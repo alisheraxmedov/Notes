@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:notes/getx/get.dart';
 import 'package:notes/widgets/circle_container.dart';
 import 'package:notes/widgets/text.dart';
 
 class NoteCard extends StatelessWidget {
   final double width;
   final String title;
-  final List<String> items;
+  final String content;
   final String editedDate;
   final Color? color;
 
@@ -13,7 +15,7 @@ class NoteCard extends StatelessWidget {
     super.key,
     required this.width,
     required this.title,
-    required this.items,
+    required this.content,
     required this.editedDate,
     this.color,
   });
@@ -51,7 +53,7 @@ class NoteCard extends StatelessWidget {
                       width: width * 0.6,
                       // color: ColorClass.blue,
                       child: Text(
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+                        content,
                         style:
                             Theme.of(context).textTheme.titleMedium!.copyWith(
                                   fontFamily: "Courier",
@@ -93,7 +95,10 @@ class NoteCard extends StatelessWidget {
                       icon: Icons.delete,
                       width: width,
                       color: Colors.cyan[100]!,
-                      onPressed: () {},
+                      onPressed: () {
+                        GetXController themeController = Get.find();
+                        themeController.deleteSelectedNotes(title: title);
+                      },
                     ),
                   ],
                 ),

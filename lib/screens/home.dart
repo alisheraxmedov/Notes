@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notes/const/item_colors.dart';
-import 'package:notes/functions/add_read_delete.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/screens/add_note.dart';
 import 'package:notes/widgets/circle_container.dart';
 import 'package:notes/widgets/notes_card.dart';
 import 'package:notes/widgets/text.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final GetXController themeController = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    readData();
+  }
+
+  void readData() {
+    themeController.readNotes();
+    setState(() {
+      themeController.readNotes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
-    final GetXController themeController = Get.find();
 
     return Scaffold(
       body: Container(
@@ -29,37 +47,37 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(
-            width * 0.03,
-          ),
+          padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
-              SizedBox(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: width * 0.04,
-                    right: width * 0.01,
-                    top: width * 0.07,
-                    bottom: width * 0.02,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextWidget(
-                        width: width,
-                        text: "Notes",
-                        fontSize: width * 0.09,
-                      ),
-                      CircleContainer(
-                        icon: Icons.clear_all_sharp,
-                        width: width,
-                        color: Theme.of(context).colorScheme.primary,
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
+              // Header
+              Padding(
+                padding: EdgeInsets.only(
+                  left: width * 0.04,
+                  right: width * 0.01,
+                  top: width * 0.07,
+                  bottom: width * 0.02,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      width: width,
+                      text: "Notes",
+                      fontSize: width * 0.09,
+                    ),
+                    CircleContainer(
+                      icon: Icons.clear_all_sharp,
+                      width: width,
+                      color: Theme.of(context).colorScheme.primary,
+                      onPressed: () {
+                        themeController.deleteAllNotes();
+                      },
+                    ),
+                  ],
                 ),
               ),
+              // Search bar
               SearchBar(
                 shadowColor: WidgetStatePropertyAll(
                   Theme.of(context).colorScheme.onPrimary,
@@ -90,6 +108,7 @@ class HomeScreen extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   themeController.changeTheme();
+                  themeController.readNotes();
                 },
                 child: TextWidget(
                   width: width,
@@ -97,19 +116,25 @@ class HomeScreen extends StatelessWidget {
                   fontSize: 24.0,
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: ItemsColor.itemsColor.length,
-                  itemBuilder: (context, index) {
-                    return NoteCard(
-                      width: width,
-                      title: 'Recipes to Try',
-                      items: ['Chicken Alfredo', 'Vegan chili'],
-                      editedDate: 'Edited: Sun Jan 2, 2022 10:05 AM',
-                      color: ItemsColor.itemsColor[index],
-                    );
-                  },
-                ),
+              // Notes List
+              Obx(
+                () {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: themeController.allNotesList.length,
+                      itemBuilder: (context, index) {
+                        return NoteCard(
+                          width: width,
+                          title: themeController.allNotesList[index]['title'],
+                          content: themeController.allNotesList[index]['content'],
+                          editedDate:
+                              "Edited: ${themeController.allNotesList[index]['date']} ${themeController.allNotesList[index]['time']}",
+                          color: ItemsColor.itemsColor[index % ItemsColor.itemsColor.length],
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -122,6 +147,7 @@ class HomeScreen extends StatelessWidget {
             const AddNoteScreen(),
             transition: Transition.circularReveal,
             duration: const Duration(milliseconds: 1000),
+             
           );
           themeController.initialDateTime();
         },
@@ -134,3 +160,4 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:notes/functions/add_read_delete.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/widgets/notification_dialog.dart';
 import 'package:notes/widgets/text.dart';
@@ -51,10 +50,17 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             children: [
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Enter a title for the note',
+                  labelStyle: Theme.of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(fontFamily: "Courier", fontSize: width * 0.045),
                   border: InputBorder.none,
                 ),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      fontFamily: "Courier",
+                    ),
               ),
               Container(
                 alignment: Alignment.center,
@@ -66,7 +72,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   children: [
                     TextWidget(
                       width: width,
-                      text: "${themeController.date}-${themeController.month}",
+                      text: "${themeController.selectedMonth} ${themeController.selectedDate}",
                       fontSize: width * 0.03,
                     ),
                     TextWidget(
@@ -77,7 +83,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     Obx(
                       () => TextWidget(
                         width: width,
-                        text: "${themeController.noteLenth} ta belgi",
+                        text: "${themeController.noteLenth} characters",
                         fontSize: width * 0.03,
                       ),
                     ),
@@ -94,12 +100,17 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     value.toString(),
                   );
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Start writing...',
-                  labelStyle: TextStyle(),
+                  labelStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontFamily: "Courier",
+                      ),
                   border: InputBorder.none,
                 ),
                 maxLines: 5,
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      fontFamily: "Courier",
+                    ),
               ),
               SizedBox(
                 height: width * 0.02,
@@ -107,13 +118,15 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               const Spacer(),
               GestureDetector(
                 onTap: () async {
-                  NotesAddReadDelete.addNotes(
+                  themeController.addNotes(
                     title: _titleController.text,
                     content: _contentController.text,
                     date: themeController.notificationDate.value,
                     time: themeController.notificationTime.value,
                   );
+                  
                   Get.back();
+                  themeController.noteLengthFunction('');
                   // print(_titleController.text);
                   // print(_contentController.text);
                   // print(themeController.notificationDate.value);

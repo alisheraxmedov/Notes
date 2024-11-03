@@ -20,51 +20,51 @@ class GetXController extends GetxController {
 //==================================================================
 //========================= DATE AND TIME ==========================
 //==================================================================
-  var date = "".obs;
-  var month = "".obs;
+  var selectedDate = "".obs;
+  var selectedMonth = "".obs;
   RxInt noteLenth = 0.obs;
 
   void initialDateTime() {
     DateTime dateTime = DateTime.now();
 
-    date.value = dateTime.day.toString();
-    month.value = dateTime.month.toString();
-    switch (month.value) {
+    selectedDate.value = dateTime.day.toString();
+    selectedMonth.value = dateTime.month.toString();
+    switch (selectedMonth.value) {
       case "1":
-        month.value = "January";
+        selectedMonth.value = "January";
         break;
       case "2":
-        month.value = "Februaury";
+        selectedMonth.value = "Februaury";
         break;
       case "3":
-        month.value = "March";
+        selectedMonth.value = "March";
         break;
       case "4":
-        month.value = "April";
+        selectedMonth.value = "April";
         break;
       case "5":
-        month.value = "May";
+        selectedMonth.value = "May";
         break;
       case "6":
-        month.value = "June";
+        selectedMonth.value = "June";
         break;
       case "7":
-        month.value = "July";
+        selectedMonth.value = "July";
         break;
       case "8":
-        month.value = "August";
+        selectedMonth.value = "August";
         break;
       case "9":
-        month.value = "September";
+        selectedMonth.value = "September";
         break;
       case "10":
-        month.value = "October";
+        selectedMonth.value = "October";
         break;
       case "11":
-        month.value = "November";
+        selectedMonth.value = "November";
         break;
       case "12":
-        month.value = "December";
+        selectedMonth.value = "December";
         break;
       default:
         "Date";
@@ -159,5 +159,50 @@ class GetXController extends GetxController {
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.dateAndTime,
     );
+  }
+
+//============================================================================
+//========================= NOTES ADD, READ, DELETE ==========================
+//============================================================================
+  GetStorage box = GetStorage();
+
+  RxList<Map<String, dynamic>> allNotesList = <Map<String, dynamic>>[].obs;
+
+  void addNotes({
+    required String title,
+    required String content,
+    required String date,
+    required String time,
+  }) {
+    Map<String, dynamic> notesMap = {
+      "title": title,
+      "content": content,
+      "date": date,
+      "time": time,
+    };
+    List notesList = box.read("notes") ?? [];
+    notesList.add(notesMap);
+    box.write("notes", notesList);
+
+    allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
+  }
+
+  void readNotes() {
+    List<dynamic> notesList = box.read("notes") ?? [];
+    allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
+  }
+
+  void deleteSelectedNotes({required String title}) {
+    List notesList = box.read("notes") ?? [];
+    notesList.removeWhere((note) => note["title"] == title);
+    box.write("notes", notesList);
+
+    allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
+  }
+
+  void deleteAllNotes() {
+    box.remove("notes");
+
+    allNotesList.clear();
   }
 }
