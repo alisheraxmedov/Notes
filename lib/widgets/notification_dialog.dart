@@ -80,6 +80,7 @@ class NotificationDialog extends StatelessWidget {
                           final TimeOfDay? picked = await showTimePicker(
                             context: context,
                             initialTime: TimeOfDay.now(),
+                            
                           );
                           if (picked != null) {
                             themeController.initNotificationTime(picked);
@@ -112,6 +113,7 @@ class NotificationDialog extends StatelessWidget {
                         width: width,
                         text: "Close",
                         fontSize: width * 0.04,
+                        
                       ),
                     ),
                     TextButton(

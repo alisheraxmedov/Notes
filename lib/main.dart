@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
               ? MyAppTheme.lightTheme
               : MyAppTheme.darkTheme,
           home: const HomeScreen(),
+          // home: const GetStorageScreen(),
         );
       },
     );

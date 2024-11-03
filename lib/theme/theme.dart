@@ -6,7 +6,7 @@ class MyAppTheme {
     brightness: Brightness.light,
     primarySwatch: Colors.grey,
     colorScheme: const ColorScheme.light(
-      primary: ColorClass.white,
+      primary: ColorClass.orginalWhite,
       onPrimary: ColorClass.white,
       secondary: ColorClass.orginalWhite,
       onSecondary: ColorClass.orginalGrey,
@@ -14,12 +14,15 @@ class MyAppTheme {
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         color: ColorClass.black,
+        fontFamily: "Courier",
       ),
       bodyMedium: TextStyle(
-        color: Colors.black,
+        color: ColorClass.black,
+        fontFamily: "Courier",
       ),
       headlineMedium: TextStyle(
-        color: Colors.grey,
+        color: ColorClass.orginalGrey,
+        fontFamily: "Courier",
       ),
     ),
     iconTheme: const IconThemeData(
@@ -49,6 +52,21 @@ class MyAppTheme {
     ),
     iconTheme: const IconThemeData(
       color: ColorClass.white,
+    ),
+    timePickerTheme: TimePickerThemeData(
+      cancelButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.white,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            color: ColorClass.white,
+          ),
+        ),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      foregroundColor: ColorClass.white,
     ),
   );
 }

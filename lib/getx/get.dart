@@ -98,9 +98,9 @@ class GetXController extends GetxController {
 //===============================================================
 //========================= SAVE NOTES ==========================
 //===============================================================
-  final box = GetStorage();
 
   void saveNoteData(String title, String content, String date, String time) {
+    final box = GetStorage();
     final Map<String, String> noteData = {
       'title': title,
       'content': content,
@@ -110,8 +110,9 @@ class GetXController extends GetxController {
     box.write('noteData', noteData);
   }
 
-  Map<String, String>? getNoteData() {
-    return box.read('noteData');
+  Map<String, dynamic>? getNoteData() {
+    final box = GetStorage();
+    return box.read('note-1');
   }
 
 //=====================================================================
@@ -148,7 +149,7 @@ class GetXController extends GetxController {
       scheduledDateTime,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'your_channel_id', 
+          'your_channel_id',
           'your_channel_name',
           channelDescription: 'your_channel_description',
         ),

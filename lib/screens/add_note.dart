@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:notes/functions/add_read_delete.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/widgets/notification_dialog.dart';
 import 'package:notes/widgets/text.dart';
@@ -104,13 +106,18 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {
-                  themeController.saveNoteData(
-                    _titleController.text,
-                    _contentController.text,
-                    themeController.notificationDate.value,
-                    themeController.notificationTime.value,
+                onTap: () async {
+                  NotesAddReadDelete.addNotes(
+                    title: _titleController.text,
+                    content: _contentController.text,
+                    date: themeController.notificationDate.value,
+                    time: themeController.notificationTime.value,
                   );
+                  Get.back();
+                  // print(_titleController.text);
+                  // print(_contentController.text);
+                  // print(themeController.notificationDate.value);
+                  // print(themeController.notificationTime.value);
                 },
                 child: Container(
                   height: width * 0.17,

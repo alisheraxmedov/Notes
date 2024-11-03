@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:notes/const/item_colors.dart';
+import 'package:notes/functions/add_read_delete.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/screens/add_note.dart';
+import 'package:notes/widgets/circle_container.dart';
 import 'package:notes/widgets/notes_card.dart';
 import 'package:notes/widgets/text.dart';
 
@@ -12,6 +15,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
     final GetXController themeController = Get.find();
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -46,24 +50,20 @@ class HomeScreen extends StatelessWidget {
                         text: "Notes",
                         fontSize: width * 0.09,
                       ),
-                      Container(
-                        height: width * 0.12,
-                        width: width * 0.12,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.menu),
-                          onPressed: () {},
-                        ),
+                      CircleContainer(
+                        icon: Icons.clear_all_sharp,
+                        width: width,
+                        color: Theme.of(context).colorScheme.primary,
+                        onPressed: () {},
                       ),
                     ],
                   ),
                 ),
               ),
               SearchBar(
+                shadowColor: WidgetStatePropertyAll(
+                  Theme.of(context).colorScheme.onPrimary,
+                ),
                 backgroundColor: WidgetStatePropertyAll(
                   Theme.of(context).colorScheme.primary,
                 ),
@@ -81,44 +81,34 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: width * 0.02),
+              TextWidget(
+                width: width,
+                text: "Get Storage dagi ma'lumot",
+                fontSize: width * 0.05,
+              ),
+              TextButton(
+                onPressed: () {
+                  themeController.changeTheme();
+                },
+                child: TextWidget(
+                  width: width,
+                  text: "---------",
+                  fontSize: 24.0,
+                ),
+              ),
               Expanded(
-                child: ListView(
-                  children: [
-                    NoteCard(
+                child: ListView.builder(
+                  itemCount: ItemsColor.itemsColor.length,
+                  itemBuilder: (context, index) {
+                    return NoteCard(
+                      width: width,
                       title: 'Recipes to Try',
                       items: ['Chicken Alfredo', 'Vegan chili'],
                       editedDate: 'Edited: Sun Jan 2, 2022 10:05 AM',
-                      color: Colors.blue[100],
-                    ),
-                    NoteCard(
-                      title: 'Gift Ideas for Mom',
-                      items: ['Jewelry box', 'Cookbook'],
-                      editedDate: 'Edited: Wed Jan 4, 2023 4:53 PM',
-                      color: Colors.pink[100],
-                    ),
-                    NoteCard(
-                      title: 'Bucket List',
-                      items: ['Travel to Japan', 'Learn to play the guitar'],
-                      editedDate: 'Edited: Fri Jan 6, 2023 1:09 PM',
-                      color: Colors.yellow[100],
-                    ),
-                    NoteCard(
-                      title: 'Ideas for Vacation',
-                      items: [
-                        'Visit Grand Canyon',
-                        'Go on a hot air balloon ride'
-                      ],
-                      editedDate: 'Edited: Wed Feb 1, 2023 12:34 PM',
-                      color: Colors.pink[100],
-                    ),
-                    NoteCard(
-                      title: 'Meeting Notes',
-                      items: ['Attendees: John, Mary, David', 'Agenda:'],
-                      editedDate: 'Edited: Wed Feb 1, 2023 12:34 PM',
-                      color: Colors.grey[300],
-                    ),
-                  ],
+                      color: ItemsColor.itemsColor[index],
+                    );
+                  },
                 ),
               ),
             ],
@@ -137,9 +127,10 @@ class HomeScreen extends StatelessWidget {
         },
         child: Icon(
           Icons.add,
-          size: width * 0.05,
+          size: width * 0.09,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 }
