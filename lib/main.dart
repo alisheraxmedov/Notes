@@ -4,9 +4,12 @@ import 'package:notes/getx/get.dart';
 import 'package:notes/screens/splash.dart';
 import 'package:notes/theme/theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(GetXController());
+  GetXController getxcontroller = Get.put(
+    GetXController(),
+  );
+  await getxcontroller.initNotifications();
   runApp(
     const MyApp(),
   );

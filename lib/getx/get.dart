@@ -3,7 +3,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class GetXController extends GetxController {
@@ -121,44 +120,52 @@ class GetXController extends GetxController {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  @override
-  void onInit() {
-    super.onInit();
-    InitializationSettings initializationSettings =
-        const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    );
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  Future<void> initNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Initialize time zone data
-    tz.initializeTimeZones();
-    tz.setLocalLocation(
-      tz.getLocation('America/Detroit'),
-    ); // Change to your preferred timezone
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> scheduleNotification(
-      String title, String body, DateTime scheduledDate) async {
-    // Convert DateTime to TZDateTime
-    final tz.TZDateTime scheduledDateTime =
-        tz.TZDateTime.from(scheduledDate, tz.local);
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      title,
-      body,
-      scheduledDateTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'your_channel_id',
-          'your_channel_name',
-          channelDescription: 'your_channel_description',
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dateAndTime,
-    );
+  Future<void> scheduleNotification() async {
+    if (notificationDate.value != "Date" && notificationTime.value != "Time") {
+      DateTime now = DateTime.now();
+      DateTime scheduledDate = DateTime(
+        int.parse(notificationDate.value.split('-')[0]),
+        int.parse(notificationDate.value.split('-')[1]),
+        int.parse(notificationDate.value.split('-')[2]),
+        int.parse(notificationTime.value.split(':')[0]),
+        int.parse(notificationTime.value.split(':')[1]),
+      );
+
+      if (scheduledDate.isAfter(now)) {
+        tz.TZDateTime tzScheduledDate =
+            tz.TZDateTime.from(scheduledDate, tz.local);
+        await flutterLocalNotificationsPlugin.zonedSchedule(
+          0,
+          'Reminder',
+          'This is your scheduled notification!',
+          tzScheduledDate,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'your_channel_id',
+              'your_channel_name',
+              channelDescription: 'your_channel_description',
+              importance: Importance.max,
+              priority: Priority.high,
+              showWhen: false,
+            ),
+          ),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents: DateTimeComponents.time,
+        );
+      }
+    }
   }
 
 //============================================================================
@@ -187,16 +194,50 @@ class GetXController extends GetxController {
     allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
   }
 
+//========================================================
+//======================== UPDATE ========================
+  void updateNotes({
+    required String title,
+    required String content,
+    required String date,
+    required String time,
+    required String notificationDate,
+    required String notificationTime,
+    int? index,
+  }) {
+    Map<String, dynamic> notesMap = {
+      "title": title,
+      "content": content,
+      "date": date,
+      "time": time,
+      "nDate": notificationDate,
+      "nTime": notificationTime,
+    };
+
+    List notesList = box.read("notes") ?? [];
+
+    if (index != null) {
+      notesList[index] = notesMap;
+    } else {
+      notesList.add(notesMap);
+    }
+
+    box.write("notes", notesList);
+    allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
+  }
+
+//======================================================
+//======================== READ ========================
   void readNotes() {
     // print("=====================================");
     // print("==============Ishlayabdi=============");
     // print("=====================================");
     List<dynamic> notesList = box.read("notes") ?? [];
     allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
-    print(notesList);
-    print(allNotesList);
   }
 
+//========================================================
+//======================== DELETE ========================
   void deleteSelectedNotes({required String title}) {
     List notesList = box.read("notes") ?? [];
     notesList.removeWhere((note) => note["title"] == title);

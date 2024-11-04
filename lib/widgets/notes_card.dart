@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notes/getx/get.dart';
+import 'package:notes/screens/add_note.dart';
 import 'package:notes/widgets/circle_container.dart';
 import 'package:notes/widgets/text.dart';
 
 class NoteCard extends StatelessWidget {
+  final int index;
   final double width;
   final String title;
   final String content;
@@ -14,6 +16,7 @@ class NoteCard extends StatelessWidget {
   const NoteCard({
     super.key,
     required this.width,
+    required this.index,
     required this.title,
     required this.content,
     required this.editedDate,
@@ -83,7 +86,12 @@ class NoteCard extends StatelessWidget {
                       icon: Icons.edit,
                       width: width,
                       color: Colors.cyan[100]!,
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.to(
+                          const AddNoteScreen(),
+                          arguments: [index, title, content],
+                        );
+                      },
                     ),
                     CircleContainer(
                       icon: Icons.alarm,

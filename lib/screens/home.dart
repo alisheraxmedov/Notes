@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: width,
                           color: Theme.of(context).colorScheme.primary,
                           onPressed: () {
-                            themeController.deleteAllNotes();
+                            // themeController.deleteAllNotes();
                           },
                         ),
                       ],
@@ -105,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: themeController.allNotesList.length,
                       itemBuilder: (context, index) {
                         return NoteCard(
+                          index: index,
                           width: width,
                           title: themeController.allNotesList[index]['title'],
                           content: themeController.allNotesList[index]
@@ -130,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const AddNoteScreen(),
             transition: Transition.circularReveal,
             duration: const Duration(milliseconds: 1000),
+            arguments: ['','',''],
           )?.then(
             (value) {
               themeController.readNotes();
