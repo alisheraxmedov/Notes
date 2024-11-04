@@ -188,8 +188,13 @@ class GetXController extends GetxController {
   }
 
   void readNotes() {
+    // print("=====================================");
+    // print("==============Ishlayabdi=============");
+    // print("=====================================");
     List<dynamic> notesList = box.read("notes") ?? [];
     allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
+    print(notesList);
+    print(allNotesList);
   }
 
   void deleteSelectedNotes({required String title}) {
