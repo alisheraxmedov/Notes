@@ -331,8 +331,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 onTap: () {
                   DateTime dateTime = DateTime.now();
                   final int? index = int.tryParse(Get.arguments[0]?.toString() ?? '');
-
-
+                  
                   themeController.updateNotes(
                     title: _titleController.text,
                     content: _contentController.text,

@@ -54,7 +54,6 @@ class NoteCard extends StatelessWidget {
                     SizedBox(
                       height: width * 0.21,
                       width: width * 0.6,
-                      // color: ColorClass.blue,
                       child: Text(
                         content,
                         style:
@@ -105,7 +104,9 @@ class NoteCard extends StatelessWidget {
                       color: Colors.cyan[100]!,
                       onPressed: () {
                         GetXController themeController = Get.find();
-                        themeController.deleteSelectedNotes(title: title);
+                        themeController.deleteSelectedNotes(
+                          title: title,
+                        );
                       },
                     ),
                   ],
