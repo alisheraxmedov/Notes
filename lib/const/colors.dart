@@ -8,4 +8,7 @@ class ColorClass {
   static const Color orginalGrey = Colors.grey;
   static const Color orange = Colors.orange;
   static const Color blue = Colors.blue;
+  static const Color red = Colors.red;
+  static const Color cyan = Colors.cyan;
+  static const Color cyanAccent = Colors.cyanAccent;
 }

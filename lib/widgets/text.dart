@@ -26,7 +26,6 @@ class TextWidget extends StatelessWidget {
             fontWeight: fontWeight,
             letterSpacing: letterSpacing,
             fontFamily: "Courier",
-            // fontStyle: FontStyle.italic,
           ),
     );
   }

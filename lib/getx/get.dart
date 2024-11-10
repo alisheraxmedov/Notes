@@ -248,7 +248,6 @@ class GetXController extends GetxController {
 
   void deleteAllNotes() {
     box.remove("notes");
-
     allNotesList.clear();
   }
 }
