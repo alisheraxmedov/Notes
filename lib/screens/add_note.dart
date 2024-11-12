@@ -301,7 +301,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     Obx(
                       () => TextWidget(
                         width: width,
-                        text: "${themeController.noteLenth} characters",
+                        text: "${themeController.noteLength} characters",
                         fontSize: width * 0.03,
                       ),
                     ),

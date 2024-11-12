@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notes/getx/get.dart';
+import 'package:notes/notification/notification.dart';
 import 'package:notes/screens/splash.dart';
 import 'package:notes/theme/theme.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  tz.initializeTimeZones();
   GetXController getxcontroller = Get.put(
     GetXController(),
   );
