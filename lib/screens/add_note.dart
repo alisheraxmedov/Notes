@@ -266,8 +266,10 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           child: Column(
             children: [
               TextField(
+                cursorColor: Theme.of(context).colorScheme.onPrimary,
                 controller: _titleController,
                 decoration: InputDecoration(
+                  
                   labelText: 'Enter a title for the note',
                   labelStyle: Theme.of(context)
                       .textTheme
@@ -283,7 +285,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 alignment: Alignment.center,
                 padding: EdgeInsets.only(left: width * 0.01),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 child: Row(
                   children: [
@@ -310,6 +312,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               ),
               SizedBox(height: width * 0.02),
               TextField(
+                cursorColor: Theme.of(context).colorScheme.onPrimary,
                 controller: _contentController,
                 onChanged: (value) {
                   themeController.noteLengthFunction(value.toString());
@@ -345,10 +348,10 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   themeController.noteLengthFunction('');
                 },
                 child: Container(
-                  height: width * 0.17,
+                  height: width * 0.15,
                   width: width,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: Theme.of(context).colorScheme.secondary,
                     borderRadius: BorderRadius.circular(width * 0.02),
                   ),
                   alignment: Alignment.center,
@@ -359,7 +362,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: width * 0.01),
+              SizedBox(height: width * 0.04),
             ],
           ),
         ),

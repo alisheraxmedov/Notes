@@ -252,7 +252,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -263,10 +262,19 @@ class GetXController extends GetxController {
 //==================================================================
 //========================= CHANGE THEME ===========================
 //==================================================================
+  final _box = GetStorage();
   var isLight = false.obs;
+
+  
+  void onInitTheme() {
+    super.onInit();
+    isLight.value = _box.read('isLight') ?? false;
+  }
 
   void changeTheme() {
     isLight.value = !isLight.value;
+    _box.write('isLight', isLight.value);
+
   }
 
 //==================================================================
@@ -346,12 +354,15 @@ class GetXController extends GetxController {
 //=====================================================================
 //========================= SET NOTIFICATION ==========================
 //=====================================================================
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> initNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
@@ -369,7 +380,8 @@ class GetXController extends GetxController {
       );
 
       if (scheduledDate.isAfter(now)) {
-        tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+        tz.TZDateTime tzScheduledDate =
+            tz.TZDateTime.from(scheduledDate, tz.local);
         await flutterLocalNotificationsPlugin.zonedSchedule(
           0,
           'Reminder',
@@ -386,7 +398,8 @@ class GetXController extends GetxController {
             ),
           ),
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
           matchDateTimeComponents: DateTimeComponents.dateAndTime,
         );
       }

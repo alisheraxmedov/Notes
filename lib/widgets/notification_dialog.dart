@@ -253,6 +253,7 @@ class NotificationDialog extends StatelessWidget {
                         text: "Close",
                         fontSize: width * 0.04,
                       ),
+                      
                     ),
                     TextButton(
                       onPressed: () {

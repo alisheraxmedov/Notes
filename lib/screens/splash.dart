@@ -12,6 +12,7 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   final GetXController themeController = Get.find();
+
   @override
   void initState() {
     super.initState();
@@ -19,49 +20,50 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   void _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 3), () {
-      themeController.readNotes();
-    });
-    Get.off(() => const HomeScreen());
+    try {
+      await Future.delayed(const Duration(seconds: 3), () {
+        themeController.readNotes(); 
+        themeController.onInitTheme(); 
+      });
+      Get.off(() => const HomeScreen()); 
+    } catch (e) {
+      print('Error navigating to home: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Container(
         width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.onSecondary,
-              Theme.of(context).colorScheme.onPrimary,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Theme.of(context).colorScheme.primary,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               Icons.note,
-              size: width * 0.3,
-              color: Theme.of(context).colorScheme.primary,
+              size: width * 0.3, 
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
-            SizedBox(height: width * 0.05),
+            SizedBox(height: height * 0.05), 
             Text(
               "Notes App",
               style: TextStyle(
-                fontSize: width * 0.08,
+                fontSize: width * 0.08, 
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            SizedBox(height: width * 0.02),
+            SizedBox(height: height * 0.02), // Adjust space based on height
             CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onSecondary, // Spinner color from theme
             ),
           ],
         ),

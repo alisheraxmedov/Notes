@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:notes/const/item_colors.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/screens/add_note.dart';
+import 'package:notes/screens/settings.dart';
 import 'package:notes/widgets/circle_container.dart';
 import 'package:notes/widgets/notes_card.dart';
 import 'package:notes/widgets/text.dart';
@@ -30,21 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 "Notes mavjud emas",
                 style: TextStyle(
                   fontSize: width * 0.05,
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: Theme.of(context).colorScheme.onSecondary, 
                 ),
               ),
             );
           }
           return Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.onSecondary,
-                  Theme.of(context).colorScheme.onPrimary,
-                ],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
+              color: Theme.of(context).colorScheme.primary, 
             ),
             child: Padding(
               padding: EdgeInsets.all(width * 0.03),
@@ -65,13 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: width,
                           text: "Notes",
                           fontSize: width * 0.09,
+                          fontWeight: FontWeight.bold,
+                          textColor: Theme.of(context).colorScheme.secondary,
                         ),
                         CircleContainer(
                           icon: Icons.clear_all_sharp,
                           width: width,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).colorScheme.primary, 
                           onPressed: () {
-                            // themeController.deleteAllNotes();
+                            Get.to(
+                              const SettingScreen(),
+                              transition: Transition.circularReveal,
+                              duration: const Duration(milliseconds: 1000),
+                              arguments: ['', '', ''],
+                            );
                           },
                         ),
                       ],
@@ -80,26 +81,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Search bar
                   SearchBar(
                     shadowColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.onPrimary,
+                      Theme.of(context).colorScheme.primary,
                     ),
                     backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.secondary, // Updated for theme
                     ),
                     hintText: "Search notes...",
                     hintStyle: WidgetStatePropertyAll(
                       TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.onPrimary, // Updated for theme
                         fontFamily: "Courier",
                       ),
                     ),
                     textStyle: WidgetStatePropertyAll(
                       TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.onPrimary, // Updated for theme
                         fontFamily: "Courier",
                       ),
                     ),
                   ),
-
                   Expanded(
                     child: ListView.builder(
                       itemCount: themeController.allNotesList.length,
@@ -108,12 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           index: index,
                           width: width,
                           title: themeController.allNotesList[index]['title'],
-                          content: themeController.allNotesList[index]
-                              ['content'],
+                          content: themeController.allNotesList[index]['content'],
                           editedDate:
                               "Edited: ${themeController.allNotesList[index]['date']} ${themeController.allNotesList[index]['time']}",
-                          color: ItemsColor
-                              .itemsColor[index % ItemsColor.itemsColor.length],
+                          color: ItemsColor.itemsColor[
+                              index % ItemsColor.itemsColor.length],
                         );
                       },
                     ),
@@ -125,13 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.secondary, // Updated for theme
         onPressed: () {
           Get.to(
             const AddNoteScreen(),
             transition: Transition.circularReveal,
             duration: const Duration(milliseconds: 1000),
-            arguments: ['','',''],
+            arguments: ['', '', ''],
           )?.then(
             (value) {
               themeController.readNotes();
@@ -142,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Icon(
           Icons.add,
           size: width * 0.09,
+          color: Theme.of(context).iconTheme.color, // Updated for theme
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

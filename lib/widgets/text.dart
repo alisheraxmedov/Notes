@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes/const/colors.dart';
 
 class TextWidget extends StatelessWidget {
   final String text;
@@ -7,6 +8,7 @@ class TextWidget extends StatelessWidget {
   final FontWeight fontWeight;
   final double letterSpacing;
   final FontStyle fontStyle;
+  final Color textColor;
   const TextWidget({
     super.key,
     required this.width,
@@ -15,6 +17,7 @@ class TextWidget extends StatelessWidget {
     this.fontWeight = FontWeight.normal,
     this.letterSpacing = 0.0,
     this.fontStyle = FontStyle.italic,
+    this.textColor = ColorClass.black,
   });
 
   @override
@@ -26,6 +29,7 @@ class TextWidget extends StatelessWidget {
             fontWeight: fontWeight,
             letterSpacing: letterSpacing,
             fontFamily: "Courier",
+            color: textColor,
           ),
     );
   }
