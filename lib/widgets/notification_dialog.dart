@@ -256,15 +256,17 @@ class NotificationDialog extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Schedule notification using selected date and time
-                        final selectedDate = themeController.notificationDate.value;
-                        final selectedTime = themeController.notificationTime.value;
+                        final selectedDate =
+                            themeController.notificationDate.value;
+                        final selectedTime =
+                            themeController.notificationTime.value;
 
-                        // Parse selected date and time into DateTime object
                         DateTime? scheduledDateTime;
                         if (selectedDate != "Date" && selectedTime != "Time") {
-                          final dateParts = selectedDate.split('-').map(int.parse).toList();
-                          final timeParts = selectedTime.split(':').map(int.parse).toList();
+                          final dateParts =
+                              selectedDate.split('-').map(int.parse).toList();
+                          final timeParts =
+                              selectedTime.split(':').map(int.parse).toList();
                           scheduledDateTime = DateTime(
                             dateParts[0],
                             dateParts[1],
@@ -274,13 +276,17 @@ class NotificationDialog extends StatelessWidget {
                           );
                         }
 
-                        if (scheduledDateTime != null && scheduledDateTime.isAfter(DateTime.now())) {
+                        if (scheduledDateTime != null &&
+                            scheduledDateTime.isAfter(
+                              DateTime.now(),
+                            )) {
                           themeController.scheduleNotification();
                           Navigator.of(context).pop();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Please select a valid future date and time."),
+                              content: Text(
+                                  "Please select a valid future date and time."),
                             ),
                           );
                         }
@@ -301,4 +307,3 @@ class NotificationDialog extends StatelessWidget {
     );
   }
 }
-
