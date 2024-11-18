@@ -45,7 +45,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       width: width,
                       text: "Dark Theme",
                       fontSize: width * 0.06,
-                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      textColor: Theme.of(context).colorScheme.secondary,
                     ),
                     Obx(
                       () => Switch(
@@ -72,9 +72,11 @@ class _SettingScreenState extends State<SettingScreen> {
                       width: width,
                       text: "Language",
                       fontSize: width * 0.06,
-                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      textColor: Theme.of(context).colorScheme.secondary,
                     ),
                     DropdownButton<String>(
+                      dropdownColor: Theme.of(context).colorScheme.secondary,
+                      elevation: 0,
                       icon: Icon(
                         Icons.language,
                         color: Theme.of(context).colorScheme.secondary,
@@ -83,12 +85,10 @@ class _SettingScreenState extends State<SettingScreen> {
                           .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(
-                            value,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontSize: width * 0.05,
-                            ),
+                          child: TextWidget(
+                            width: width,
+                            text: value,
+                            fontSize: width * 0.05,
                           ),
                         );
                       }).toList(),
@@ -111,7 +111,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       width: width,
                       text: "Enable Notifications",
                       fontSize: width * 0.06,
-                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      textColor: Theme.of(context).colorScheme.secondary,
                     ),
                     // Obx(
                     //   () => Switch(

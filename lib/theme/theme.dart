@@ -75,6 +75,8 @@ class MyAppTheme {
       ),
     ),
     colorScheme: const ColorScheme.light(
+      surfaceVariant: ColorClass.deepGreen,
+      inversePrimary: ColorClass.white,
       primary: ColorClass.white,
       onPrimary: ColorClass.white,
       secondary: ColorClass.deepGreen,
@@ -127,9 +129,12 @@ class MyAppTheme {
       ),
     ),
     colorScheme: const ColorScheme.dark(
+      surfaceVariant: ColorClass.darkGrey,
+      inversePrimary: ColorClass.white,
       primary: ColorClass.black,
       onPrimary: ColorClass.white,
       secondary: ColorClass.white,
+      onSecondary: ColorClass.white,
       // ignore: deprecated_member_use
       background: ColorClass.darkGrey,
     ),
@@ -149,7 +154,7 @@ class MyAppTheme {
       ),
     ),
     iconTheme: const IconThemeData(
-      color: ColorClass.white,
+      color: ColorClass.black,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: ColorClass.darkGrey,

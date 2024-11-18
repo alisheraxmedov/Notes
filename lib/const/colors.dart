@@ -15,5 +15,6 @@ class ColorClass {
   static const Color tealLight = Color(0xFF4DB6AC); 
   static const Color deepGreen = Color.fromARGB(255, 11, 248, 98); 
   static const Color deepGreen2 = Color.fromARGB(255, 11, 248, 62); 
+  static const Color red = Colors.red; 
 
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:notes/const/colors.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/screens/home.dart';
@@ -49,22 +50,38 @@ class SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: width*0.3,
-              width: width*0.3,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/icons/1024.png"),
-                ),
+              height: width * 0.7,
+              width: width * 0.7,
+              // decoration: const BoxDecoration(
+              //   image: DecorationImage(
+              //     image: AssetImage("assets/icons/1024.png"),
+              //   ),
+              // ),
+              child: Lottie.asset(
+                "assets/lottie/notes.json",
               ),
             ),
             SizedBox(height: height * 0.05),
-            Text(
-              "Notes App",
-              style: TextStyle(
-                fontSize: width * 0.08,
-                fontWeight: FontWeight.bold,
-                color: ColorClass.black,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Reminder",
+                  style: TextStyle(
+                    fontSize: width * 0.08,
+                    fontWeight: FontWeight.bold,
+                    color: ColorClass.red,
+                  ),
+                ),
+                Text(
+                  " Notes",
+                  style: TextStyle(
+                    fontSize: width * 0.08,
+                    fontWeight: FontWeight.bold,
+                    color: ColorClass.deepGreen,
+                  ),
+                ),
+              ],
             ),
             // SizedBox(height: height * 0.02),
             // CircularProgressIndicator(

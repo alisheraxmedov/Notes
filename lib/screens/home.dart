@@ -31,14 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 "Notes mavjud emas",
                 style: TextStyle(
                   fontSize: width * 0.05,
-                  color: Theme.of(context).colorScheme.onSecondary, 
+                  color: Theme.of(context).colorScheme.onSecondary,
                 ),
               ),
             );
           }
           return Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary, 
+              color: Theme.of(context).colorScheme.primary,
             ),
             child: Padding(
               padding: EdgeInsets.all(width * 0.03),
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         CircleContainer(
                           icon: Icons.clear_all_sharp,
                           width: width,
-                          color: Theme.of(context).colorScheme.primary, 
+                          color: Theme.of(context).colorScheme.secondary,
                           onPressed: () {
                             Get.to(
                               const SettingScreen(),
@@ -84,18 +84,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       Theme.of(context).colorScheme.primary,
                     ),
                     backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.secondary, // Updated for theme
+                      Theme.of(context)
+                          .colorScheme
+                          .secondary, // Updated for theme
                     ),
                     hintText: "Search notes...",
                     hintStyle: WidgetStatePropertyAll(
                       TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary, // Updated for theme
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary, // Updated for theme
                         fontFamily: "Courier",
                       ),
                     ),
                     textStyle: WidgetStatePropertyAll(
                       TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary, // Updated for theme
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary, // Updated for theme
                         fontFamily: "Courier",
                       ),
                     ),
@@ -108,11 +114,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           index: index,
                           width: width,
                           title: themeController.allNotesList[index]['title'],
-                          content: themeController.allNotesList[index]['content'],
+                          content: themeController.allNotesList[index]
+                              ['content'],
                           editedDate:
                               "Edited: ${themeController.allNotesList[index]['date']} ${themeController.allNotesList[index]['time']}",
-                          color: ItemsColor.itemsColor[
-                              index % ItemsColor.itemsColor.length],
+                          color: ItemsColor
+                              .itemsColor[index % ItemsColor.itemsColor.length],
                         );
                       },
                     ),
@@ -124,7 +131,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.secondary, // Updated for theme
+        shape: const CircleBorder(),
+        backgroundColor:
+            Theme.of(context).colorScheme.secondary, // Updated for theme
         onPressed: () {
           Get.to(
             const AddNoteScreen(),
@@ -144,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Theme.of(context).iconTheme.color, // Updated for theme
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      
     );
   }
 }

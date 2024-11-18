@@ -161,17 +161,19 @@ class NotificationDialog extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.notifications_active_outlined,
+            color: Theme.of(context).colorScheme.onSecondary,
           ),
           onPressed: () {
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
                   title: TextWidget(
                     width: width,
                     text: "Set notification",
