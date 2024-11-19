@@ -11,6 +11,7 @@ class NoteCard extends StatelessWidget {
   final String title;
   final String content;
   final String editedDate;
+  final String reTime;
   final Color? color;
 
   const NoteCard({
@@ -20,6 +21,7 @@ class NoteCard extends StatelessWidget {
     required this.title,
     required this.content,
     required this.editedDate,
+    required this.reTime,
     this.color,
   });
 
@@ -45,31 +47,50 @@ class NoteCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextWidget(
-                      width: width,
-                      text: title,
-                      fontSize: width * 0.07,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(
-                      height: width * 0.21,
-                      width: width * 0.6,
-                      child: Text(
-                        content,
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontFamily: "Courier",
-                                  fontSize: width * 0.035,
-                                ),
+                    Expanded(
+                      flex: 2,
+                      child: TextWidget(
+                        width: width,
+                        text: title,
+                        fontSize: width * 0.07,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontFamily: "Courier",
-                            color: Theme.of(context).colorScheme.onSecondary,
+                    Expanded(
+                      flex: 4,
+                      child: SizedBox(
+                        height: width * 0.21,
+                        width: width * 0.6,
+                        child: Text(
+                          content,
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontFamily: "Courier",
+                                    fontSize: width * 0.035,
+                                  ),
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextWidget(
+                            width: width,
+                            text: editedDate,
                             fontSize: width * 0.03,
                           ),
-                      editedDate,
+                          TextWidget(
+                            width: width,
+                            text: reTime,
+                            fontSize: width * 0.03,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

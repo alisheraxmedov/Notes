@@ -120,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               "Edited: ${themeController.allNotesList[index]['date']} ${themeController.allNotesList[index]['time']}",
                           color: ItemsColor
                               .itemsColor[index % ItemsColor.itemsColor.length],
+                              reTime: "Reminder time: ${themeController.allNotesList[index]['date']} ${themeController.allNotesList[index]['time']}",
                         );
                       },
                     ),

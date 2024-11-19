@@ -33,6 +33,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: width*0.13,
         centerTitle: true,
         title: TextWidget(
           width: width,

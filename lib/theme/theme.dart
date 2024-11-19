@@ -1,63 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:notes/const/colors.dart';
-
-// class MyAppTheme {
-//   static final ThemeData lightTheme = ThemeData(
-//     brightness: Brightness.light,
-//     primarySwatch: Colors.grey,
-//     colorScheme: const ColorScheme.light(
-//       primary: ColorClass.orginalWhite,
-//       onPrimary: ColorClass.white,
-//       secondary: ColorClass.orginalWhite,
-//       onSecondary: ColorClass.orginalGrey,
-//     ),
-//     textTheme: const TextTheme(
-//       titleMedium: TextStyle(
-//         color: ColorClass.black,
-//         fontFamily: "Courier",
-//       ),
-//       bodyMedium: TextStyle(
-//         color: ColorClass.black,
-//         fontFamily: "Courier",
-//       ),
-//       headlineMedium: TextStyle(
-//         color: ColorClass.orginalGrey,
-//         fontFamily: "Courier",
-//       ),
-//     ),
-//     iconTheme: const IconThemeData(
-//       color: ColorClass.white,
-//     ),
-//   );
-
-//   static final ThemeData darkTheme = ThemeData(
-//     brightness: Brightness.dark,
-//     primarySwatch: Colors.amber,
-//     colorScheme: ColorScheme.dark(
-//       primary: ColorClass.grey,
-//       onPrimary: Colors.black,
-//       secondary: ColorClass.white,
-//       onSecondary: ColorClass.orginalGrey,
-//     ),
-//     textTheme: const TextTheme(
-//       titleMedium: TextStyle(
-//         color: ColorClass.white,
-//       ),
-//       bodyMedium: TextStyle(
-//         color: Colors.white,
-//       ),
-//       headlineMedium: TextStyle(
-//         color: Colors.grey,
-//       ),
-//     ),
-//     iconTheme: const IconThemeData(
-//       color: ColorClass.white,
-//     ),
-//     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-//       foregroundColor: ColorClass.white,
-//     ),
-//   );
-// }
 import 'package:flutter/material.dart';
 import 'package:notes/const/colors.dart';
 
@@ -76,6 +16,7 @@ class MyAppTheme {
     ),
     colorScheme: const ColorScheme.light(
       surfaceVariant: ColorClass.deepGreen,
+      onSurfaceVariant: ColorClass.deepGreen3,
       inversePrimary: ColorClass.white,
       primary: ColorClass.white,
       onPrimary: ColorClass.white,
@@ -85,19 +26,130 @@ class MyAppTheme {
       background: ColorClass.lightTealAccent,
       surface: ColorClass.lightTeal,
     ),
+
+//===================================================================================
+//============================== DATE PICKER LIGHT ==================================
+//===================================================================================
+    datePickerTheme: const DatePickerThemeData(
+      backgroundColor: ColorClass.deepGreen3,
+      dividerColor: ColorClass.deepGreen,
+      // dayBackgroundColor: WidgetStatePropertyAll(ColorClass.red),
+      dayOverlayColor: WidgetStatePropertyAll(
+        ColorClass.deepGreen,
+      ),
+      // dayForegroundColor: WidgetStatePropertyAll(
+      //   ColorClass.red,
+      // ),
+
+      dayShape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(),
+      ),
+      todayBackgroundColor: WidgetStatePropertyAll(
+        ColorClass.deepGreen,
+      ),
+      rangePickerBackgroundColor: ColorClass.deepGreen,
+      // dayStyle: TextStyle(
+      //   color: ColorClass.white,
+      //   fontFamily: "Courier",
+      // ),
+      // yearStyle: TextStyle(
+      //   color: ColorClass.white,
+      //   fontFamily: "Courier",
+      // ),
+      // rangePickerHeaderHelpStyle: TextStyle(
+      //   color: ColorClass.white,
+      // ),
+      confirmButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.deepGreen,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+      cancelButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.red,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+      // helpTextStyle: TextStyle(color: ColorClass.white, fontFamily: "Courier"),
+    ),
+
+//===================================================================================
+//============================== TIME PICKER LIGHT ==================================
+//===================================================================================
+    timePickerTheme: const TimePickerThemeData(
+      backgroundColor: ColorClass.deepGreen3,
+      dialTextColor: ColorClass.white,
+      hourMinuteTextColor: ColorClass.deepGreen,
+      dayPeriodTextColor: ColorClass.deepGreen,
+      dayPeriodColor: ColorClass.white,
+      dialHandColor: ColorClass.deepGreen3,
+      dialBackgroundColor: ColorClass.deepGreen,
+      entryModeIconColor: ColorClass.white,
+      helpTextStyle: TextStyle(color: ColorClass.white, fontFamily: "Courier"),
+
+      confirmButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.deepGreen,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+      cancelButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.red,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+      // timeSelectorSeparatorColor: WidgetStatePropertyAll(
+      //   ColorClass.white,
+      // ),
+      // hourMinuteColor: ColorClass.deepGreen3,
+    ),
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         color: ColorClass.black,
-        fontFamily: "Montserrat",
+        fontFamily: "Courier",
         fontWeight: FontWeight.w600,
       ),
       bodyMedium: TextStyle(
         color: ColorClass.black,
-        fontFamily: "Montserrat",
+        fontFamily: "Courier",
       ),
       headlineMedium: TextStyle(
         color: ColorClass.black,
-        fontFamily: "Montserrat",
+        fontFamily: "Courier",
       ),
     ),
     iconTheme: const IconThemeData(
@@ -130,6 +182,7 @@ class MyAppTheme {
     ),
     colorScheme: const ColorScheme.dark(
       surfaceVariant: ColorClass.darkGrey,
+      onSurfaceVariant: ColorClass.darkGrey,
       inversePrimary: ColorClass.white,
       primary: ColorClass.black,
       onPrimary: ColorClass.white,
@@ -138,19 +191,64 @@ class MyAppTheme {
       // ignore: deprecated_member_use
       background: ColorClass.darkGrey,
     ),
+//===================================================================================
+//=============================== TIME PICKER DARK ==================================
+//===================================================================================
+    timePickerTheme: const TimePickerThemeData(
+      backgroundColor: ColorClass.darkGrey,
+      dialTextColor: ColorClass.white,
+      hourMinuteTextColor: ColorClass.white,
+      dayPeriodTextColor: ColorClass.black,
+      dayPeriodColor: ColorClass.white,
+      dialHandColor: ColorClass.darkGrey,
+      dialBackgroundColor: ColorClass.black,
+      entryModeIconColor: ColorClass.black,
+      helpTextStyle: TextStyle(
+        color: ColorClass.white,
+      ),
+      confirmButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.grey,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+      cancelButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.red,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+    ),
+
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         color: ColorClass.white,
-        fontFamily: "Montserrat",
+        fontFamily: "Courier",
         fontWeight: FontWeight.w600,
       ),
       bodyMedium: TextStyle(
         color: ColorClass.white,
-        fontFamily: "Montserrat",
+        fontFamily: "Courier",
       ),
       headlineMedium: TextStyle(
         color: ColorClass.amberAccent,
-        fontFamily: "Montserrat",
+        fontFamily: "Courier",
       ),
     ),
     iconTheme: const IconThemeData(
