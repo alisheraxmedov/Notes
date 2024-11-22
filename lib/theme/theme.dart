@@ -30,36 +30,89 @@ class MyAppTheme {
 //===================================================================================
 //============================== DATE PICKER LIGHT ==================================
 //===================================================================================
-    datePickerTheme: const DatePickerThemeData(
-      backgroundColor: ColorClass.deepGreen3,
-      dividerColor: ColorClass.deepGreen,
-      // dayBackgroundColor: WidgetStatePropertyAll(ColorClass.red),
-      dayOverlayColor: WidgetStatePropertyAll(
-        ColorClass.deepGreen,
-      ),
-      // dayForegroundColor: WidgetStatePropertyAll(
-      //   ColorClass.red,
-      // ),
+    // datePickerTheme: const DatePickerThemeData(
+    //   backgroundColor: ColorClass.deepGreen3,
+    //   dividerColor: ColorClass.deepGreen,
+    //   dayOverlayColor: WidgetStatePropertyAll(
+    //     ColorClass.deepGreen,
+    //   ),
 
-      dayShape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(),
+    //   dayShape: WidgetStatePropertyAll(
+    //     RoundedRectangleBorder(),
+    //   ),
+    //   todayBackgroundColor: WidgetStatePropertyAll(
+    //     ColorClass.deepGreen,
+    //   ),
+    //   rangePickerBackgroundColor: ColorClass.deepGreen,
+    // confirmButtonStyle: ButtonStyle(
+    //   backgroundColor: WidgetStatePropertyAll(
+    //     ColorClass.deepGreen,
+    //   ),
+    //   textStyle: WidgetStatePropertyAll(
+    //     TextStyle(
+    //       fontFamily: "Courier",
+    //       color: ColorClass.white,
+    //     ),
+    //   ),
+    //   shape: WidgetStatePropertyAll(
+    //     RoundedRectangleBorder(),
+    //   ),
+    // ),
+    // cancelButtonStyle: ButtonStyle(
+    //   backgroundColor: WidgetStatePropertyAll(
+    //     ColorClass.red,
+    //   ),
+    //   textStyle: WidgetStatePropertyAll(
+    //     TextStyle(
+    //       fontFamily: "Courier",
+    //       color: ColorClass.white,
+    //     ),
+    //   ),
+    //   shape: WidgetStatePropertyAll(
+    //     RoundedRectangleBorder(),
+    //   ),
+    // ),
+    // ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: ColorClass.deepGreen3, // Fonga rang
+      dayBackgroundColor:
+          WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return ColorClass.white; 
+        }
+        return null; 
+      }),
+      dayForegroundColor:
+          WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return ColorClass.deepGreen; 
+        }
+        return ColorClass.white; // Oddiy kun matn rangi
+      }),
+      dayStyle: const TextStyle(
+        color: ColorClass.white,
+        fontWeight: FontWeight.bold,
+        fontFamily: "Courier",
       ),
-      todayBackgroundColor: WidgetStatePropertyAll(
-        ColorClass.deepGreen,
-      ),
-      rangePickerBackgroundColor: ColorClass.deepGreen,
-      // dayStyle: TextStyle(
-      //   color: ColorClass.white,
-      //   fontFamily: "Courier",
-      // ),
-      // yearStyle: TextStyle(
-      //   color: ColorClass.white,
-      //   fontFamily: "Courier",
-      // ),
-      // rangePickerHeaderHelpStyle: TextStyle(
-      //   color: ColorClass.white,
-      // ),
-      confirmButtonStyle: ButtonStyle(
+      dayOverlayColor: WidgetStateProperty.all(
+          ColorClass.deepGreen), // Kunni belgilash uchun overlay rangi
+          
+      todayForegroundColor:
+          WidgetStateProperty.all(ColorClass.white, ), // Bugungi kun matni rangi
+      todayBackgroundColor:
+          WidgetStateProperty.all(ColorClass.deepGreen), // Bugungi kun foni
+      yearForegroundColor:
+          WidgetStateProperty.all(ColorClass.white), // Yil matni rangi
+      yearBackgroundColor:
+          WidgetStateProperty.all(ColorClass.deepGreen3), // Yil fon rangi
+      rangePickerBackgroundColor: ColorClass.deepGreen3, // Oraliq tanlash foni
+      headerBackgroundColor: ColorClass.deepGreen3, // Sarlavha foni
+      headerForegroundColor: ColorClass.white, // Sarlavha matni
+      dividerColor: ColorClass.white, // Ajratgichning rangi
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ), // Rounded dizayn
+      confirmButtonStyle: const ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(
           ColorClass.deepGreen,
         ),
@@ -73,7 +126,7 @@ class MyAppTheme {
           RoundedRectangleBorder(),
         ),
       ),
-      cancelButtonStyle: ButtonStyle(
+      cancelButtonStyle: const ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(
           ColorClass.red,
         ),
@@ -87,9 +140,7 @@ class MyAppTheme {
           RoundedRectangleBorder(),
         ),
       ),
-      // helpTextStyle: TextStyle(color: ColorClass.white, fontFamily: "Courier"),
     ),
-
 //===================================================================================
 //============================== TIME PICKER LIGHT ==================================
 //===================================================================================
