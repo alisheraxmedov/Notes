@@ -44,7 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(width * 0.03),
               child: Column(
                 children: [
-                  // Header
+//=============================================================================== 
+//=================================== HEADER ==================================== 
+//=============================================================================== 
                   Padding(
                     padding: EdgeInsets.only(
                       left: width * 0.04,
@@ -78,7 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  // Search bar
+//=============================================================================== 
+//================================ SEARCH BAR =================================== 
+//=============================================================================== 
                   SearchBar(
                     shadowColor: WidgetStatePropertyAll(
                       Theme.of(context).colorScheme.primary,
@@ -86,14 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: WidgetStatePropertyAll(
                       Theme.of(context)
                           .colorScheme
-                          .secondary, // Updated for theme
+                          .secondary, 
                     ),
                     hintText: "Search notes...",
                     hintStyle: WidgetStatePropertyAll(
                       TextStyle(
                         color: Theme.of(context)
                             .colorScheme
-                            .primary, // Updated for theme
+                            .primary, 
                         fontFamily: "Courier",
                       ),
                     ),
@@ -101,11 +105,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextStyle(
                         color: Theme.of(context)
                             .colorScheme
-                            .onPrimary, // Updated for theme
+                            .onPrimary, 
                         fontFamily: "Courier",
                       ),
                     ),
                   ),
+//=============================================================================== 
+//================================ NOTES CARD =================================== 
+//=============================================================================== 
                   Expanded(
                     child: ListView.builder(
                       itemCount: themeController.allNotesList.length,
@@ -131,10 +138,13 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
+//=============================================================================== 
+//=============================== ADD NOTE BTN ================================== 
+//=============================================================================== 
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         backgroundColor:
-            Theme.of(context).colorScheme.secondary, // Updated for theme
+            Theme.of(context).colorScheme.secondary, 
         onPressed: () {
           Get.to(
             const AddNoteScreen(),
@@ -151,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Icon(
           Icons.add,
           size: width * 0.09,
-          color: Theme.of(context).iconTheme.color, // Updated for theme
+          color: Theme.of(context).iconTheme.color, 
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

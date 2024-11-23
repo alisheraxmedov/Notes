@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/widgets/notification_dialog.dart';
 import 'package:notes/widgets/text.dart';
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({super.key});
+  const AddNoteScreen({
+    super.key,
+  });
 
   @override
   AddNoteScreenState createState() => AddNoteScreenState();
@@ -14,16 +17,32 @@ class AddNoteScreen extends StatefulWidget {
 class AddNoteScreenState extends State<AddNoteScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+  late String _time;
 
   @override
   void initState() {
     super.initState();
+    final box = GetStorage();
+
+    // Log arguments for debugging
+    print("Get.arguments: ${Get.arguments}");
+
+    // Safely parse the arguments
+    final dynamic argIndex = Get.arguments[0];
+    final int? index =
+        (argIndex is int) ? argIndex : int.tryParse(argIndex?.toString() ?? '');
 
     final String? title = Get.arguments[1];
     final String? content = Get.arguments[2];
 
     _titleController = TextEditingController(text: title ?? '');
     _contentController = TextEditingController(text: content ?? '');
+
+    if (index != null && box.read("notes")[index] != null) {
+      _time = box.read("notes")[index]["today"] ?? "";
+    } else {
+      _time = "";
+    }
   }
 
   @override
@@ -33,7 +52,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: width*0.13,
+        toolbarHeight: width * 0.13,
         centerTitle: true,
         title: TextWidget(
           width: width,
@@ -57,11 +76,13 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           padding: EdgeInsets.symmetric(horizontal: width * 0.06),
           child: Column(
             children: [
+//===============================================================================
+//================================ TITLE FIELD ==================================
+//===============================================================================
               TextField(
                 cursorColor: Theme.of(context).colorScheme.secondary,
                 controller: _titleController,
                 decoration: InputDecoration(
-                  
                   labelText: 'Enter a title for the note',
                   labelStyle: Theme.of(context)
                       .textTheme
@@ -83,8 +104,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   children: [
                     TextWidget(
                       width: width,
-                      text:
-                          "${themeController.selectedMonth} ${themeController.selectedDate}",
+                      text: int.parse(_time) != 1000
+                          ? _time
+                          : "${themeController.selectedMonth} ${themeController.selectedDate}",
                       fontSize: width * 0.03,
                     ),
                     TextWidget(
@@ -103,6 +125,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 ),
               ),
               SizedBox(height: width * 0.02),
+//===============================================================================
+//=============================== CONTENT FIELD =================================
+//===============================================================================
               TextField(
                 cursorColor: Theme.of(context).colorScheme.secondary,
                 controller: _contentController,
@@ -122,19 +147,25 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     ),
               ),
               const Spacer(),
+//===============================================================================
+//================================ SAVE BUTTON ==================================
+//===============================================================================
               GestureDetector(
                 onTap: () {
                   DateTime dateTime = DateTime.now();
-                  final int? index = int.tryParse(Get.arguments[0]?.toString() ?? '');
-                  
+                  final int? index =
+                      int.tryParse(Get.arguments[0]?.toString() ?? '');
+
                   themeController.updateNotes(
                     title: _titleController.text,
                     content: _contentController.text,
                     date: "${dateTime.day}:${dateTime.month}:${dateTime.year}",
                     time: "${dateTime.hour}:${dateTime.minute}",
-                    index: index, 
+                    index: index,
                     notificationDate: themeController.notificationDate.value,
                     notificationTime: themeController.notificationTime.value,
+                    today:
+                        "${themeController.selectedMonth} ${themeController.selectedDate}",
                   );
                   Get.back();
                   themeController.noteLengthFunction('');

@@ -265,7 +265,6 @@ class GetXController extends GetxController {
   final _box = GetStorage();
   var isLight = false.obs;
 
-  
   void onInitTheme() {
     super.onInit();
     isLight.value = _box.read('isLight') ?? false;
@@ -274,7 +273,6 @@ class GetXController extends GetxController {
   void changeTheme() {
     isLight.value = !isLight.value;
     _box.write('isLight', isLight.value);
-
   }
 
 //==================================================================
@@ -441,6 +439,7 @@ class GetXController extends GetxController {
     required String time,
     required String notificationDate,
     required String notificationTime,
+    required String today,
     int? index,
   }) {
     Map<String, dynamic> notesMap = {
@@ -450,6 +449,7 @@ class GetXController extends GetxController {
       "time": time,
       "nDate": notificationDate,
       "nTime": notificationTime,
+      "today": today,
     };
 
     List notesList = box.read("notes") ?? [];
@@ -463,6 +463,14 @@ class GetXController extends GetxController {
     box.write("notes", notesList);
     allNotesList.assignAll(List<Map<String, dynamic>>.from(notesList));
   }
+
+//======================================================
+//====================== GET TIME ======================
+  // final String timeformatted = '';
+  // void getTimeFormatted(int index) {
+  //   List notes = box.read("notes") ?? [];
+
+  // }
 
 //======================================================
 //======================== READ ========================

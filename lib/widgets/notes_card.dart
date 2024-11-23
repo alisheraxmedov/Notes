@@ -47,6 +47,9 @@ class NoteCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+//===============================================================================
+//================================= NOTE TITLE ==================================
+//===============================================================================
                     Expanded(
                       flex: 2,
                       child: TextWidget(
@@ -56,6 +59,9 @@ class NoteCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+//===============================================================================
+//================================= NOTE TEXT ===================================
+//===============================================================================
                     Expanded(
                       flex: 4,
                       child: SizedBox(
@@ -79,11 +85,17 @@ class NoteCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+//===============================================================================
+//================================= NOTED TIME ==================================
+//===============================================================================
                           TextWidget(
                             width: width,
                             text: editedDate,
                             fontSize: width * 0.03,
                           ),
+//===============================================================================
+//================================= ALARM TIME ==================================
+//===============================================================================
                           TextWidget(
                             width: width,
                             text: reTime,
@@ -102,23 +114,34 @@ class NoteCard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+//===============================================================================
+//================================ EDIT BUTTON ==================================
+//===============================================================================
                     CircleContainer(
                       icon: Icons.edit,
                       width: width,
                       color: Colors.cyan[100]!,
                       onPressed: () {
+                        final GetXController themeController = Get.find();
                         Get.to(
-                          const AddNoteScreen(),
+                          AddNoteScreen(),
                           arguments: [index, title, content],
                         );
+                        themeController.noteLengthFunction('');
                       },
                     ),
+//===============================================================================
+//============================ NOTIFICATION BUTTON ==============================
+//===============================================================================
                     CircleContainer(
                       icon: Icons.alarm,
                       width: width,
                       color: Colors.cyan[100]!,
                       onPressed: () {},
                     ),
+//===============================================================================
+//=============================== DELETE BUTTON =================================
+//===============================================================================
                     CircleContainer(
                       icon: Icons.delete,
                       width: width,
