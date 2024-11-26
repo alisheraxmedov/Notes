@@ -124,10 +124,11 @@ class NoteCard extends StatelessWidget {
                       onPressed: () {
                         final GetXController themeController = Get.find();
                         Get.to(
-                          AddNoteScreen(),
+                          const AddNoteScreen(),
                           arguments: [index, title, content],
                         );
-                        themeController.noteLengthFunction('');
+                        themeController.initialDateTime();
+                        themeController.noteLengthFunction(content);
                       },
                     ),
 //===============================================================================

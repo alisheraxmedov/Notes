@@ -21,7 +21,8 @@ class _SettingScreenState extends State<SettingScreen> {
       appBar: AppBar(
         title: TextWidget(
           width: width,
-          text: "Settings",
+          text: "Setting",
+          // text: LocaleKeys.setting.tr(),
           fontSize: width * 0.08,
           fontWeight: FontWeight.bold,
           textColor: Theme.of(context).colorScheme.onPrimary,
@@ -62,57 +63,57 @@ class _SettingScreenState extends State<SettingScreen> {
               const Divider(
                 thickness: 2,
               ),
-              // Language Selection
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: width * 0.02),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextWidget(
-                      width: width,
-                      text: "Language",
-                      fontSize: width * 0.06,
-                      textColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                    DropdownButton<String>(
-                      dropdownColor: Theme.of(context).colorScheme.secondary,
-                      elevation: 0,
-                      icon: Icon(
-                        Icons.language,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      items: <String>['English', 'Uzbek', 'Russian']
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: TextWidget(
-                            width: width,
-                            text: value,
-                            fontSize: width * 0.05,
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        // themeController.changeLanguage(newValue!);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(
-                thickness: 2,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: width * 0.02),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextWidget(
-                      width: width,
-                      text: "Enable Notifications",
-                      fontSize: width * 0.06,
-                      textColor: Theme.of(context).colorScheme.secondary,
-                    ),
+              // // Language Selection
+              // Padding(
+              //   padding: EdgeInsets.symmetric(vertical: width * 0.02),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       TextWidget(
+              //         width: width,
+              //         text: "Language",
+              //         fontSize: width * 0.06,
+              //         textColor: Theme.of(context).colorScheme.secondary,
+              //       ),
+              //       DropdownButton<String>(
+              //         dropdownColor: Theme.of(context).colorScheme.secondary,
+              //         elevation: 0,
+              //         icon: Icon(
+              //           Icons.language,
+              //           color: Theme.of(context).colorScheme.secondary,
+              //         ),
+              //         items: <String>['English', 'Uzbek', 'Russian']
+              //             .map((String value) {
+              //           return DropdownMenuItem<String>(
+              //             value: value,
+              //             child: TextWidget(
+              //               width: width,
+              //               text: value,
+              //               fontSize: width * 0.05,
+              //             ),
+              //           );
+              //         }).toList(),
+              //         onChanged: (String? newValue) {
+              //           // themeController.changeLanguage(newValue!);
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // const Divider(
+              //   thickness: 2,
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(vertical: width * 0.02),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       TextWidget(
+              //         width: width,
+              //         text: "Enable Notifications",
+              //         fontSize: width * 0.06,
+              //         textColor: Theme.of(context).colorScheme.secondary,
+              //       ),
                     // Obx(
                     //   () => Switch(
                     //     // value: themeController.notificationsEnabled.value,
@@ -122,12 +123,12 @@ class _SettingScreenState extends State<SettingScreen> {
                     //     },
                     //   ),
                     // ),
-                  ],
-                ),
-              ),
-              const Divider(
-                thickness: 2,
-              ),
+              //     ],
+              //   ),
+              // ),
+              // const Divider(
+              //   thickness: 2,
+              // ),
             ],
           ),
         ),

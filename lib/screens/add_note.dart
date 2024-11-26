@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/widgets/notification_dialog.dart';
 import 'package:notes/widgets/text.dart';
@@ -17,31 +16,22 @@ class AddNoteScreen extends StatefulWidget {
 class AddNoteScreenState extends State<AddNoteScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
-  late String _time;
 
   @override
   void initState() {
     super.initState();
-    final box = GetStorage();
 
-    // Log arguments for debugging
-    print("Get.arguments: ${Get.arguments}");
+    // Check if Get.arguments is not null and has the expected length
+    if (Get.arguments != null && Get.arguments.length >= 3) {
+      final String? title = Get.arguments[1];
+      final String? content = Get.arguments[2];
 
-    // Safely parse the arguments
-    final dynamic argIndex = Get.arguments[0];
-    final int? index =
-        (argIndex is int) ? argIndex : int.tryParse(argIndex?.toString() ?? '');
-
-    final String? title = Get.arguments[1];
-    final String? content = Get.arguments[2];
-
-    _titleController = TextEditingController(text: title ?? '');
-    _contentController = TextEditingController(text: content ?? '');
-
-    if (index != null && box.read("notes")[index] != null) {
-      _time = box.read("notes")[index]["today"] ?? "";
+      _titleController = TextEditingController(text: title ?? '');
+      _contentController = TextEditingController(text: content ?? '');
     } else {
-      _time = "";
+      // Fallback for cases where arguments are not passed correctly
+      _titleController = TextEditingController();
+      _contentController = TextEditingController();
     }
   }
 
@@ -92,6 +82,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 ),
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       fontFamily: "Courier",
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
               ),
               Container(
@@ -104,9 +95,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   children: [
                     TextWidget(
                       width: width,
-                      text: int.parse(_time) != 1000
-                          ? _time
-                          : "${themeController.selectedMonth} ${themeController.selectedDate}",
+                      text:
+                          "${themeController.selectedMonth} ${themeController.selectedDate}",
                       fontSize: width * 0.03,
                     ),
                     TextWidget(
@@ -144,6 +134,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 maxLines: 5,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       fontFamily: "Courier",
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
               ),
               const Spacer(),

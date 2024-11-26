@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:notes/generated/codegen_loader.g.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/notification/notification.dart';
 import 'package:notes/screens/splash.dart';
@@ -9,13 +11,27 @@ import 'package:timezone/data/latest.dart' as tz;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.init();
+  await EasyLocalization.ensureInitialized();
   tz.initializeTimeZones();
+
   GetXController getxcontroller = Get.put(
     GetXController(),
   );
+
   await getxcontroller.initNotifications();
   runApp(
-    const MyApp(),
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en', "US"),
+        Locale('ru', "RU"),
+        Locale('uz', "UZ"),
+      ],
+      assetLoader: const CodegenLoader(),
+      path: 'assets/translations/',
+      startLocale: const Locale('uz', "UZ"),
+      // saveLocale: true,
+      child: const MyApp(),
+    ),
   );
 }
 
@@ -28,6 +44,9 @@ class MyApp extends StatelessWidget {
     return Obx(
       () {
         return GetMaterialApp(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
           debugShowCheckedModeBanner: false,
           theme: themeController.isLight.value
               ? MyAppTheme.lightTheme
