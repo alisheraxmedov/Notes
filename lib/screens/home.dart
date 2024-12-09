@@ -130,28 +130,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.search,
                         color: Theme.of(context).colorScheme.surfaceDim,
                       ),
+                      prefixStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.surfaceDim,
+                      ),
                     ),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.surfaceDim,
                       fontFamily: "Courier",
                     ),
                   ),
+                  SizedBox(height: width * 0.35),
                   Container(
+                    alignment: Alignment.center,
                     height: width * 0.5,
                     width: width * 0.5,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage("assets/icons/not-available.jpg"),
+                        image: AssetImage("assets/icons/not-available.png"),
                       ),
                     ),
                   ),
+                  SizedBox(height: width * 0.05),
                   Center(
                     child: Text(
                       "Such note not available.",
                       style: TextStyle(
                         fontSize: width * 0.05,
                         color: Theme.of(context).colorScheme.onSecondary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -223,11 +230,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       prefixIcon: Icon(
                         Icons.search,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: Theme.of(context).colorScheme.surfaceDim,
                       ),
                     ),
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.surfaceDim,
                       fontFamily: "Courier",
                     ),
                   ),
@@ -240,19 +247,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ListView.builder(
                           itemCount: filteredNotesList.length,
                           itemBuilder: (context, index) {
+                            // Teskari tartibdagi indexni hisoblash
+                            final reversedIndex =
+                                filteredNotesList.length - 1 - index;
                             return NoteCard(
-                              index: index,
+                              index: reversedIndex,
                               width: width,
-                              title: filteredNotesList[index]['title'],
-                              content: filteredNotesList[index]['content'],
+                              title: filteredNotesList[reversedIndex]['title'],
+                              content: filteredNotesList[reversedIndex]
+                                  ['content'],
                               editedDate:
-                                  "Edited: ${filteredNotesList[index]['date']} ${filteredNotesList[index]['time']}",
+                                  "Edited: ${filteredNotesList[reversedIndex]['date']} ${filteredNotesList[reversedIndex]['time']}",
                               color: ItemsColor.itemsColor[
-                                  index % ItemsColor.itemsColor.length],
-                              reTime: filteredNotesList[index]['nDate'] ==
+                                  reversedIndex % ItemsColor.itemsColor.length],
+                              reTime: filteredNotesList[reversedIndex]
+                                          ['nDate'] ==
                                       "Date"
                                   ? "Reminder time: Unspecified"
-                                  : "Reminder time: ${filteredNotesList[index]['nDate']} ${filteredNotesList[index]['nTime']}",
+                                  : "Reminder time: ${filteredNotesList[reversedIndex]['nDate']} ${filteredNotesList[reversedIndex]['nTime']}",
                             );
                           },
                         ),

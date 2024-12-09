@@ -33,7 +33,7 @@ class MyAppTheme {
 //===================================================================================
 
     datePickerTheme: DatePickerThemeData(
-      backgroundColor: ColorClass.deepGreen3, 
+      backgroundColor: ColorClass.deepGreen3,
       dayBackgroundColor:
           WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
         if (states.contains(WidgetState.selected)) {
@@ -46,7 +46,7 @@ class MyAppTheme {
         if (states.contains(WidgetState.selected)) {
           return ColorClass.deepGreen;
         }
-        return ColorClass.white; // Oddiy kun matn rangi
+        return ColorClass.white;
       }),
       dayStyle: const TextStyle(
         color: ColorClass.white,
@@ -115,7 +115,6 @@ class MyAppTheme {
       dialBackgroundColor: ColorClass.deepGreen,
       entryModeIconColor: ColorClass.white,
       helpTextStyle: TextStyle(color: ColorClass.white, fontFamily: "Courier"),
-
       confirmButtonStyle: ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(
           ColorClass.deepGreen,
@@ -144,7 +143,6 @@ class MyAppTheme {
           RoundedRectangleBorder(),
         ),
       ),
-      
     ),
     textTheme: const TextTheme(
       titleMedium: TextStyle(
@@ -201,6 +199,40 @@ class MyAppTheme {
       // ignore: deprecated_member_use
       background: ColorClass.darkGrey,
     ),
+//===================================================================================
+//=============================== TIME PICKER DARK ==================================
+//===================================================================================
+    datePickerTheme: const DatePickerThemeData(
+      confirmButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.grey,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+      cancelButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          ColorClass.red,
+        ),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontFamily: "Courier",
+            color: ColorClass.white,
+          ),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(),
+        ),
+      ),
+    ),
+
 //===================================================================================
 //=============================== TIME PICKER DARK ==================================
 //===================================================================================
