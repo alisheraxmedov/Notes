@@ -21,7 +21,6 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   void initState() {
     super.initState();
 
-    // Check if Get.arguments is not null and has the expected length
     if (Get.arguments != null && Get.arguments.length >= 3) {
       final String? title = Get.arguments[1];
       final String? content = Get.arguments[2];
@@ -29,7 +28,6 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       _titleController = TextEditingController(text: title ?? '');
       _contentController = TextEditingController(text: content ?? '');
     } else {
-      // Fallback for cases where arguments are not passed correctly
       _titleController = TextEditingController();
       _contentController = TextEditingController();
     }
@@ -55,6 +53,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           NotificationDialog(
             width: width,
             themeController: themeController,
+            title: _titleController.text,
+            text: _contentController.text,
           ),
         ],
       ),

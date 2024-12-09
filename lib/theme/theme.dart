@@ -15,6 +15,7 @@ class MyAppTheme {
       ),
     ),
     colorScheme: const ColorScheme.light(
+      surfaceDim: ColorClass.white,
       surfaceVariant: ColorClass.deepGreen,
       onSurfaceVariant: ColorClass.deepGreen3,
       inversePrimary: ColorClass.white,
@@ -30,62 +31,20 @@ class MyAppTheme {
 //===================================================================================
 //============================== DATE PICKER LIGHT ==================================
 //===================================================================================
-    // datePickerTheme: const DatePickerThemeData(
-    //   backgroundColor: ColorClass.deepGreen3,
-    //   dividerColor: ColorClass.deepGreen,
-    //   dayOverlayColor: WidgetStatePropertyAll(
-    //     ColorClass.deepGreen,
-    //   ),
 
-    //   dayShape: WidgetStatePropertyAll(
-    //     RoundedRectangleBorder(),
-    //   ),
-    //   todayBackgroundColor: WidgetStatePropertyAll(
-    //     ColorClass.deepGreen,
-    //   ),
-    //   rangePickerBackgroundColor: ColorClass.deepGreen,
-    // confirmButtonStyle: ButtonStyle(
-    //   backgroundColor: WidgetStatePropertyAll(
-    //     ColorClass.deepGreen,
-    //   ),
-    //   textStyle: WidgetStatePropertyAll(
-    //     TextStyle(
-    //       fontFamily: "Courier",
-    //       color: ColorClass.white,
-    //     ),
-    //   ),
-    //   shape: WidgetStatePropertyAll(
-    //     RoundedRectangleBorder(),
-    //   ),
-    // ),
-    // cancelButtonStyle: ButtonStyle(
-    //   backgroundColor: WidgetStatePropertyAll(
-    //     ColorClass.red,
-    //   ),
-    //   textStyle: WidgetStatePropertyAll(
-    //     TextStyle(
-    //       fontFamily: "Courier",
-    //       color: ColorClass.white,
-    //     ),
-    //   ),
-    //   shape: WidgetStatePropertyAll(
-    //     RoundedRectangleBorder(),
-    //   ),
-    // ),
-    // ),
     datePickerTheme: DatePickerThemeData(
-      backgroundColor: ColorClass.deepGreen3, // Fonga rang
+      backgroundColor: ColorClass.deepGreen3, 
       dayBackgroundColor:
           WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
         if (states.contains(WidgetState.selected)) {
-          return ColorClass.white; 
+          return ColorClass.white;
         }
-        return null; 
+        return null;
       }),
       dayForegroundColor:
           WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
         if (states.contains(WidgetState.selected)) {
-          return ColorClass.deepGreen; 
+          return ColorClass.deepGreen;
         }
         return ColorClass.white; // Oddiy kun matn rangi
       }),
@@ -95,10 +54,12 @@ class MyAppTheme {
         fontFamily: "Courier",
       ),
       dayOverlayColor: WidgetStateProperty.all(
-          ColorClass.deepGreen), // Kunni belgilash uchun overlay rangi
-          
-      todayForegroundColor:
-          WidgetStateProperty.all(ColorClass.white, ), // Bugungi kun matni rangi
+        ColorClass.deepGreen,
+      ), // Kunni belgilash uchun overlay rangi
+
+      todayForegroundColor: WidgetStateProperty.all(
+        ColorClass.white,
+      ), // Bugungi kun matni rangi
       todayBackgroundColor:
           WidgetStateProperty.all(ColorClass.deepGreen), // Bugungi kun foni
       yearForegroundColor:
@@ -183,10 +144,7 @@ class MyAppTheme {
           RoundedRectangleBorder(),
         ),
       ),
-      // timeSelectorSeparatorColor: WidgetStatePropertyAll(
-      //   ColorClass.white,
-      // ),
-      // hourMinuteColor: ColorClass.deepGreen3,
+      
     ),
     textTheme: const TextTheme(
       titleMedium: TextStyle(
@@ -232,6 +190,7 @@ class MyAppTheme {
       ),
     ),
     colorScheme: const ColorScheme.dark(
+      surfaceDim: ColorClass.black,
       surfaceVariant: ColorClass.darkGrey,
       onSurfaceVariant: ColorClass.darkGrey,
       inversePrimary: ColorClass.white,

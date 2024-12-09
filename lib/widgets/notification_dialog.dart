@@ -6,10 +6,14 @@ import 'package:notes/widgets/text.dart';
 class NotificationDialog extends StatelessWidget {
   final double width;
   final GetXController themeController;
+  final String title;
+  final String text;
   const NotificationDialog({
     super.key,
     required this.width,
     required this.themeController,
+    required this.title,
+    required this.text,
   });
 
   @override
@@ -35,7 +39,8 @@ class NotificationDialog extends StatelessWidget {
               builder: (BuildContext context) {
                 return AlertDialog(
                   shape: const BeveledRectangleBorder(),
-                  backgroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.onSurfaceVariant,
                   title: TextWidget(
                     width: width,
                     text: "Set notification",
@@ -84,7 +89,6 @@ class NotificationDialog extends StatelessWidget {
                       GestureDetector(
                         onTap: () async {
                           final TimeOfDay? picked = await showTimePicker(
-                            
                             context: context,
                             initialTime: TimeOfDay.now(),
                           );
@@ -149,7 +153,10 @@ class NotificationDialog extends StatelessWidget {
                             scheduledDateTime.isAfter(
                               DateTime.now(),
                             )) {
-                          themeController.scheduleNotification();
+                          themeController.scheduleNotification(
+                            title: title,
+                            text: text,
+                          );
                           Navigator.of(context).pop();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -44,9 +44,9 @@ class MyApp extends StatelessWidget {
     return Obx(
       () {
         return GetMaterialApp(
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
+          // localizationsDelegates: context.localizationDelegates,
+          // supportedLocales: context.supportedLocales,
+          // locale: context.locale,
           debugShowCheckedModeBanner: false,
           theme: themeController.isLight.value
               ? MyAppTheme.lightTheme
