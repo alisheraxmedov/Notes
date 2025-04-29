@@ -10,15 +10,14 @@ import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
   await NotificationService.init();
   await EasyLocalization.ensureInitialized();
-  tz.initializeTimeZones();
 
   GetXController getxcontroller = Get.put(
     GetXController(),
   );
 
-  await getxcontroller.initNotifications();
   runApp(
     EasyLocalization(
       supportedLocales: const [

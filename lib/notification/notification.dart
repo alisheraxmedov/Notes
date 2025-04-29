@@ -1,5 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:notes/const/colors.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter/material.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -9,6 +12,9 @@ class NotificationService {
       NotificationResponse notificationResponse) async {}
 
   static Future<void> init() async {
+    // Initialize timezone database
+    tz.initializeTimeZones();
+
     const AndroidInitializationSettings androidInitializationSettings =
         AndroidInitializationSettings("@mipmap/ic_launcher");
     const DarwinInitializationSettings iOSInitializationSettings =
@@ -25,10 +31,52 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: onDidReceiveNotification,
     );
 
+    // Create Android notification channels
+    const AndroidNotificationChannel reminderChannel =
+        AndroidNotificationChannel(
+      'reminder_channel',
+      'Reminder Channel',
+      description: 'Channel for reminder notifications',
+      importance: Importance.max,
+      showBadge: true,
+      enableVibration: true,
+      enableLights: true,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(reminderChannel);
+
+    const AndroidNotificationChannel instantChannel =
+        AndroidNotificationChannel(
+      'instant_notification_channel_id',
+      'Instant Notifications',
+      description: 'Channel for instant notifications',
+      importance: Importance.max,
+      showBadge: true,
+      enableVibration: true,
+      enableLights: true,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(instantChannel);
+
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   static Future<void> showInstantNotification(String title, String body) async {
@@ -38,12 +86,8 @@ class NotificationService {
         'Instant Notifications',
         importance: Importance.max,
         priority: Priority.high,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('notification_sound'),
       ),
-      iOS: DarwinNotificationDetails(
-        presentSound: true,
-      ),
+      iOS: DarwinNotificationDetails(),
     );
 
     await flutterLocalNotificationsPlugin.show(
@@ -61,28 +105,58 @@ class NotificationService {
     String body,
     DateTime scheduledTime,
   ) async {
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      const NotificationDetails(
-        iOS: DarwinNotificationDetails(
+    try {
+      final tzDateTime = tz.TZDateTime.from(scheduledTime, tz.local);
+
+      final androidDetails = AndroidNotificationDetails(
+        'reminder_channel',
+        'Reminder Channel',
+        channelDescription: 'Channel for reminder notifications',
+        importance: Importance.max,
+        priority: Priority.high,
+        showWhen: true,
+        enableVibration: true,
+        enableLights: true,
+        color: ColorClass.blue,
+        ledColor: ColorClass.blue,
+        ledOnMs: 1000,
+        ledOffMs: 500,
+        fullScreenIntent: true,
+        ongoing: false,
+        autoCancel: true,
+        styleInformation: BigTextStyleInformation(
+          body,
+          htmlFormatBigText: true,
+          contentTitle: title,
+          htmlFormatContentTitle: true,
+        ),
+      );
+
+      final notificationDetails = NotificationDetails(
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
           presentSound: true,
         ),
-        android: AndroidNotificationDetails(
-          'reminder_channel',
-          'Reminder Channel',
-          importance: Importance.high,
-          priority: Priority.high,
-          playSound: true,
-          sound: RawResourceAndroidNotificationSound('notification_sound'),
-        ),
-      ),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dateAndTime,
-    );
+        android: androidDetails,
+      );
+
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzDateTime,
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dateAndTime,
+        payload: 'reminder_$id',
+      );
+      print('NotificationService: Notification scheduled successfully');
+    } catch (e) {
+      print('NotificationService: Error scheduling notification: $e');
+      rethrow;
+    }
   }
 }

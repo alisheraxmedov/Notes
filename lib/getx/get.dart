@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:notes/notification/notification.dart';
 
 class GetXController extends GetxController {
 //==================================================================
@@ -98,58 +98,48 @@ class GetXController extends GetxController {
 //=====================================================================
 //========================= SET NOTIFICATION ==========================
 //=====================================================================
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  Future<void> initNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
   Future<void> scheduleNotification({
     required String title,
     required String text,
   }) async {
+    print('Starting to schedule notification...');
+    print('Notification date: ${notificationDate.value}');
+    print('Notification time: ${notificationTime.value}');
+    
     if (notificationDate.value != "Date" && notificationTime.value != "Time") {
-      DateTime now = DateTime.now();
-      // Parse selected date and time for scheduling
-      DateTime scheduledDate = DateTime(
-        int.parse(notificationDate.value.split('-')[0]),
-        int.parse(notificationDate.value.split('-')[1]),
-        int.parse(notificationDate.value.split('-')[2]),
-        int.parse(notificationTime.value.split(':')[0]),
-        int.parse(notificationTime.value.split(':')[1]),
-      );
-
-      if (scheduledDate.isAfter(now)) {
-        tz.TZDateTime tzScheduledDate =
-            tz.TZDateTime.from(scheduledDate, tz.local);
-        await flutterLocalNotificationsPlugin.zonedSchedule(
-          0,
-          title,
-          text,
-          tzScheduledDate,
-          const NotificationDetails(
-            android: AndroidNotificationDetails(
-              'your_channel_id',
-              'your_channel_name',
-              channelDescription: 'your_channel_description',
-              importance: Importance.max,
-              priority: Priority.high,
-              showWhen: false,
-            ),
-          ),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime,
-          matchDateTimeComponents: DateTimeComponents.dateAndTime,
+      try {
+        DateTime now = DateTime.now();
+        // Parse selected date and time for scheduling
+        DateTime scheduledDate = DateTime(
+          int.parse(notificationDate.value.split('-')[0]),
+          int.parse(notificationDate.value.split('-')[1]),
+          int.parse(notificationDate.value.split('-')[2]),
+          int.parse(notificationTime.value.split(':')[0]),
+          int.parse(notificationTime.value.split(':')[1]),
         );
+
+        print('Scheduled date: $scheduledDate');
+        print('Current date: $now');
+
+        if (scheduledDate.isAfter(now)) {
+          print('Scheduling notification...');
+          // Generate unique ID based on timestamp
+          int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          await NotificationService.scheduleNotification(
+            notificationId, // Use unique ID
+            title,
+            text,
+            scheduledDate,
+          );
+          print('Notification scheduled successfully for $scheduledDate with ID: $notificationId');
+        } else {
+          print('Scheduled date is not in the future');
+        }
+      } catch (e) {
+        print('Error in scheduleNotification: $e');
       }
+    } else {
+      print('Date or time not selected');
     }
   }
 
