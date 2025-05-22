@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:notes/notification/notification.dart';
 
 class GetXController extends GetxController {
