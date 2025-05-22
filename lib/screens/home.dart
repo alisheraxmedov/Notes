@@ -64,114 +64,134 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Obx(
         () {
           if (filteredNotesList.isEmpty) {
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.03,
-                vertical: width * 0.03,
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withAlpha(125),
+                  ],
+                ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.05,
+                  vertical: width * 0.05,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
 //===============================================================================
 //=================================== HEADER ====================================
 //===============================================================================
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: width * 0.04,
-                      right: width * 0.01,
-                      top: width * 0.07,
-                      bottom: width * 0.02,
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: width * 0.08,
+                        bottom: width * 0.03,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          TextWidget(
+                            width: width,
+                            text: "Reminder Notes",
+                            fontSize: width * 0.075,
+                            fontWeight: FontWeight.w600,
+                            textColor: Theme.of(context).colorScheme.secondary,
+                          ),
+                          CircleContainer(
+                            icon: Icons.settings_outlined,
+                            width: width,
+                            color: Theme.of(context).colorScheme.secondary,
+                            onPressed: () {
+                              Get.to(
+                                const SettingScreen(),
+                                transition: Transition.circularReveal,
+                                duration: const Duration(milliseconds: 1000),
+                                arguments: ['', '', ''],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextWidget(
-                          width: width,
-                          text: "Notes",
-                          fontSize: width * 0.09,
-                          fontWeight: FontWeight.bold,
-                          textColor: Theme.of(context).colorScheme.secondary,
+                    //===============================================================================
+//================================= SEARCH BAR ==================================
+//===============================================================================
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: "Search notes...",
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontFamily: "Courier",
+                          ),
+                          border: InputBorder.none,
+                          prefixIcon: Icon(
+                            Icons.search_rounded,
+                            color: Theme.of(context).colorScheme.surfaceDim,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: width * 0.04,
+                            vertical: width * 0.03,
+                          ),
                         ),
-                        CircleContainer(
-                          icon: Icons.clear_all_sharp,
-                          width: width,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surfaceDim,
+                          fontFamily: "Courier",
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: width * 0.35),
+                    Container(
+                      alignment: Alignment.center,
+                      height: width * 0.5,
+                      width: width * 0.5,
+                      decoration: BoxDecoration(
+                        image: const DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage("assets/icons/not-available.png"),
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    SizedBox(height: width * 0.05),
+                    Center(
+                      child: Text(
+                        "Reminder notes not found",
+                        style: TextStyle(
+                          fontSize: width * 0.05,
                           color: Theme.of(context).colorScheme.secondary,
-                          onPressed: () {
-                            Get.to(
-                              const SettingScreen(),
-                              transition: Transition.circularReveal,
-                              duration: const Duration(milliseconds: 1000),
-                              arguments: ['', '', ''],
-                            );
-                          },
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: width * 0.03),
-                  //===============================================================================
-                  //================================ SEARCH BAR ===================================
-                  //===============================================================================
-                  TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: "Search notes...",
-                      hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontFamily: "Courier",
-                      ),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.secondary,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).colorScheme.surfaceDim,
-                      ),
-                      prefixStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.surfaceDim,
                       ),
                     ),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.surfaceDim,
-                      fontFamily: "Courier",
-                    ),
-                  ),
-                  SizedBox(height: width * 0.35),
-                  Container(
-                    alignment: Alignment.center,
-                    height: width * 0.5,
-                    width: width * 0.5,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage("assets/icons/not-available.png"),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: width * 0.05),
-                  Center(
-                    child: Text(
-                      "Such note not available.",
-                      style: TextStyle(
-                        fontSize: width * 0.05,
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }
           return Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withAlpha(125),
+                ],
+              ),
             ),
             child: Padding(
-              padding: EdgeInsets.all(width * 0.03),
+              padding: EdgeInsets.all(width * 0.05),
               child: Column(
                 children: [
 //===============================================================================
@@ -179,23 +199,21 @@ class _HomeScreenState extends State<HomeScreen> {
 //===============================================================================
                   Padding(
                     padding: EdgeInsets.only(
-                      left: width * 0.04,
-                      right: width * 0.01,
                       top: width * 0.07,
-                      bottom: width * 0.02,
+                      bottom: width * 0.03,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextWidget(
                           width: width,
-                          text: "Notes",
-                          fontSize: width * 0.09,
-                          fontWeight: FontWeight.bold,
+                          text: "Reminder Notes",
+                          fontSize: width * 0.075,
+                          fontWeight: FontWeight.w600,
                           textColor: Theme.of(context).colorScheme.secondary,
                         ),
                         CircleContainer(
-                          icon: Icons.clear_all_sharp,
+                          icon: Icons.settings_outlined,
                           width: width,
                           color: Theme.of(context).colorScheme.secondary,
                           onPressed: () {
@@ -210,66 +228,68 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-
 //===============================================================================
-//================================ SEARCH BAR ===================================
+//================================= SEARCH BAR ==================================
 //===============================================================================
-                  TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: "Search notes...",
-                      hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: "Search notes...",
+                        hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontFamily: "Courier",
+                        ),
+                        border: InputBorder.none,
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          color: Theme.of(context).colorScheme.surfaceDim,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: width * 0.04,
+                          vertical: width * 0.03,
+                        ),
+                      ),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surfaceDim,
                         fontFamily: "Courier",
                       ),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.secondary,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).colorScheme.surfaceDim,
-                      ),
-                    ),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.surfaceDim,
-                      fontFamily: "Courier",
                     ),
                   ),
+
 //===============================================================================
-//================================ NOTES CARD ===================================
+//================================= NOTES LIST ==================================
 //===============================================================================
-                  Obx(
-                    () {
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: filteredNotesList.length,
-                          itemBuilder: (context, index) {
-                            // Teskari tartibdagi indexni hisoblash
-                            final reversedIndex =
-                                filteredNotesList.length - 1 - index;
-                            return NoteCard(
-                              index: reversedIndex,
-                              width: width,
-                              title: filteredNotesList[reversedIndex]['title'],
-                              content: filteredNotesList[reversedIndex]
-                                  ['content'],
-                              editedDate:
-                                  "Edited: ${filteredNotesList[reversedIndex]['date']} ${filteredNotesList[reversedIndex]['time']}",
-                              color: ItemsColor.itemsColor[
-                                  reversedIndex % ItemsColor.itemsColor.length],
-                              reTime: filteredNotesList[reversedIndex]
-                                          ['nDate'] ==
-                                      "Date"
-                                  ? "Reminder time: Unspecified"
-                                  : "Reminder time: ${filteredNotesList[reversedIndex]['nDate']} ${filteredNotesList[reversedIndex]['nTime']}",
-                            );
-                          },
-                        ),
-                      );
-                    },
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredNotesList.length,
+                      itemBuilder: (context, index) {
+                        final reversedIndex =
+                            filteredNotesList.length - 1 - index;
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: width * 0.03),
+                          child: NoteCard(
+                            index: reversedIndex,
+                            width: width,
+                            title: filteredNotesList[reversedIndex]['title'],
+                            content: filteredNotesList[reversedIndex]
+                                ['content'],
+                            editedDate:
+                                "Edited: ${filteredNotesList[reversedIndex]['date']} ${filteredNotesList[reversedIndex]['time']}",
+                            color: ItemsColor.itemsColor[
+                                reversedIndex % ItemsColor.itemsColor.length],
+                            reTime: filteredNotesList[reversedIndex]['nDate'] ==
+                                    "Date"
+                                ? "Reminder time: Not specified"
+                                : "Reminder time: ${filteredNotesList[reversedIndex]['nDate']} ${filteredNotesList[reversedIndex]['nTime']}",
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -277,9 +297,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-//===============================================================================
-//=============================== ADD NOTE BTN ==================================
-//===============================================================================
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -298,8 +315,8 @@ class _HomeScreenState extends State<HomeScreen> {
           themeController.initialDateTime();
         },
         child: Icon(
-          Icons.add,
-          size: width * 0.09,
+          Icons.add_rounded,
+          size: width * 0.08,
           color: Theme.of(context).iconTheme.color,
         ),
       ),
