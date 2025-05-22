@@ -12,11 +12,12 @@ class GetXController extends GetxController {
 
   void onInitTheme() {
     super.onInit();
+    // print(_box.read('isLight'));
     isLight.value = _box.read('isLight') ?? false;
   }
 
-  void changeTheme() {
-    isLight.value = !isLight.value;
+  void changeTheme(bool value_) {
+    isLight.value = value_;
     _box.write('isLight', isLight.value);
   }
 

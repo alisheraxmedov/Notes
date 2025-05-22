@@ -27,6 +27,7 @@ class _SettingScreenState extends State<SettingScreen> {
           fontWeight: FontWeight.bold,
           textColor: Theme.of(context).colorScheme.onPrimary,
         ),
+        centerTitle: true,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -44,7 +45,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     TextWidget(
                       width: width,
-                      text: "Dark Theme",
+                      text: "Light Theme",
                       fontSize: width * 0.06,
                       textColor: Theme.of(context).colorScheme.secondary,
                     ),
@@ -52,7 +53,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       () => Switch(
                         value: themeController.isLight.value,
                         onChanged: (bool value) {
-                          themeController.changeTheme();
+                          themeController.changeTheme(value);
                         },
                         activeColor: Theme.of(context).colorScheme.secondary,
                       ),
