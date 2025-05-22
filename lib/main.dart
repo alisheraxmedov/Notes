@@ -1,7 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notes/generated/codegen_loader.g.dart';
 import 'package:notes/getx/get.dart';
 import 'package:notes/notification/notification.dart';
 import 'package:notes/screens/splash.dart';
@@ -12,25 +11,26 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
   await NotificationService.init();
-  await EasyLocalization.ensureInitialized();
+  // await EasyLocalization.ensureInitialized();
 
   GetXController getxcontroller = Get.put(
     GetXController(),
   );
 
   runApp(
-    EasyLocalization(
-      supportedLocales: const [
-        Locale('en', "US"),
-        Locale('ru', "RU"),
-        Locale('uz', "UZ"),
-      ],
-      assetLoader: const CodegenLoader(),
-      path: 'assets/translations/',
-      startLocale: const Locale('uz', "UZ"),
-      // saveLocale: true,
-      child: const MyApp(),
-    ),
+    // EasyLocalization(
+    //   supportedLocales: const [
+    //     Locale('en', "US"),
+    //     Locale('ru', "RU"),
+    //     Locale('uz', "UZ"),
+    //   ],
+    //   assetLoader: const CodegenLoader(),
+    //   path: 'assets/translations/',
+    //   startLocale: const Locale('uz', "UZ"),
+    //   // saveLocale: true,
+    //   child: const MyApp(),
+    // ),
+    const MyApp(),
   );
 }
 
