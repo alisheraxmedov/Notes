@@ -8,12 +8,12 @@ def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
+} 
 
 android {
-    namespace = "com.example.notes"
-    compileSdk = 34
-    ndkVersion = flutter.ndkVersion
+    namespace = "com.remindernotes.app"
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -31,10 +31,10 @@ android {
         applicationId = "com.alisher.remindernotes"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 21
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        minSdkVersion = flutter.minSdkVersion
+        targetSdk = 34
+        versionCode = 3
+        versionName = "1.0.3"
     }
     signingConfigs {
         release {
@@ -55,7 +55,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }
 
 flutter {
