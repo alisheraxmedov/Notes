@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notes/getx/get.dart';
-import 'package:notes/widgets/text.dart';
+import 'package:notes/core/widgets/text.dart';
+import 'package:notes/features/settings/controller/settings_controller.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -11,7 +11,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  final GetXController themeController = Get.find();
+  final SettingsController settingsController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +51,11 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     Obx(
                       () => Switch(
-                        value: themeController.isLight.value,
+                        value: settingsController.isLight.value,
                         onChanged: (bool value) {
-                          themeController.changeTheme(value);
+                          settingsController.changeTheme(value);
                         },
-                        activeColor: Theme.of(context).colorScheme.secondary,
+                        activeThumbColor: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                   ],
@@ -115,15 +115,15 @@ class _SettingScreenState extends State<SettingScreen> {
               //         fontSize: width * 0.06,
               //         textColor: Theme.of(context).colorScheme.secondary,
               //       ),
-                    // Obx(
-                    //   () => Switch(
-                    //     // value: themeController.notificationsEnabled.value,
-                    //     value: true,
-                    //     onChanged: (bool value) {
-                    //       // themeController.toggleNotifications(value);
-                    //     },
-                    //   ),
-                    // ),
+              // Obx(
+              //   () => Switch(
+              //     // value: themeController.notificationsEnabled.value,
+              //     value: true,
+              //     onChanged: (bool value) {
+              //       // themeController.toggleNotifications(value);
+              //     },
+              //   ),
+              // ),
               //     ],
               //   ),
               // ),

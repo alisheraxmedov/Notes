@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notes/getx/get.dart';
-import 'package:notes/widgets/notification_dialog.dart';
-import 'package:notes/widgets/text.dart';
+import 'package:notes/core/widgets/notification_dialog.dart';
+import 'package:notes/core/widgets/text.dart';
+import 'package:notes/features/note/controller/note_controller.dart';
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({
@@ -36,7 +36,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
-    final GetXController themeController = Get.find();
+    final NoteController noteController = Get.find();
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +52,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         actions: [
           NotificationDialog(
             width: width,
-            themeController: themeController,
+            noteController: noteController,
             title: _titleController.text,
             text: _contentController.text,
           ),
@@ -96,7 +96,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     TextWidget(
                       width: width,
                       text:
-                          "${themeController.selectedMonth} ${themeController.selectedDate}",
+                          "${noteController.selectedMonth} ${noteController.selectedDate}",
                       fontSize: width * 0.03,
                     ),
                     TextWidget(
@@ -107,7 +107,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     Obx(
                       () => TextWidget(
                         width: width,
-                        text: "${themeController.noteLength} characters",
+                        text: "${noteController.noteLength} characters",
                         fontSize: width * 0.03,
                       ),
                     ),
@@ -122,7 +122,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 cursorColor: Theme.of(context).colorScheme.secondary,
                 controller: _contentController,
                 onChanged: (value) {
-                  themeController.noteLengthFunction(value.toString());
+                  noteController.updateNoteLength(value.toString());
                 },
                 decoration: InputDecoration(
                   labelText: 'Start writing...',
@@ -147,19 +147,19 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   final int? index =
                       int.tryParse(Get.arguments[0]?.toString() ?? '');
 
-                  themeController.updateNotes(
+                  noteController.updateNotes(
                     title: _titleController.text,
                     content: _contentController.text,
                     date: "${dateTime.day}:${dateTime.month}:${dateTime.year}",
                     time: "${dateTime.hour}:${dateTime.minute}",
                     index: index,
-                    notificationDate: themeController.notificationDate.value,
-                    notificationTime: themeController.notificationTime.value,
+                    nDate: noteController.notificationDate.value,
+                    nTime: noteController.notificationTime.value,
                     today:
-                        "${themeController.selectedMonth} ${themeController.selectedDate}",
+                        "${noteController.selectedMonth} ${noteController.selectedDate}",
                   );
                   Get.back();
-                  themeController.noteLengthFunction('');
+                  noteController.updateNoteLength('');
                 },
                 child: Container(
                   height: width * 0.15,
@@ -177,7 +177,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: width * 0.04),
+              SizedBox(height: width * 0.07),
             ],
           ),
         ),

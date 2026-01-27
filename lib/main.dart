@@ -1,21 +1,22 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notes/getx/get.dart';
-import 'package:notes/notification/notification.dart';
-import 'package:notes/screens/splash.dart';
-import 'package:notes/theme/theme.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:notes/data/services/notification_service.dart';
+import 'package:notes/features/splash/view/splash_view.dart';
+import 'package:notes/core/theme/theme.dart';
+import 'package:notes/features/settings/controller/settings_controller.dart';
+import 'package:notes/features/note/controller/note_controller.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
+  await GetStorage.init();
   await NotificationService.init();
   // await EasyLocalization.ensureInitialized();
 
-  GetXController getxcontroller = Get.put(
-    GetXController(),
-  );
+  Get.put(SettingsController());
+  Get.put(NoteController());
 
   runApp(
     // EasyLocalization(
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GetXController themeController = Get.find();
+    final SettingsController settingsController = Get.find();
     return Obx(
       () {
         return GetMaterialApp(
@@ -47,11 +48,10 @@ class MyApp extends StatelessWidget {
           // supportedLocales: context.supportedLocales,
           // locale: context.locale,
           debugShowCheckedModeBanner: false,
-          theme: themeController.isLight.value
+          theme: settingsController.isLight.value
               ? MyAppTheme.lightTheme
               : MyAppTheme.darkTheme,
           home: const SplashScreen(),
-          // home: const GetStorageScreen(),
         );
       },
     );

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notes/const/item_colors.dart';
-import 'package:notes/getx/get.dart';
-import 'package:notes/screens/add_note.dart';
-import 'package:notes/screens/settings.dart';
-import 'package:notes/widgets/circle_container.dart';
-import 'package:notes/widgets/notes_card.dart';
-import 'package:notes/widgets/text.dart';
+import 'package:notes/core/const/item_colors.dart';
+import 'package:notes/core/widgets/circle_container.dart';
+import 'package:notes/core/widgets/notes_card.dart';
+import 'package:notes/core/widgets/text.dart';
+import 'package:notes/features/note/controller/note_controller.dart';
+import 'package:notes/features/note/view/add_note_view.dart';
+import 'package:notes/features/settings/view/settings_view.dart';
+import 'package:notes/data/models/note_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,44 +17,37 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GetXController themeController = Get.find();
+  final NoteController noteController = Get.find();
   final TextEditingController searchController = TextEditingController();
-  final RxList filteredNotesList = [].obs;
+  final RxList<NoteModel> filteredNotesList = <NoteModel>[].obs;
 
   @override
   void initState() {
     super.initState();
 
-    filteredNotesList.addAll(themeController.allNotesList);
+    filteredNotesList.assignAll(noteController.allNotesList);
 
     searchController.addListener(() {
-      final query = searchController.text.toLowerCase();
-      if (query.isEmpty) {
-        filteredNotesList.assignAll(themeController.allNotesList);
-      } else {
-        filteredNotesList.assignAll(
-          themeController.allNotesList.where((note) {
-            final title = note['title'].toString().toLowerCase();
-            return title.contains(query);
-          }),
-        );
-      }
+      filterNotes();
     });
 
-    ever(themeController.allNotesList, (_) {
-      final query = searchController.text.toLowerCase();
-      if (query.isEmpty) {
-        filteredNotesList.assignAll(themeController.allNotesList);
-        searchController.clear();
-      } else {
-        filteredNotesList.assignAll(
-          themeController.allNotesList.where((note) {
-            final title = note['title'].toString().toLowerCase();
-            return title.contains(query);
-          }),
-        );
-      }
+    ever(noteController.allNotesList, (_) {
+      filterNotes();
     });
+  }
+
+  void filterNotes() {
+    final query = searchController.text.toLowerCase();
+    if (query.isEmpty) {
+      filteredNotesList.assignAll(noteController.allNotesList);
+    } else {
+      filteredNotesList.assignAll(
+        noteController.allNotesList.where((note) {
+          final title = note.title.toLowerCase();
+          return title.contains(query);
+        }),
+      );
+    }
   }
 
   @override
@@ -270,22 +264,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final reversedIndex =
                             filteredNotesList.length - 1 - index;
+                        final note = filteredNotesList[reversedIndex];
                         return Padding(
                           padding: EdgeInsets.only(bottom: width * 0.03),
                           child: NoteCard(
                             index: reversedIndex,
                             width: width,
-                            title: filteredNotesList[reversedIndex]['title'],
-                            content: filteredNotesList[reversedIndex]
-                                ['content'],
-                            editedDate:
-                                "Edited: ${filteredNotesList[reversedIndex]['date']} ${filteredNotesList[reversedIndex]['time']}",
+                            title: note.title,
+                            content: note.content,
+                            editedDate: "Edited: ${note.date} ${note.time}",
                             color: ItemsColor.itemsColor[
                                 reversedIndex % ItemsColor.itemsColor.length],
-                            reTime: filteredNotesList[reversedIndex]['nDate'] ==
-                                    "Date"
+                            reTime: note.nDate == "Date"
                                 ? "Reminder time: Not specified"
-                                : "Reminder time: ${filteredNotesList[reversedIndex]['nDate']} ${filteredNotesList[reversedIndex]['nTime']}",
+                                : "Reminder time: ${note.nDate} ${note.nTime}",
                           ),
                         );
                       },
@@ -308,11 +300,11 @@ class _HomeScreenState extends State<HomeScreen> {
             arguments: ['', '', ''],
           )?.then(
             (value) {
-              themeController.readNotes();
-              filteredNotesList.assignAll(themeController.allNotesList);
+              noteController.readNotes();
+              // filteredNotesList will update via ever() listener
             },
           );
-          themeController.initialDateTime();
+          noteController.initialDateTime();
         },
         child: Icon(
           Icons.add_rounded,

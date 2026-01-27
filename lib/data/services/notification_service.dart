@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:notes/const/colors.dart';
+import 'package:notes/core/const/colors.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
-
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -26,7 +26,7 @@ class NotificationService {
       iOS: iOSInitializationSettings,
     );
     await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: onDidReceiveNotification,
       onDidReceiveBackgroundNotificationResponse: onDidReceiveNotification,
     );
@@ -91,10 +91,10 @@ class NotificationService {
     );
 
     await flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
+      id: 0,
+      title: title,
+      body: body,
+      notificationDetails: platformChannelSpecifics,
       payload: 'instant_notification',
     );
   }
@@ -142,20 +142,18 @@ class NotificationService {
       );
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        title,
-        body,
-        tzDateTime,
-        notificationDetails,
+        id: id,
+        title: title,
+        body: body,
+        scheduledDate: tzDateTime,
+        notificationDetails: notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
         payload: 'reminder_$id',
       );
-      print('NotificationService: Notification scheduled successfully');
+      debugPrint('NotificationService: Notification scheduled successfully');
     } catch (e) {
-      print('NotificationService: Error scheduling notification: $e');
+      debugPrint('NotificationService: Error scheduling notification: $e');
       rethrow;
     }
   }
