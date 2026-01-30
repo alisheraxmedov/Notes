@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -13,25 +14,25 @@ void main() async {
   tz.initializeTimeZones();
   await GetStorage.init();
   await NotificationService.init();
-  // await EasyLocalization.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   Get.put(SettingsController());
   Get.put(NoteController());
 
   runApp(
-    // EasyLocalization(
-    //   supportedLocales: const [
-    //     Locale('en', "US"),
-    //     Locale('ru', "RU"),
-    //     Locale('uz', "UZ"),
-    //   ],
-    //   assetLoader: const CodegenLoader(),
-    //   path: 'assets/translations/',
-    //   startLocale: const Locale('uz', "UZ"),
-    //   // saveLocale: true,
-    //   child: const MyApp(),
-    // ),
-    const MyApp(),
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ru'),
+        Locale('uz'),
+      ],
+      // assetLoader: const CodegenLoader(),
+      path: 'assets/translations',
+      startLocale: const Locale('uz'),
+      saveLocale: true,
+      child: const MyApp(),
+    ),
+    // const MyApp(),
   );
 }
 
@@ -41,19 +42,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SettingsController settingsController = Get.find();
+
+    // Ensure initial theme mode is set correctly
     return Obx(
-      () {
-        return GetMaterialApp(
-          // localizationsDelegates: context.localizationDelegates,
-          // supportedLocales: context.supportedLocales,
-          // locale: context.locale,
-          debugShowCheckedModeBanner: false,
-          theme: settingsController.isLight.value
-              ? MyAppTheme.lightTheme
-              : MyAppTheme.darkTheme,
-          home: const SplashScreen(),
-        );
-      },
+      () => GetMaterialApp(
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        debugShowCheckedModeBanner: false,
+
+        // Define both themes
+        theme: MyAppTheme.lightTheme,
+        darkTheme: MyAppTheme.darkTheme,
+
+        // Use themeMode to switch
+        themeMode:
+            settingsController.isLight.value ? ThemeMode.light : ThemeMode.dark,
+
+        home: const SplashScreen(),
+      ),
     );
   }
 }

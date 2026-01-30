@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/settings/controller/settings_controller.dart';
 
@@ -21,8 +22,7 @@ class _SettingScreenState extends State<SettingScreen> {
       appBar: AppBar(
         title: TextWidget(
           width: width,
-          text: "Setting",
-          // text: LocaleKeys.setting.tr(),
+          text: "settings".tr(),
           fontSize: width * 0.08,
           fontWeight: FontWeight.bold,
           textColor: Theme.of(context).colorScheme.onPrimary,
@@ -45,7 +45,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     TextWidget(
                       width: width,
-                      text: "Light Theme",
+                      text: "light_theme".tr(),
                       fontSize: width * 0.06,
                       textColor: Theme.of(context).colorScheme.secondary,
                     ),
@@ -55,7 +55,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         onChanged: (bool value) {
                           settingsController.changeTheme(value);
                         },
-                        activeThumbColor: Theme.of(context).colorScheme.secondary,
+                        activeThumbColor:
+                            Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                   ],
@@ -64,72 +65,50 @@ class _SettingScreenState extends State<SettingScreen> {
               const Divider(
                 thickness: 2,
               ),
-              // // Language Selection
-              // Padding(
-              //   padding: EdgeInsets.symmetric(vertical: width * 0.02),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       TextWidget(
-              //         width: width,
-              //         text: "Language",
-              //         fontSize: width * 0.06,
-              //         textColor: Theme.of(context).colorScheme.secondary,
-              //       ),
-              //       DropdownButton<String>(
-              //         dropdownColor: Theme.of(context).colorScheme.secondary,
-              //         elevation: 0,
-              //         icon: Icon(
-              //           Icons.language,
-              //           color: Theme.of(context).colorScheme.secondary,
-              //         ),
-              //         items: <String>['English', 'Uzbek', 'Russian']
-              //             .map((String value) {
-              //           return DropdownMenuItem<String>(
-              //             value: value,
-              //             child: TextWidget(
-              //               width: width,
-              //               text: value,
-              //               fontSize: width * 0.05,
-              //             ),
-              //           );
-              //         }).toList(),
-              //         onChanged: (String? newValue) {
-              //           // themeController.changeLanguage(newValue!);
-              //         },
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // const Divider(
-              //   thickness: 2,
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.symmetric(vertical: width * 0.02),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       TextWidget(
-              //         width: width,
-              //         text: "Enable Notifications",
-              //         fontSize: width * 0.06,
-              //         textColor: Theme.of(context).colorScheme.secondary,
-              //       ),
-              // Obx(
-              //   () => Switch(
-              //     // value: themeController.notificationsEnabled.value,
-              //     value: true,
-              //     onChanged: (bool value) {
-              //       // themeController.toggleNotifications(value);
-              //     },
-              //   ),
-              // ),
-              //     ],
-              //   ),
-              // ),
-              // const Divider(
-              //   thickness: 2,
-              // ),
+              // Language Selection
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: width * 0.02),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      width: width,
+                      text: "language".tr(),
+                      fontSize: width * 0.06,
+                      textColor: Theme.of(context).colorScheme.secondary,
+                    ),
+                    DropdownButton<Locale>(
+                      dropdownColor: Theme.of(context).colorScheme.secondary,
+                      elevation: 0,
+                      value: context.locale,
+                      icon: Icon(
+                        Icons.language,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      items: context.supportedLocales.map((Locale locale) {
+                        String name = "";
+                        if (locale.languageCode == 'en') name = "English";
+                        if (locale.languageCode == 'ru') name = "Русский";
+                        if (locale.languageCode == 'uz') name = "O'zbek";
+                        return DropdownMenuItem<Locale>(
+                          value: locale,
+                          child: TextWidget(
+                            width: width,
+                            text: name,
+                            fontSize: width * 0.05,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (Locale? newLocale) {
+                        if (newLocale != null) {
+                          context.setLocale(newLocale);
+                          Get.updateLocale(newLocale);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
