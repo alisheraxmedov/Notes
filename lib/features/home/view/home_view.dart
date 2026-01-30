@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:notes/core/const/item_colors.dart';
 import 'package:notes/core/widgets/circle_container.dart';
 import 'package:notes/core/widgets/notes_card.dart';
@@ -7,7 +8,6 @@ import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 import 'package:notes/features/note/view/add_note_view.dart';
 import 'package:notes/features/settings/view/settings_view.dart';
-import 'package:notes/data/models/note_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,35 +19,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final NoteController noteController = Get.find();
   final TextEditingController searchController = TextEditingController();
-  final RxList<NoteModel> filteredNotesList = <NoteModel>[].obs;
 
   @override
   void initState() {
     super.initState();
-
-    filteredNotesList.assignAll(noteController.allNotesList);
-
-    searchController.addListener(() {
-      filterNotes();
-    });
-
-    ever(noteController.allNotesList, (_) {
-      filterNotes();
-    });
+    // Sync search text with controller if needed (bi-directional)
+    // currently just one-way from UI to Controller is enough
   }
 
-  void filterNotes() {
-    final query = searchController.text.toLowerCase();
-    if (query.isEmpty) {
-      filteredNotesList.assignAll(noteController.allNotesList);
-    } else {
-      filteredNotesList.assignAll(
-        noteController.allNotesList.where((note) {
-          final title = note.title.toLowerCase();
-          return title.contains(query);
-        }),
-      );
-    }
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -57,7 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Obx(
         () {
-          if (filteredNotesList.isEmpty) {
+          // Use controller's filtered list
+          if (noteController.filteredNotesList.isEmpty) {
             return Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -91,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           TextWidget(
                             width: width,
-                            text: "Reminder Notes",
+                            text: "app_title".tr(),
                             fontSize: width * 0.075,
                             fontWeight: FontWeight.w600,
                             textColor: Theme.of(context).colorScheme.secondary,
@@ -104,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               Get.to(
                                 const SettingScreen(),
                                 transition: Transition.circularReveal,
-                                duration: const Duration(milliseconds: 1000),
                                 arguments: ['', '', ''],
                               );
                             },
@@ -122,8 +105,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: TextField(
                         controller: searchController,
+                        onChanged: (val) {
+                          noteController.searchQuery.value = val;
+                        },
                         decoration: InputDecoration(
-                          hintText: "Search notes...",
+                          hintText: "search".tr(),
                           hintStyle: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontFamily: "Courier",
@@ -160,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: width * 0.05),
                     Center(
                       child: Text(
-                        "Reminder notes not found",
+                        "no_notes".tr(),
                         style: TextStyle(
                           fontSize: width * 0.05,
                           color: Theme.of(context).colorScheme.secondary,
@@ -201,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         TextWidget(
                           width: width,
-                          text: "Reminder Notes",
+                          text: "app_title".tr(),
                           fontSize: width * 0.075,
                           fontWeight: FontWeight.w600,
                           textColor: Theme.of(context).colorScheme.secondary,
@@ -214,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Get.to(
                               const SettingScreen(),
                               transition: Transition.circularReveal,
-                              duration: const Duration(milliseconds: 1000),
+                              // duration: const Duration(milliseconds: 1000), // REMOVED slow duration
                               arguments: ['', '', ''],
                             );
                           },
@@ -232,8 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: TextField(
                       controller: searchController,
+                      onChanged: (val) {
+                        noteController.searchQuery.value = val;
+                      },
                       decoration: InputDecoration(
-                        hintText: "Search notes...",
+                        hintText: "search".tr(),
                         hintStyle: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontFamily: "Courier",
@@ -260,24 +249,30 @@ class _HomeScreenState extends State<HomeScreen> {
 //===============================================================================
                   Expanded(
                     child: ListView.builder(
-                      itemCount: filteredNotesList.length,
+                      // Use controller's filtered list
+                      itemCount: noteController.filteredNotesList.length,
                       itemBuilder: (context, index) {
                         final reversedIndex =
-                            filteredNotesList.length - 1 - index;
-                        final note = filteredNotesList[reversedIndex];
+                            noteController.filteredNotesList.length - 1 - index;
+                        final note =
+                            noteController.filteredNotesList[reversedIndex];
+                        final realIndex =
+                            noteController.allNotesList.indexOf(note);
+
                         return Padding(
                           padding: EdgeInsets.only(bottom: width * 0.03),
                           child: NoteCard(
-                            index: reversedIndex,
+                            index: realIndex,
                             width: width,
                             title: note.title,
                             content: note.content,
-                            editedDate: "Edited: ${note.date} ${note.time}",
+                            editedDate:
+                                "${"edited".tr()}: ${note.date} ${note.time}",
                             color: ItemsColor.itemsColor[
                                 reversedIndex % ItemsColor.itemsColor.length],
                             reTime: note.nDate == "Date"
-                                ? "Reminder time: Not specified"
-                                : "Reminder time: ${note.nDate} ${note.nTime}",
+                                ? "${"reminder_time".tr()}: ${"not_specified".tr()}"
+                                : "${"reminder_time".tr()}: ${note.nDate} ${note.nTime}",
                           ),
                         );
                       },
@@ -296,12 +291,11 @@ class _HomeScreenState extends State<HomeScreen> {
           Get.to(
             const AddNoteScreen(),
             transition: Transition.circularReveal,
-            duration: const Duration(milliseconds: 1000),
+            // duration: const Duration(milliseconds: 1000), // REMOVED slow duration
             arguments: ['', '', ''],
           )?.then(
             (value) {
-              noteController.readNotes();
-              // filteredNotesList will update via ever() listener
+              // noteController.readNotes(); // REMOVED: Auto synced via reactive lists
             },
           );
           noteController.initialDateTime();

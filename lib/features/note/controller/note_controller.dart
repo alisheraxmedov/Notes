@@ -17,11 +17,35 @@ class NoteController extends GetxController {
   RxString notificationDate = "Date".obs;
   RxString notificationTime = "Time".obs;
 
+  // Search and Filter
+  RxList<NoteModel> filteredNotesList = <NoteModel>[].obs;
+  RxString searchQuery = "".obs;
+
   @override
   void onInit() {
     super.onInit();
     readNotes();
     initialDateTime();
+
+    // Debounce search to avoid performance lag
+    debounce(searchQuery, (_) => filterNotes(),
+        time: const Duration(milliseconds: 300));
+
+    // Update filtered list when all notes change
+    ever(allNotesList, (_) => filterNotes());
+  }
+
+  void filterNotes() {
+    String query = searchQuery.value.toLowerCase();
+    if (query.isEmpty) {
+      filteredNotesList.assignAll(allNotesList);
+    } else {
+      filteredNotesList.assignAll(
+        allNotesList.where((note) {
+          return note.title.toLowerCase().contains(query);
+        }),
+      );
+    }
   }
 
   void readNotes() {
@@ -49,11 +73,13 @@ class NoteController extends GetxController {
       today: today,
     );
 
+    // 1. Update in-memory list (Reactive)
+    allNotesList.add(note);
+
+    // 2. Sync to storage
     List<dynamic> notesList = box.read("notes") ?? [];
     notesList.add(note.toJson());
     box.write("notes", notesList);
-
-    allNotesList.add(note);
   }
 
   void updateNotes({
@@ -78,29 +104,51 @@ class NoteController extends GetxController {
 
     List<dynamic> notesList = box.read("notes") ?? [];
 
-    if (index != null) {
-      notesList[index] = note.toJson();
-    } else {
-      notesList.add(note.toJson());
-    }
+    if (index != null && index >= 0 && index < allNotesList.length) {
+      // 1. Update in-memory list
+      allNotesList[index] = note;
 
-    box.write("notes", notesList);
-    readNotes(); // Refresh list
+      // 2. Sync to storage
+      if (index < notesList.length) {
+        notesList[index] = note.toJson();
+        box.write("notes", notesList);
+      } else {
+        // Fallback if storage out of sync (should rarely happen)
+        readNotes();
+      }
+    } else {
+      addNotes(
+          title: title,
+          content: content,
+          date: date,
+          time: time,
+          nDate: nDate,
+          nTime: nTime,
+          today: today);
+    }
   }
 
   void deleteNoteByTitle(String title) {
+    // 1. Update in-memory
+    allNotesList.removeWhere((note) => note.title == title);
+
+    // 2. Sync to storage
     List<dynamic> notesList = box.read("notes") ?? [];
     notesList.removeWhere((note) => note["title"] == title);
     box.write("notes", notesList);
-    readNotes();
   }
 
   void deleteNoteAt(int index) {
-    List<dynamic> notesList = box.read("notes") ?? [];
-    if (index >= 0 && index < notesList.length) {
-      notesList.removeAt(index);
-      box.write("notes", notesList);
-      readNotes();
+    if (index >= 0 && index < allNotesList.length) {
+      // 1. Update in-memory
+      allNotesList.removeAt(index);
+
+      // 2. Sync to storage
+      List<dynamic> notesList = box.read("notes") ?? [];
+      if (index < notesList.length) {
+        notesList.removeAt(index);
+        box.write("notes", notesList);
+      }
     }
   }
 

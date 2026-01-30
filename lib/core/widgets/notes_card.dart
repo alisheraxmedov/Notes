@@ -91,7 +91,7 @@ class NoteCard extends StatelessWidget {
                           TextWidget(
                             width: width,
                             text: editedDate,
-                            fontSize: width * 0.03,
+                            fontSize: width * 0.025,
                           ),
 //===============================================================================
 //================================= ALARM TIME ==================================
@@ -99,7 +99,7 @@ class NoteCard extends StatelessWidget {
                           TextWidget(
                             width: width,
                             text: reTime,
-                            fontSize: width * 0.03,
+                            fontSize: width * 0.025,
                           ),
                         ],
                       ),
@@ -149,9 +149,7 @@ class NoteCard extends StatelessWidget {
                       color: Colors.cyan[100]!,
                       onPressed: () {
                         NoteController noteController = Get.find();
-                        noteController.deleteNoteByTitle(
-                          title,
-                        );
+                        noteController.deleteNoteAt(index);
                       },
                     ),
                   ],
