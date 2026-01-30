@@ -1,8 +1,22 @@
 {
-  "setting": "Settings",
-  "theme": "Dark Theme",
+  "settings": "Settings",
+  "light_theme": "Light Theme",
+  "dark_theme": "Dark Theme",
   "language": "Language",
-  "en": "English",
-  "ru": "Russian",
-  "uz": "Uzbek"
+  "app_title": "Notes",
+  "search": "Search...",
+  "no_notes": "No notes found",
+  "add_note": "Add Note",
+  "title": "Title",
+  "write": "Write here...",
+  "save": "Save",
+  "edited": "Edited",
+  "reminder": "Reminder ",
+  "set_reminder": "Set Reminder",
+  "close": "Close",
+  "ok": "OK",
+  "error_time": "Invalid time selected.",
+  "chars": "chars",
+  "reminder_time": "Reminder time",
+  "not_specified": "Not specified"
 }

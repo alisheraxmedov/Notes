@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
@@ -43,7 +44,7 @@ class NotificationDialog extends StatelessWidget {
                       Theme.of(context).colorScheme.onSurfaceVariant,
                   title: TextWidget(
                     width: width,
-                    text: "Set notification",
+                    text: "set_reminder".tr(),
                     fontSize: width * 0.05,
                     textColor: Theme.of(context).colorScheme.inversePrimary,
                   ),
@@ -122,7 +123,7 @@ class NotificationDialog extends StatelessWidget {
                       },
                       child: TextWidget(
                         width: width,
-                        text: "Close",
+                        text: "close".tr(),
                         fontSize: width * 0.04,
                         textColor: Theme.of(context).colorScheme.inversePrimary,
                       ),
@@ -160,9 +161,9 @@ class NotificationDialog extends StatelessWidget {
                           Navigator.of(context).pop();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                "Please select a valid future date and time.",
+                                "error_time".tr(),
                               ),
                             ),
                           );
@@ -170,7 +171,7 @@ class NotificationDialog extends StatelessWidget {
                       },
                       child: TextWidget(
                         width: width,
-                        text: "OK",
+                        text: "ok".tr(),
                         fontSize: width * 0.04,
                         textColor: Theme.of(context).colorScheme.inversePrimary,
                       ),

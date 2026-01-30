@@ -1,8 +1,22 @@
 {
-  "setting": "Настройки",
-  "theme": "Темный режим",
+  "settings": "Настройки",
+  "light_theme": "Светлая тема",
+  "dark_theme": "Темная тема",
   "language": "Язык",
-  "en": "Английский",
-  "ru": "Русский",
-  "uz": "Узбекский"
+  "app_title": "Notes",
+  "search": "Поиск...",
+  "no_notes": "Нет заметок",
+  "add_note": "Новая заметка",
+  "title": "Заголовок",
+  "write": "Пишите здесь...",
+  "save": "Сохранить",
+  "edited": "Изменено",
+  "reminder": "Reminder ",
+  "set_reminder": "Напомнить",
+  "close": "Закрыть",
+  "ok": "ОК",
+  "error_time": "Неверное время.",
+  "chars": "симв",
+  "reminder_time": "Время напоминания",
+  "not_specified": "Не указано"
 }

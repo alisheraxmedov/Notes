@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:notes/core/widgets/notification_dialog.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
@@ -44,7 +45,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         centerTitle: true,
         title: TextWidget(
           width: width,
-          text: "Add Note",
+          text: "add_note".tr(),
           fontSize: width * 0.09,
           textColor: Theme.of(context).colorScheme.inversePrimary,
           fontWeight: FontWeight.bold,
@@ -73,7 +74,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 cursorColor: Theme.of(context).colorScheme.secondary,
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'Enter a title for the note',
+                  labelText: "title".tr(),
                   labelStyle: Theme.of(context)
                       .textTheme
                       .titleSmall!
@@ -107,7 +108,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     Obx(
                       () => TextWidget(
                         width: width,
-                        text: "${noteController.noteLength} characters",
+                        text: "${noteController.noteLength} ${"chars".tr()}",
                         fontSize: width * 0.03,
                       ),
                     ),
@@ -125,7 +126,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   noteController.updateNoteLength(value.toString());
                 },
                 decoration: InputDecoration(
-                  labelText: 'Start writing...',
+                  labelText: "write".tr(),
                   labelStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
                         fontFamily: "Courier",
                       ),
@@ -171,7 +172,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   alignment: Alignment.center,
                   child: TextWidget(
                     width: width,
-                    text: "Save",
+                    text: "save".tr(),
                     fontSize: width * 0.09,
                     textColor: Theme.of(context).scaffoldBackgroundColor,
                   ),
