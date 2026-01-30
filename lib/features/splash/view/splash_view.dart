@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:lottie/lottie.dart';
 import 'package:notes/core/const/colors.dart';
 import 'package:notes/features/home/view/home_view.dart';
@@ -12,24 +13,27 @@ class SplashScreen extends StatefulWidget {
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   final NoteController noteController = Get.find();
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _navigateToHome();
+    _controller = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _navigateToHome() async {
-    try {
-      await Future.delayed(const Duration(seconds: 3), () {
-        noteController.readNotes();
-      });
-      Get.off(() => const HomeScreen());
-    } catch (e) {
-      Exception(e);
-    }
+    // Navigate after animation completes
+    noteController.readNotes();
+    Get.off(() => const HomeScreen());
   }
 
   @override
@@ -51,13 +55,14 @@ class SplashScreenState extends State<SplashScreen> {
             SizedBox(
               height: width * 0.7,
               width: width * 0.7,
-              // decoration: const BoxDecoration(
-              //   image: DecorationImage(
-              //     image: AssetImage("assets/icons/1024.png"),
-              //   ),
-              // ),
               child: Lottie.asset(
                 "assets/lottie/notes.json",
+                controller: _controller,
+                onLoaded: (composition) {
+                  _controller
+                    ..duration = composition.duration
+                    ..forward().whenComplete(() => _navigateToHome());
+                },
               ),
             ),
             SizedBox(height: height * 0.05),
@@ -65,7 +70,7 @@ class SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Reminder",
+                  "reminder".tr(),
                   style: TextStyle(
                     fontSize: width * 0.08,
                     fontWeight: FontWeight.bold,
@@ -73,7 +78,7 @@ class SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
                 Text(
-                  " Notes",
+                  "app_title".tr(),
                   style: TextStyle(
                     fontSize: width * 0.08,
                     fontWeight: FontWeight.bold,
