@@ -6,6 +6,9 @@
   "app_title": "Notes",
   "search": "Qidirish...",
   "no_notes": "Eslatmalar yo'q",
+  "no_notes_hint": "Birinchi eslatmani yaratish uchun + bosing",
+  "search_no_results": "Mos eslatmalar topilmadi",
+  "search_no_results_hint": "Boshqa so'z bilan qidirib ko'ring",
   "add_note": "Yangi eslatma",
   "title": "Sarlavha",
   "write": "Yozishni boshlang...",
@@ -18,5 +21,9 @@
   "error_time": "Noto'g'ri vaqt.",
   "chars": "belgi",
   "reminder_time": "Eslatma vaqti",
-  "not_specified": "Belgilanmagan"
+  "not_specified": "Belgilanmagan",
+  "edit_profile": "Profilni tahrirlash",
+  "theme": "Mavzu",
+  "user_name": "Foydalanuvchi",
+  "user_email": "email@example.com"
 }

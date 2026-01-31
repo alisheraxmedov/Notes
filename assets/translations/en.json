@@ -6,6 +6,9 @@
   "app_title": "Notes",
   "search": "Search...",
   "no_notes": "No notes found",
+  "no_notes_hint": "Tap + to create your first note",
+  "search_no_results": "No matching notes",
+  "search_no_results_hint": "Try a different search term",
   "add_note": "Add Note",
   "title": "Title",
   "write": "Write here...",
@@ -18,5 +21,9 @@
   "error_time": "Invalid time selected.",
   "chars": "chars",
   "reminder_time": "Reminder time",
-  "not_specified": "Not specified"
+  "not_specified": "Not specified",
+  "edit_profile": "Edit Profile",
+  "theme": "Theme",
+  "user_name": "User",
+  "user_email": "email@example.com"
 }

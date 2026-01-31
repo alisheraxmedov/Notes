@@ -9,6 +9,7 @@ class TextWidget extends StatelessWidget {
   final double letterSpacing;
   final FontStyle fontStyle;
   final Color textColor;
+  final TextAlign textAlign;
   const TextWidget({
     super.key,
     required this.width,
@@ -18,12 +19,14 @@ class TextWidget extends StatelessWidget {
     this.letterSpacing = 0.0,
     this.fontStyle = FontStyle.italic,
     this.textColor = ColorClass.black,
+    this.textAlign = TextAlign.start,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
+      textAlign: textAlign,
       style: Theme.of(context).textTheme.titleMedium!.copyWith(
             fontSize: fontSize,
             fontWeight: fontWeight,

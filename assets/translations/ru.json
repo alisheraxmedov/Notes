@@ -6,6 +6,9 @@
   "app_title": "Notes",
   "search": "Поиск...",
   "no_notes": "Нет заметок",
+  "no_notes_hint": "Нажмите + чтобы создать первую заметку",
+  "search_no_results": "Заметки не найдены",
+  "search_no_results_hint": "Попробуйте другой запрос",
   "add_note": "Новая заметка",
   "title": "Заголовок",
   "write": "Пишите здесь...",
@@ -18,5 +21,9 @@
   "error_time": "Неверное время.",
   "chars": "симв",
   "reminder_time": "Время напоминания",
-  "not_specified": "Не указано"
+  "not_specified": "Не указано",
+  "edit_profile": "Редактировать профиль",
+  "theme": "Тема",
+  "user_name": "Пользователь",
+  "user_email": "email@example.com"
 }
