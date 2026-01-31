@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notes/core/const/colors.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -151,9 +150,7 @@ class NotificationService {
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
         payload: 'reminder_$id',
       );
-      debugPrint('NotificationService: Notification scheduled successfully');
     } catch (e) {
-      debugPrint('NotificationService: Error scheduling notification: $e');
       rethrow;
     }
   }
