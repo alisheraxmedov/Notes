@@ -66,91 +66,196 @@ class _HomeScreenState extends State<HomeScreen> {
 //===============================================================================
                     Padding(
                       padding: EdgeInsets.only(
-                        top: width * 0.08,
-                        bottom: width * 0.03,
+                        top: width * 0.12,
+                        bottom: width * 0.05,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          TextWidget(
-                            width: width,
-                            text: "app_title".tr(),
-                            fontSize: width * 0.075,
-                            fontWeight: FontWeight.w600,
-                            textColor: Theme.of(context).colorScheme.secondary,
+                          // Premium Title with subtle glow effect
+                          ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.secondary,
+                                Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withAlpha(200),
+                                Theme.of(context).colorScheme.secondary,
+                              ],
+                            ).createShader(bounds),
+                            child: TextWidget(
+                              width: width,
+                              text: "app_title".tr(),
+                              fontSize: width * 0.085,
+                              fontWeight: FontWeight.w700,
+                              textColor: Colors.white,
+                            ),
                           ),
-                          CircleContainer(
-                            icon: Icons.settings_outlined,
-                            width: width,
-                            color: Theme.of(context).colorScheme.secondary,
-                            onPressed: () {
-                              Get.to(
-                                const SettingScreen(),
-                                transition: Transition.circularReveal,
-                                arguments: ['', '', ''],
-                              );
-                            },
+                          // Enhanced Settings Button with glow
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withAlpha(80),
+                                  blurRadius: 12,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: CircleContainer(
+                              icon: Icons.settings_outlined,
+                              width: width,
+                              color: Theme.of(context).colorScheme.secondary,
+                              onPressed: () {
+                                Get.to(
+                                  const SettingScreen(),
+                                  transition: Transition.circularReveal,
+                                  arguments: ['', '', ''],
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    //===============================================================================
+//===============================================================================
 //================================= SEARCH BAR ==================================
 //===============================================================================
+                    // Premium Search Bar with glassmorphism effect
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondary
+                                .withAlpha(60),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                            spreadRadius: 1,
+                          ),
+                        ],
                       ),
                       child: TextField(
                         controller: searchController,
                         onChanged: (val) {
                           noteController.searchQuery.value = val;
                         },
+                        cursorColor: Theme.of(context).colorScheme.primary,
                         decoration: InputDecoration(
                           hintText: "search".tr(),
                           hintStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withAlpha(150),
                             fontFamily: "Courier",
+                            fontSize: width * 0.04,
+                            fontWeight: FontWeight.w500,
                           ),
                           border: InputBorder.none,
-                          prefixIcon: Icon(
-                            Icons.search_rounded,
-                            color: Theme.of(context).colorScheme.surfaceDim,
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(
+                                left: width * 0.04, right: width * 0.02),
+                            child: Icon(
+                              Icons.search_rounded,
+                              color: Theme.of(context).colorScheme.surfaceDim,
+                              size: width * 0.065,
+                            ),
+                          ),
+                          prefixIconConstraints: BoxConstraints(
+                            minWidth: width * 0.12,
                           ),
                           contentPadding: EdgeInsets.symmetric(
                             horizontal: width * 0.04,
-                            vertical: width * 0.03,
+                            vertical: width * 0.04,
                           ),
                         ),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.surfaceDim,
                           fontFamily: "Courier",
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: width * 0.35),
-                    Container(
-                      alignment: Alignment.center,
-                      height: width * 0.5,
-                      width: width * 0.5,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage("assets/icons/not-available.png"),
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    SizedBox(height: width * 0.05),
-                    Center(
-                      child: Text(
-                        "no_notes".tr(),
-                        style: TextStyle(
-                          fontSize: width * 0.05,
-                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: width * 0.04,
                           fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+//===============================================================================
+//=============================== EMPTY STATE ===================================
+//===============================================================================
+                    Expanded(
+                      child: Center(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: width * 0.1),
+                              // Decorative emoji - different for each case
+                              Container(
+                                padding: EdgeInsets.all(width * 0.06),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withAlpha(20),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: TextWidget(
+                                  width: width,
+                                  text: noteController.allNotesList.isEmpty
+                                      ? "📝"
+                                      : "🔍",
+                                  fontSize: width * 0.15,
+                                ),
+                              ),
+                              SizedBox(height: width * 0.06),
+                              // Main empty text
+                              ShaderMask(
+                                shaderCallback: (bounds) => LinearGradient(
+                                  colors: [
+                                    Theme.of(context).colorScheme.secondary,
+                                    Theme.of(context)
+                                        .colorScheme
+                                        .secondary
+                                        .withAlpha(180),
+                                  ],
+                                ).createShader(bounds),
+                                child: TextWidget(
+                                  width: width,
+                                  text: noteController.allNotesList.isEmpty
+                                      ? "no_notes".tr()
+                                      : "search_no_results".tr(),
+                                  fontSize: width * 0.055,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                  textColor: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: width * 0.03),
+                              // Subtitle hint - different for each case
+                              TextWidget(
+                                width: width,
+                                text: noteController.allNotesList.isEmpty
+                                    ? "no_notes_hint".tr()
+                                    : "search_no_results_hint".tr(),
+                                fontSize: width * 0.035,
+                                fontWeight: FontWeight.w500,
+                                textAlign: TextAlign.center,
+                                textColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withAlpha(150),
+                              ),
+                              SizedBox(height: width * 0.1),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -179,31 +284,58 @@ class _HomeScreenState extends State<HomeScreen> {
 //===============================================================================
                   Padding(
                     padding: EdgeInsets.only(
-                      top: width * 0.07,
-                      bottom: width * 0.03,
+                      top: width * 0.12,
+                      bottom: width * 0.05,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TextWidget(
-                          width: width,
-                          text: "app_title".tr(),
-                          fontSize: width * 0.075,
-                          fontWeight: FontWeight.w600,
-                          textColor: Theme.of(context).colorScheme.secondary,
+                        ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.secondary,
+                              Theme.of(context)
+                                  .colorScheme
+                                  .secondary
+                                  .withAlpha(200),
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ).createShader(bounds),
+                          child: TextWidget(
+                            width: width,
+                            text: "app_title".tr(),
+                            fontSize: width * 0.085,
+                            fontWeight: FontWeight.w700,
+                            textColor: Colors.white,
+                          ),
                         ),
-                        CircleContainer(
-                          icon: Icons.settings_outlined,
-                          width: width,
-                          color: Theme.of(context).colorScheme.secondary,
-                          onPressed: () {
-                            Get.to(
-                              const SettingScreen(),
-                              transition: Transition.circularReveal,
-                              // duration: const Duration(milliseconds: 1000), // REMOVED slow duration
-                              arguments: ['', '', ''],
-                            );
-                          },
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withAlpha(80),
+                                blurRadius: 12,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: CircleContainer(
+                            icon: Icons.settings_outlined,
+                            width: width,
+                            color: Theme.of(context).colorScheme.secondary,
+                            onPressed: () {
+                              Get.to(
+                                const SettingScreen(),
+                                transition: Transition.circularReveal,
+                                arguments: ['', '', ''],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -211,35 +343,63 @@ class _HomeScreenState extends State<HomeScreen> {
 //===============================================================================
 //================================= SEARCH BAR ==================================
 //===============================================================================
+                  // Premium Search Bar with glassmorphism effect
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondary
+                              .withAlpha(60),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
                     child: TextField(
                       controller: searchController,
                       onChanged: (val) {
                         noteController.searchQuery.value = val;
                       },
+                      cursorColor: Theme.of(context).colorScheme.primary,
                       decoration: InputDecoration(
                         hintText: "search".tr(),
                         hintStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(150),
                           fontFamily: "Courier",
+                          fontSize: width * 0.04,
+                          fontWeight: FontWeight.w500,
                         ),
                         border: InputBorder.none,
-                        prefixIcon: Icon(
-                          Icons.search_rounded,
-                          color: Theme.of(context).colorScheme.surfaceDim,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(
+                              left: width * 0.04, right: width * 0.02),
+                          child: Icon(
+                            Icons.search_rounded,
+                            color: Theme.of(context).colorScheme.surfaceDim,
+                            size: width * 0.065,
+                          ),
+                        ),
+                        prefixIconConstraints: BoxConstraints(
+                          minWidth: width * 0.12,
                         ),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: width * 0.04,
-                          vertical: width * 0.03,
+                          vertical: width * 0.04,
                         ),
                       ),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.surfaceDim,
                         fontFamily: "Courier",
+                        fontSize: width * 0.04,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -249,7 +409,6 @@ class _HomeScreenState extends State<HomeScreen> {
 //===============================================================================
                   Expanded(
                     child: ListView.builder(
-                      // Use controller's filtered list
                       itemCount: noteController.filteredNotesList.length,
                       itemBuilder: (context, index) {
                         final reversedIndex =
@@ -291,13 +450,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Get.to(
             const AddNoteScreen(),
             transition: Transition.circularReveal,
-            // duration: const Duration(milliseconds: 1000), // REMOVED slow duration
             arguments: ['', '', ''],
-          )?.then(
-            (value) {
-              // noteController.readNotes(); // REMOVED: Auto synced via reactive lists
-            },
-          );
+          )?.then((value) {});
           noteController.initialDateTime();
         },
         child: Icon(
