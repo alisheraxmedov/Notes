@@ -35,110 +35,272 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
     final NoteController noteController = Get.find();
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: width * 0.13,
+        toolbarHeight: width * 0.16,
         centerTitle: true,
-        title: TextWidget(
-          width: width,
-          text: "add_note".tr(),
-          fontSize: width * 0.09,
-          textColor: Theme.of(context).colorScheme.inversePrimary,
-          fontWeight: FontWeight.bold,
+        elevation: 0,
+        leading: Padding(
+          padding: EdgeInsets.only(left: width * 0.02),
+          child: IconButton(
+            onPressed: () => Get.back(),
+            icon: Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Theme.of(context).colorScheme.secondary.withAlpha(30),
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Theme.of(context).colorScheme.inversePrimary,
+                size: width * 0.05,
+              ),
+            ),
+          ),
+        ),
+        title: ShaderMask(
+          shaderCallback: (bounds) => LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.inversePrimary,
+              Theme.of(context).colorScheme.inversePrimary.withAlpha(180),
+              Theme.of(context).colorScheme.inversePrimary,
+            ],
+          ).createShader(bounds),
+          child: TextWidget(
+            width: width,
+            text: "add_note".tr(),
+            fontSize: width * 0.065,
+            textColor: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         actions: [
-          NotificationDialog(
-            width: width,
-            noteController: noteController,
-            title: _titleController.text,
-            text: _contentController.text,
+          Padding(
+            padding: EdgeInsets.only(right: width * 0.02),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        Theme.of(context).colorScheme.secondary.withAlpha(40),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: NotificationDialog(
+                width: width,
+                noteController: noteController,
+                title: _titleController.text,
+                text: _contentController.text,
+              ),
+            ),
           ),
         ],
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.primary.withAlpha(200),
+            ],
+          ),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.06),
+          padding: EdgeInsets.symmetric(horizontal: width * 0.05),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: width * 0.04),
 //===============================================================================
 //================================ TITLE FIELD ==================================
 //===============================================================================
-              TextField(
-                cursorColor: Theme.of(context).colorScheme.secondary,
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: "title".tr(),
-                  labelStyle: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(fontFamily: "Courier", fontSize: width * 0.045),
-                  border: InputBorder.none,
-                ),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      fontFamily: "Courier",
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-              ),
               Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.only(left: width * 0.01),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(10),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  cursorColor: Theme.of(context).colorScheme.secondary,
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: "title".tr(),
+                    labelStyle:
+                        Theme.of(context).textTheme.titleSmall!.copyWith(
+                              fontFamily: "Courier",
+                              fontSize: width * 0.04,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondary
+                                  .withAlpha(150),
+                            ),
+                    floatingLabelStyle: TextStyle(
+                      fontFamily: "Courier",
+                      fontSize: width * 0.035,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: width * 0.04,
+                      vertical: width * 0.04,
+                    ),
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(
+                          left: width * 0.03, right: width * 0.02),
+                      child: Icon(
+                        Icons.title_rounded,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withAlpha(180),
+                        size: width * 0.055,
+                      ),
+                    ),
+                    prefixIconConstraints:
+                        BoxConstraints(minWidth: width * 0.12),
+                  ),
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontFamily: "Courier",
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: width * 0.045,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              SizedBox(height: width * 0.04),
+//===============================================================================
+//=============================== DATE & CHARS BADGE ============================
+//===============================================================================
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.04,
+                  vertical: width * 0.025,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          Theme.of(context).colorScheme.secondary.withAlpha(60),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    Icon(
+                      Icons.calendar_today_rounded,
+                      size: width * 0.035,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    SizedBox(width: width * 0.02),
                     TextWidget(
                       width: width,
                       text:
                           "${noteController.selectedMonth} ${noteController.selectedDate}",
                       fontSize: width * 0.03,
+                      fontWeight: FontWeight.w600,
                     ),
-                    TextWidget(
-                      width: width,
-                      text: " | ",
-                      fontSize: width * 0.03,
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: width * 0.025),
+                      height: width * 0.04,
+                      width: 1.5,
+                      color:
+                          Theme.of(context).colorScheme.primary.withAlpha(100),
                     ),
+                    Icon(
+                      Icons.text_fields_rounded,
+                      size: width * 0.035,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    SizedBox(width: width * 0.015),
                     Obx(
                       () => TextWidget(
                         width: width,
                         text: "${noteController.noteLength} ${"chars".tr()}",
                         fontSize: width * 0.03,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: width * 0.02),
+              SizedBox(height: width * 0.05),
 //===============================================================================
 //=============================== CONTENT FIELD =================================
 //===============================================================================
-              TextField(
-                cursorColor: Theme.of(context).colorScheme.secondary,
-                controller: _contentController,
-                onChanged: (value) {
-                  noteController.updateNoteLength(value.toString());
-                },
-                decoration: InputDecoration(
-                  labelText: "write".tr(),
-                  labelStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontFamily: "Courier",
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(10),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                  border: InputBorder.none,
-                ),
-                maxLines: 5,
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      fontFamily: "Courier",
-                      color: Theme.of(context).colorScheme.secondary,
+                    ],
+                  ),
+                  child: TextField(
+                    cursorColor: Theme.of(context).colorScheme.secondary,
+                    controller: _contentController,
+                    onChanged: (value) {
+                      noteController.updateNoteLength(value.toString());
+                    },
+                    decoration: InputDecoration(
+                      hintText: "write".tr(),
+                      hintStyle:
+                          Theme.of(context).textTheme.titleSmall!.copyWith(
+                                fontFamily: "Courier",
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withAlpha(120),
+                                fontSize: width * 0.04,
+                              ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.all(width * 0.04),
                     ),
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontFamily: "Courier",
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: width * 0.04,
+                          height: 1.5,
+                        ),
+                  ),
+                ),
               ),
-              const Spacer(),
+              SizedBox(height: width * 0.05),
 //===============================================================================
 //================================ SAVE BUTTON ==================================
 //===============================================================================
@@ -163,22 +325,44 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   noteController.updateNoteLength('');
                 },
                 child: Container(
-                  height: width * 0.15,
+                  height: width * 0.14,
                   width: width,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(width * 0.02),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withAlpha(100),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                        spreadRadius: 0,
+                      ),
+                    ],
                   ),
-                  alignment: Alignment.center,
-                  child: TextWidget(
-                    width: width,
-                    text: "save".tr(),
-                    fontSize: width * 0.09,
-                    textColor: Theme.of(context).scaffoldBackgroundColor,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.save_rounded,
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        size: width * 0.06,
+                      ),
+                      SizedBox(width: width * 0.03),
+                      TextWidget(
+                        width: width,
+                        text: "save".tr(),
+                        fontSize: width * 0.055,
+                        fontWeight: FontWeight.w700,
+                        textColor: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                    ],
                   ),
                 ),
               ),
-              SizedBox(height: width * 0.07),
+              SizedBox(height: width * 0.08),
             ],
           ),
         ),
