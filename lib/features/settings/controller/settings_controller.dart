@@ -16,10 +16,8 @@ class SettingsController extends GetxController {
     isLight.value = value;
     _box.write('isLight', isLight.value);
 
-    // Use GetX native theme switching for better performance
     Get.changeThemeMode(value ? ThemeMode.light : ThemeMode.dark);
 
-    // Also force update UI to ensure colors apply instantly
     Get.forceAppUpdate();
   }
 }

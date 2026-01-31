@@ -18,5 +18,6 @@ class ColorClass {
   static const Color deepGreen3 = Color.fromARGB(255, 118, 253, 147); 
   static const Color red = Colors.red; 
   static const Color blue = Colors.blue; 
+  static const Color green = Colors.green; 
 
 }
