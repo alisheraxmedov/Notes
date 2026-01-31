@@ -41,3 +41,32 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# --------------------
+# Sensitive Files & Keys
+# --------------------
+client_secret.json
+firebase.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+android/key.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+service-account.json
+
+# App Secrets Code
+lib/core/config/app_secrets.dart
+lib/firebase_options.dart
+
+# Platform Configs
+android/local.properties
+ios/Flutter/Generated.xcconfig
+macos/Flutter/Generated.xcconfig
+*.env
+.env*
+
+
+google_sign_in.md

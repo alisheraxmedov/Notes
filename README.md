@@ -1,80 +1,139 @@
-# Note Application
+# 📝 Notes App (Google Drive Sync & Secure Authentication)
 
-## Project Overview
-This project is a mobile application developed using the Flutter framework, designed to facilitate the management of personal notes. The primary objective of the application is to provide users with a robust and intuitive interface for creating, editing, storing, and organizing text-based notes. Additionally, the application integrates local notification services to support scheduled reminders, ensuring users can set alerts for specific notes.
+A partially feature-rich Flutter application for managing personal notes with robust security, cloud synchronization, and local reminders. Built with **Clean Architecture** and **Feature-First** principles.
 
-## Key Features
-- **Note Management**: Comprehensive CRUD (Create, Read, Update, Delete) functionality for notes.
-- **Local Storage**: Data persistence capabilities using `GetStorage` to ensure notes are saved locally on the device.
-- **Scheduled Reminders**: Integration with `flutter_local_notifications` to schedule and deliver system notifications at specified times.
-- **Theme Management**: Dynamic light and dark mode switching capabilities.
-- **State Management**: Utilization of the GetX package for efficient state management and dependency injection.
+## 🚀 Key Features
 
-## Technical Architecture
-The project adheres to a **Feature-First Architecture**, promoting separation of concerns, scalability, and maintainability. The codebase is organized into three primary layers:
+*   **Google Sign-In**: Secure and seamless authentication using Google accounts.
+*   **Google Drive Synchronization**: Backup and restore your notes to/from a private App Folder in your Google Drive.
+*   **Local Reminders**: Schedule notifications to remind you of important notes.
+*   **Secure Storage**: Sensitive data (tokens) are handled securely, and secrets are excluded from version control.
+*   **Localization**: Supports English, Russian, and Uzbek languages.
 
-### 1. Core Layer (`lib/core/`)
-Contains shared resources and utilities accessible throughout the application.
-- **Theme**: Application-wide theme definitions and color palettes.
-- **Widgets**: Reusable UI components.
-- **Constants**: Static constant values used across the project.
+---
 
-### 2. Data Layer (`lib/data/`)
-Handles data manipulation and external services.
-- **Models**: Data classes defining the structure of application entities (e.g., `NoteModel`).
-- **Services**: Services for handling specific functionalities such as notifications (`NotificationService`).
+## 🛠️ Project Setup & Installation Guide
 
-### 3. Features Layer (`lib/features/`)
-Encapsulates independent functional modules of the application. Each feature contains its own views and controllers.
-- **Home**: The main dashboard displaying the list of notes.
-- **Note**: Functionality for viewing, creating, and editing individual notes.
-- **Settings**: Configuration options including theme selection.
-- **Splash**: Initial launch screen handling loading logic.
+**IMPORTANT:** This project relies on sensitive API keys and configuration files that are **NOT** included in the repository for security reasons. You **MUST** generate them yourself to run the app.
 
-## File Structure
-The directory structure of the project is organized as follows:
+### 📋 Prerequisites
 
-```
-lib/
-├── core/
-│   ├── const/              # Application constants (colors, strings)
-│   ├── theme/              # Theme configuration
-│   └── widgets/            # Shared UI components
-├── data/
-│   ├── models/             # Data models (NoteModel)
-│   └── services/           # Service classes (NotificationService)
-├── features/
-│   ├── home/               # Home screen logic and UI
-│   ├── note/               # Note editing logic and UI
-│   ├── settings/           # Settings logic and UI
-│   └── splash/             # Splash screen logic and UI
-└── main.dart               # Application entry point
+*   Flutter SDK (Latest Stable)
+*   Dart SDK
+*   A Google Account (for Firebase and Google Cloud Console)
+
+---
+
+### Phase 1: 🔐 Security Configuration (The "Secrets" File)
+
+The app needs a Client ID and specific Scopes to talk to Google. Since we don't commit secrets to Git, you need to create this file manually.
+
+1.  Navigate to `lib/core/config/`.
+2.  Create a new file named `app_secrets.dart`.
+3.  Copy and paste the code below into the file:
+
+```dart
+// File: lib/core/config/app_secrets.dart
+
+class AppSecrets {
+  /// CLIENT ID: Get this from your Google Cloud Console (APIs & Services -> Credentials).
+  /// It usually looks like "123456789-xxxxxxxx.apps.googleusercontent.com".
+  static const String googleClientId = 'YOUR_GOOGLE_CLIENT_ID_HERE';
+
+  /// SCOPES: These are the permissions we need.
+  /// 'drive.file' allows the app to ONLY access files created by this app (secure).
+  static const List<String> googleScopes = [
+    'https://www.googleapis.com/auth/drive.file',
+  ];
+}
 ```
 
-## Setup and Installation
+> **Note:** We also ignore `lib/firebase_options.dart` to prevent your specific Firebase configuration from leaking. You will generate this in the next step.
 
-### Prerequisites
-- Flutter SDK (latest stable version recommended)
-- Android Studio or VS Code
-- Android SDK (API 35 recommended)
+---
 
-### Installation Steps
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-username/your-repo-name.git
-    ```
+### Phase 2: 🔥 Firebase Setup
 
-2.  **Navigate to the project directory:**
-    ```bash
-    cd notes
-    ```
+To enable Google Sign-In, you need a Firebase project.
 
-3.  **Install dependencies:**
-    ```bash
-    flutter pub get
-    ```
+1.  Go to the [Firebase Console](https://console.firebase.google.com/).
+2.  **Create a New Project** (or use an existing one).
+3.  **Enable Authentication**:
+    *   Go to **Build** -> **Authentication** -> **Sign-in method**.
+    *   Click on **Google**, enable it, and save.
+4.  **Register your Android App**:
+    *   Go to **Project Settings** (gear icon) -> **General**.
+    *   Click the **Android** icon.
+    *   **Package Name**: Use `com.example.notes` (or check `android/app/build.gradle`.
+    *   **SHA-1 Certificate**: You MUST add your machine's SHA-1 key.
+        *   Run this in your terminal: `./gradlew signingReport` (in the `android/` folder).
+        *   Copy the `SHA1` from the `debug` variant.
+    *   **Download config file**: Download `google-services.json`.
+    *   **Move file**: Place `google-services.json` into the `android/app/` directory of your project.
 
-4.  **Run the application:**
-    ```bash
-    flutter run
-    ```
+5.  **Generate `firebase_options.dart`** (Optional but Recommended):
+    *   If you use the FlutterFire CLI, run: `flutterfire configure`. This will generate `lib/firebase_options.dart` with your project details.
+
+---
+
+### Phase 3: ☁️ Google Cloud & Drive API
+
+For synchronization to work, the Google Drive API must be enabled.
+
+1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2.  Make sure your Firebase project is selected in the top bar.
+3.  Go to **APIs & Services** -> **Enabled APIs & services**.
+4.  Click **+ ENABLE APIS AND SERVICES**.
+5.  Search for **Google Drive API** and click **Enable**.
+6.  **Configure OAuth Consent Screen**:
+    *   Go to **OAuth consent screen**.
+    *   Select **External**.
+    *   Fill in required fields (App name, email).
+    *   **Test Users**: Add your own email address here so you can test the login/sync while the app is in "Testing" mode.
+
+---
+
+### Phase 4: 🏃‍♂️ Running the App
+
+Once you have:
+1.  Created `lib/core/config/app_secrets.dart`.
+2.  Placed `google-services.json` in `android/app/`.
+3.  Enabled Google Drive API.
+
+Run the dependencies command:
+
+```bash
+flutter pub get
+```
+
+Then run the app:
+
+```bash
+flutter run
+```
+
+---
+
+## 📂 Project Structure
+
+This project follows a strict **Clean Architecture** to ensure maintainability.
+
+*   **`lib/core/`**: Shared utilities, constants, theme data, and common widgets.
+*   **`lib/data/`**:
+    *   **`services/`**: logic for external APIs (Google Auth, Drive, Notifications).
+    *   **`db/`**: Local database schema (Drift/SQLite).
+*   **`lib/features/`**: The main app features (Screens + Controllers).
+    *   **`home/`**: Display notes list.
+    *   **`note/`**: Create/Edit notes.
+    *   **`settings/`**: User profile, Sync settings, Language, Theme.
+
+---
+
+## ⚠️ Troubleshooting
+
+*   **"Auth token unavailable"**: This usually means you haven't added your email to the **Test Users** list in the Google Cloud Console OAuth Consent Screen.
+*   **"PlatformException(sign_in_failed, ...)"**: Check that your `google-services.json` is correct and that the SHA-1 fingerprint in Firebase matches your local keystore.
+*   **Sync Stuck**: Ensure `drive.file` scope is requested and you have internet access.
+
+---
+
