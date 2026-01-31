@@ -6,6 +6,7 @@ import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
 class NoteCard extends StatelessWidget {
+  final int id; // Drift ID
   final int index;
   final double width;
   final String title;
@@ -16,8 +17,9 @@ class NoteCard extends StatelessWidget {
 
   const NoteCard({
     super.key,
+    required this.id, // Add id
     required this.width,
-    required this.index,
+    required this.index, // Keep index for color logic if needed, or better logic
     required this.title,
     required this.content,
     required this.editedDate,
@@ -125,7 +127,11 @@ class NoteCard extends StatelessWidget {
                         final NoteController noteController = Get.find();
                         Get.to(
                           const AddNoteScreen(),
-                          arguments: [index, title, content],
+                          arguments: [
+                            id,
+                            title,
+                            content
+                          ], // Pass ID instead of index
                         );
                         noteController.initialDateTime();
                         noteController.updateNoteLength(content);
@@ -149,7 +155,7 @@ class NoteCard extends StatelessWidget {
                       color: Colors.cyan[100]!,
                       onPressed: () {
                         NoteController noteController = Get.find();
-                        noteController.deleteNoteAt(index);
+                        noteController.deleteNote(id); // Use deleteNote(id)
                       },
                     ),
                   ],

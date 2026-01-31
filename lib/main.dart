@@ -2,21 +2,34 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:notes/data/local/database.dart';
 import 'package:notes/data/services/notification_service.dart';
 import 'package:notes/features/splash/view/splash_view.dart';
 import 'package:notes/core/theme/theme.dart';
 import 'package:notes/features/settings/controller/settings_controller.dart';
+import 'package:notes/features/settings/controller/auth_controller.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:notes/firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   tz.initializeTimeZones();
   await GetStorage.init();
   await NotificationService.init();
   await EasyLocalization.ensureInitialized();
 
+  final db = AppDatabase();
+  Get.put(db);
+
   Get.put(SettingsController());
+  Get.put(AuthController());
   Get.put(NoteController());
 
   runApp(

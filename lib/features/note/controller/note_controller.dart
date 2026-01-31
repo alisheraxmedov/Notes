@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:notes/data/models/note_model.dart';
+import 'package:drift/drift.dart' as drift;
+import 'package:notes/core/const/colors.dart';
+import 'package:notes/data/local/database.dart';
 import 'package:notes/data/services/notification_service.dart';
 
 class NoteController extends GetxController {
-  final GetStorage box = GetStorage();
-  RxList<NoteModel> allNotesList = <NoteModel>[].obs;
+  final AppDatabase _db = AppDatabase(); // Drift Database Instance
+
+  RxList<Note> allNotesList = <Note>[].obs; // Use Drift 'Note' class
+  RxBool isLoading = false.obs;
 
   // Date and Time for Note Creation
   var selectedDate = "".obs;
@@ -18,22 +21,56 @@ class NoteController extends GetxController {
   RxString notificationTime = "Time".obs;
 
   // Search and Filter
-  RxList<NoteModel> filteredNotesList = <NoteModel>[].obs;
+  RxList<Note> filteredNotesList = <Note>[].obs;
   RxString searchQuery = "".obs;
 
   @override
   void onInit() {
     super.onInit();
-    readNotes();
     initialDateTime();
+    fetchNotes();
 
-    // Debounce search to avoid performance lag
+    // Debounce search
     debounce(searchQuery, (_) => filterNotes(),
         time: const Duration(milliseconds: 300));
 
-    // Update filtered list when all notes change
+    // Update filtered list
     ever(allNotesList, (_) => filterNotes());
   }
+
+  // ==================== DATA FETCHING ====================
+
+  Future<void> fetchNotes() async {
+    try {
+      isLoading.value = true;
+      // Drift: select(notes).get() returns Future<List<Note>>
+      // final notes = await _db.select(_db.notes).get();
+
+      // Sort by creation date descending (in memory for now, or use orderBy in drift)
+      // notes.sort((a, b) => b.created.compareTo(a.created));
+      // Better to use Drift orderBy
+      final sortedNotes = await (_db.select(_db.notes)
+            ..orderBy([
+              (t) => drift.OrderingTerm(
+                  expression: t.created, mode: drift.OrderingMode.desc)
+            ]))
+          .get();
+
+      allNotesList.assignAll(sortedNotes);
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to load notes: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+        colorText: ColorClass.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ==================== SEARCH & FILTER ====================
 
   void filterNotes() {
     String query = searchQuery.value.toLowerCase();
@@ -48,13 +85,9 @@ class NoteController extends GetxController {
     }
   }
 
-  void readNotes() {
-    List<dynamic> notesList = box.read("notes") ?? [];
-    allNotesList
-        .assignAll(notesList.map((e) => NoteModel.fromJson(e)).toList());
-  }
+  // ==================== CRUD OPERATIONS ====================
 
-  void addNotes({
+  Future<void> addNotes({
     required String title,
     required String content,
     required String date,
@@ -62,27 +95,45 @@ class NoteController extends GetxController {
     String? nDate,
     String? nTime,
     String? today,
-  }) {
-    NoteModel note = NoteModel(
-      title: title,
-      content: content,
-      date: date,
-      time: time,
-      nDate: nDate,
-      nTime: nTime,
-      today: today,
-    );
+  }) async {
+    try {
+      isLoading.value = true;
 
-    // 1. Update in-memory list (Reactive)
-    allNotesList.add(note);
+      final companion = NotesCompanion(
+        title: drift.Value(title),
+        content: drift.Value(content),
+        date: drift.Value(date),
+        time: drift.Value(time),
+        nDate: drift.Value(nDate),
+        nTime: drift.Value(nTime),
+        today: drift.Value(today),
+      );
 
-    // 2. Sync to storage
-    List<dynamic> notesList = box.read("notes") ?? [];
-    notesList.add(note.toJson());
-    box.write("notes", notesList);
+      await _db.into(_db.notes).insert(companion);
+      await fetchNotes(); // Refresh list
+
+      Get.snackbar(
+        "Success",
+        "Note created successfully",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorClass.green.withValues(alpha: 0.8),
+        colorText: ColorClass.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to save note: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+        colorText: ColorClass.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  void updateNotes({
+  Future<void> updateNotes({
+    required int id, // Drift ID is int
     required String title,
     required String content,
     required String date,
@@ -90,79 +141,75 @@ class NoteController extends GetxController {
     required String nDate,
     required String nTime,
     required String today,
-    int? index,
-  }) {
-    NoteModel note = NoteModel(
-      title: title,
-      content: content,
-      date: date,
-      time: time,
-      nDate: nDate,
-      nTime: nTime,
-      today: today,
-    );
+  }) async {
+    try {
+      isLoading.value = true;
 
-    List<dynamic> notesList = box.read("notes") ?? [];
+      final companion = NotesCompanion(
+        id: drift.Value(id),
+        title: drift.Value(title),
+        content: drift.Value(content),
+        date: drift.Value(date),
+        time: drift.Value(time),
+        nDate: drift.Value(nDate),
+        nTime: drift.Value(nTime),
+        today: drift.Value(today),
+        updated: drift.Value(DateTime.now()),
+      );
 
-    if (index != null && index >= 0 && index < allNotesList.length) {
-      // 1. Update in-memory list
-      allNotesList[index] = note;
+      await (_db.update(_db.notes)..where((t) => t.id.equals(id)))
+          .write(companion);
+      await fetchNotes();
 
-      // 2. Sync to storage
-      if (index < notesList.length) {
-        notesList[index] = note.toJson();
-        box.write("notes", notesList);
-      } else {
-        // Fallback if storage out of sync (should rarely happen)
-        readNotes();
-      }
-    } else {
-      addNotes(
-          title: title,
-          content: content,
-          date: date,
-          time: time,
-          nDate: nDate,
-          nTime: nTime,
-          today: today);
+      // Get.back(); // Close Edit Screen - Handled in UI
+      // Get.back(); // Check if double back is needed
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to update note: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+        colorText: ColorClass.white,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void deleteNoteByTitle(String title) {
-    // 1. Update in-memory
-    allNotesList.removeWhere((note) => note.title == title);
+  Future<void> deleteNote(int id) async {
+    try {
+      await (_db.delete(_db.notes)..where((t) => t.id.equals(id))).go();
 
-    // 2. Sync to storage
-    List<dynamic> notesList = box.read("notes") ?? [];
-    notesList.removeWhere((note) => note["title"] == title);
-    box.write("notes", notesList);
-  }
+      // Update local list
+      allNotesList.removeWhere((note) => note.id == id);
 
-  void deleteNoteAt(int index) {
-    if (index >= 0 && index < allNotesList.length) {
-      // 1. Update in-memory
-      allNotesList.removeAt(index);
-
-      // 2. Sync to storage
-      List<dynamic> notesList = box.read("notes") ?? [];
-      if (index < notesList.length) {
-        notesList.removeAt(index);
-        box.write("notes", notesList);
-      }
+      Get.snackbar("Deleted", "Note deleted successfully",
+          snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      fetchNotes();
+      Get.snackbar(
+        "Error",
+        "Failed to delete note: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+        colorText: ColorClass.white,
+      );
     }
   }
 
-  void deleteAllNotes() {
-    box.remove("notes");
-    allNotesList.clear();
+  // Clean up DB when controller is disposed (rarely called for singleton-like usage)
+  @override
+  void onClose() {
+    _db.close();
+    super.onClose();
   }
 
-  // Helper Functions
+  // ==================== HELPER FUNCTIONS ====================
+
   void initialDateTime() {
     DateTime dateTime = DateTime.now();
     selectedDate.value = dateTime.day.toString();
 
-    // Simple month mapping
     const months = [
       "January",
       "February",

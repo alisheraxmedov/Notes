@@ -421,6 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Padding(
                           padding: EdgeInsets.only(bottom: width * 0.03),
                           child: NoteCard(
+                            id: note.id, // Pass Drift ID
                             index: realIndex,
                             width: width,
                             title: note.title,
@@ -429,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 "${"edited".tr()}: ${note.date} ${note.time}",
                             color: ItemsColor.itemsColor[
                                 reversedIndex % ItemsColor.itemsColor.length],
-                            reTime: note.nDate == "Date"
+                            reTime: note.nDate == "Date" || note.nDate == null
                                 ? "${"reminder_time".tr()}: ${"not_specified".tr()}"
                                 : "${"reminder_time".tr()}: ${note.nDate} ${note.nTime}",
                           ),

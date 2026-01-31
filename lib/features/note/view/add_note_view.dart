@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
+import 'package:notes/core/const/colors.dart';
 import 'package:notes/core/widgets/notification_dialog.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
@@ -23,11 +24,14 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     super.initState();
 
     if (Get.arguments != null && Get.arguments.length >= 3) {
-      final String? title = Get.arguments[1];
-      final String? content = Get.arguments[2];
-
-      _titleController = TextEditingController(text: title ?? '');
-      _contentController = TextEditingController(text: content ?? '');
+      if (Get.arguments[0] is int) {
+        _titleController = TextEditingController(text: Get.arguments[1] ?? '');
+        _contentController =
+            TextEditingController(text: Get.arguments[2] ?? '');
+      } else {
+        _titleController = TextEditingController();
+        _contentController = TextEditingController();
+      }
     } else {
       _titleController = TextEditingController();
       _contentController = TextEditingController();
@@ -81,7 +85,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             width: width,
             text: "add_note".tr(),
             fontSize: width * 0.065,
-            textColor: Colors.white,
+            textColor: ColorClass.white,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -136,7 +140,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha(10),
+                      color: ColorClass.black.withAlpha(10),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -262,7 +266,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withAlpha(10),
+                        color: ColorClass.black.withAlpha(10),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -305,22 +309,42 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 //================================ SAVE BUTTON ==================================
 //===============================================================================
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   DateTime dateTime = DateTime.now();
-                  final int? index =
-                      int.tryParse(Get.arguments[0]?.toString() ?? '');
 
-                  noteController.updateNotes(
-                    title: _titleController.text,
-                    content: _contentController.text,
-                    date: "${dateTime.day}:${dateTime.month}:${dateTime.year}",
-                    time: "${dateTime.hour}:${dateTime.minute}",
-                    index: index,
-                    nDate: noteController.notificationDate.value,
-                    nTime: noteController.notificationTime.value,
-                    today:
-                        "${noteController.selectedMonth} ${noteController.selectedDate}",
-                  );
+                  // Check if we are updating or creating
+                  if (Get.arguments != null &&
+                      Get.arguments.length >= 3 &&
+                      Get.arguments[0] is int) {
+                    // Update
+                    final int id = Get.arguments[0];
+                    await noteController.updateNotes(
+                      id: id,
+                      title: _titleController.text,
+                      content: _contentController.text,
+                      date:
+                          "${dateTime.day}:${dateTime.month}:${dateTime.year}",
+                      time: "${dateTime.hour}:${dateTime.minute}",
+                      nDate: noteController.notificationDate.value,
+                      nTime: noteController.notificationTime.value,
+                      today:
+                          "${noteController.selectedMonth} ${noteController.selectedDate}",
+                    );
+                  } else {
+                    // Create
+                    await noteController.addNotes(
+                      title: _titleController.text,
+                      content: _contentController.text,
+                      date:
+                          "${dateTime.day}:${dateTime.month}:${dateTime.year}",
+                      time: "${dateTime.hour}:${dateTime.minute}",
+                      nDate: noteController.notificationDate.value,
+                      nTime: noteController.notificationTime.value,
+                      today:
+                          "${noteController.selectedMonth} ${noteController.selectedDate}",
+                    );
+                  }
+
                   Get.back();
                   noteController.updateNoteLength('');
                 },
