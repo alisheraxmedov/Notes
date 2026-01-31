@@ -32,7 +32,7 @@ class SplashScreenState extends State<SplashScreen>
 
   void _navigateToHome() async {
     // Navigate after animation completes
-    noteController.readNotes();
+    noteController.fetchNotes();
     Get.off(() => const HomeScreen());
   }
 
