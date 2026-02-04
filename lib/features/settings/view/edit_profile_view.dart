@@ -20,22 +20,25 @@ class EditProfileView extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: ColorClass.white, // Explicitly White as requested
+      backgroundColor: colorScheme.surfaceDim,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Container(
-            padding: EdgeInsets.all(width * 0.02),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: colorScheme.primary.withAlpha(20),
-            ),
-            child: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: colorScheme.primary,
-              size: width * 0.05,
+        leading: Padding(
+          padding: EdgeInsets.only(left: width * 0.02),
+          child: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colorScheme.secondary.withAlpha(30),
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: colorScheme.inversePrimary,
+                size: width * 0.05,
+              ),
             ),
           ),
         ),
@@ -340,10 +343,10 @@ class EditProfileView extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Material(
-      color: ColorClass.white,
+      color: colorScheme.surface,
       borderRadius: BorderRadius.circular(12),
       elevation: 2,
-      shadowColor: ColorClass.black.withAlpha(30),
+      shadowColor: colorScheme.onSurface.withAlpha(30),
       child: InkWell(
         onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(12),
@@ -379,7 +382,7 @@ class EditProfileView extends StatelessWidget {
                   fontFamily: "Courier",
                   fontSize: width * 0.04,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],

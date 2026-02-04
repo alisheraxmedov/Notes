@@ -58,13 +58,15 @@ class NoteController extends GetxController {
 
       allNotesList.assignAll(sortedNotes);
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to load notes: $e",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
-        colorText: ColorClass.white,
-      );
+      if (Get.context != null && Get.isOverlaysClosed) {
+        Get.snackbar(
+          "Error",
+          "Failed to load notes: $e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+          colorText: ColorClass.white,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
@@ -111,22 +113,16 @@ class NoteController extends GetxController {
 
       await _db.into(_db.notes).insert(companion);
       await fetchNotes(); // Refresh list
-
-      Get.snackbar(
-        "Success",
-        "Note created successfully",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorClass.green.withValues(alpha: 0.8),
-        colorText: ColorClass.white,
-      );
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to save note: $e",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
-        colorText: ColorClass.white,
-      );
+      if (Get.context != null && Get.isOverlaysClosed) {
+        Get.snackbar(
+          "Error",
+          "Failed to save note: $e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+          colorText: ColorClass.white,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
@@ -164,13 +160,15 @@ class NoteController extends GetxController {
       // Get.back(); // Close Edit Screen - Handled in UI
       // Get.back(); // Check if double back is needed
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to update note: $e",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
-        colorText: ColorClass.white,
-      );
+      if (Get.context != null && Get.isOverlaysClosed) {
+        Get.snackbar(
+          "Error",
+          "Failed to update note: $e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+          colorText: ColorClass.white,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
@@ -183,17 +181,21 @@ class NoteController extends GetxController {
       // Update local list
       allNotesList.removeWhere((note) => note.id == id);
 
-      Get.snackbar("Deleted", "Note deleted successfully",
-          snackPosition: SnackPosition.BOTTOM);
+      if (Get.context != null && Get.isOverlaysClosed) {
+        Get.snackbar("Deleted", "Note deleted successfully",
+            snackPosition: SnackPosition.BOTTOM);
+      }
     } catch (e) {
       fetchNotes();
-      Get.snackbar(
-        "Error",
-        "Failed to delete note: $e",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorClass.red.withValues(alpha: 0.8),
-        colorText: ColorClass.white,
-      );
+      if (Get.context != null && Get.isOverlaysClosed) {
+        Get.snackbar(
+          "Error",
+          "Failed to delete note: $e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+          colorText: ColorClass.white,
+        );
+      }
     }
   }
 

@@ -17,7 +17,7 @@ class MyAppTheme {
     colorScheme: const ColorScheme.light(
       surfaceDim: ColorClass.white,
       surfaceContainerHighest: ColorClass.deepGreen,
-      onSurfaceVariant: ColorClass.deepGreen3,
+      onSurfaceVariant: ColorClass.settingsListLight, // Och yashil (light mode)
       inversePrimary: ColorClass.white,
       primary: ColorClass.white,
       onPrimary: ColorClass.white,
@@ -188,7 +188,7 @@ class MyAppTheme {
     colorScheme: const ColorScheme.dark(
       surfaceDim: ColorClass.black,
       surfaceContainerHighest: ColorClass.darkGrey,
-      onSurfaceVariant: ColorClass.darkGrey,
+      onSurfaceVariant: ColorClass.settingsListDark, 
       inversePrimary: ColorClass.white,
       primary: ColorClass.black,
       onPrimary: ColorClass.white,

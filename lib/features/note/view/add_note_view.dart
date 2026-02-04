@@ -58,7 +58,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         leading: Padding(
           padding: EdgeInsets.only(left: width * 0.02),
           child: IconButton(
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
             icon: Container(
               padding: EdgeInsets.all(width * 0.02),
               decoration: BoxDecoration(
@@ -345,7 +345,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     );
                   }
 
-                  Get.back();
+                  Navigator.of(context).pop();
                   noteController.updateNoteLength('');
                 },
                 child: Container(

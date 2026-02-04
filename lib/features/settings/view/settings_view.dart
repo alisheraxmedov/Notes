@@ -25,36 +25,35 @@ class _SettingScreenState extends State<SettingScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white, // Explicitly White as requested
+      backgroundColor: colorScheme.surfaceDim,
       body: SafeArea(
         child: Column(
           children: [
 //===============================================================================
 //================================ BACK BUTTON ==================================
 //===============================================================================
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.04,
-                vertical: width * 0.02,
-              ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Container(
-                    padding: EdgeInsets.all(width * 0.025),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colorScheme.primary.withAlpha(30),
-                    ),
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: colorScheme.primary,
-                      size: width * 0.05,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: width * 0.02),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Container(
+                      padding: EdgeInsets.all(width * 0.02),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: colorScheme.secondary.withAlpha(30),
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: colorScheme.inversePrimary,
+                        size: width * 0.05,
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
 //===============================================================================
 //=============================== PROFILE SECTION ===============================
@@ -130,14 +129,14 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.white, // Explicitly White
+                  color: colorScheme.onSurfaceVariant,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(width * 0.08),
                     topRight: Radius.circular(width * 0.08),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: ColorClass.black.withAlpha(15),
+                      color: colorScheme.onSurface.withAlpha(15),
                       blurRadius: 20,
                       offset: const Offset(0, -5),
                     ),
