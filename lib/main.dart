@@ -9,7 +9,6 @@ import 'package:notes/core/theme/theme.dart';
 import 'package:notes/features/settings/controller/settings_controller.dart';
 import 'package:notes/features/settings/controller/auth_controller.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
-import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:notes/firebase_options.dart';
@@ -20,7 +19,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  tz.initializeTimeZones();
   await GetStorage.init();
   await NotificationService.init();
   await EasyLocalization.ensureInitialized();

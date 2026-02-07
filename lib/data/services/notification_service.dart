@@ -1,157 +1,121 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:notes/core/const/colors.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
+import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+
+/// Background message handler - must be a top-level function
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint('Background message received: ${message.notification?.title}');
+}
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  static String? _fcmToken;
 
-  static Future<void> onDidReceiveNotification(
-      NotificationResponse notificationResponse) async {}
+  /// Get FCM Token (used for sending targeted notifications)
+  static String? get fcmToken => _fcmToken;
 
+  /// Initialize Firebase Messaging
   static Future<void> init() async {
-    // Initialize timezone database
-    tz.initializeTimeZones();
-
-    const AndroidInitializationSettings androidInitializationSettings =
-        AndroidInitializationSettings("@mipmap/ic_launcher");
-    const DarwinInitializationSettings iOSInitializationSettings =
-        DarwinInitializationSettings();
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: androidInitializationSettings,
-      iOS: iOSInitializationSettings,
-    );
-    await flutterLocalNotificationsPlugin.initialize(
-      settings: initializationSettings,
-      onDidReceiveNotificationResponse: onDidReceiveNotification,
-      onDidReceiveBackgroundNotificationResponse: onDidReceiveNotification,
+    // Request permission (iOS)
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
     );
 
-    // Create Android notification channels
-    const AndroidNotificationChannel reminderChannel =
-        AndroidNotificationChannel(
-      'reminder_channel',
-      'Reminder Channel',
-      description: 'Channel for reminder notifications',
-      importance: Importance.max,
-      showBadge: true,
-      enableVibration: true,
-      enableLights: true,
-    );
+    debugPrint('Notification permission: ${settings.authorizationStatus}');
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(reminderChannel);
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
+      // Register background handler
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
 
-    const AndroidNotificationChannel instantChannel =
-        AndroidNotificationChannel(
-      'instant_notification_channel_id',
-      'Instant Notifications',
-      description: 'Channel for instant notifications',
-      importance: Importance.max,
-      showBadge: true,
-      enableVibration: true,
-      enableLights: true,
-    );
+      // Listen for foreground messages
+      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(instantChannel);
+      // Handle notification tap when app was in background
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+      // Get FCM Token (with iOS APNs handling)
+      await _initializeToken();
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-  }
-
-  static Future<void> showInstantNotification(String title, String body) async {
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'instant_notification_channel_id',
-        'Instant Notifications',
-        importance: Importance.max,
-        priority: Priority.high,
-      ),
-      iOS: DarwinNotificationDetails(),
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      id: 0,
-      title: title,
-      body: body,
-      notificationDetails: platformChannelSpecifics,
-      payload: 'instant_notification',
-    );
-  }
-
-  static Future<void> scheduleNotification(
-    int id,
-    String title,
-    String body,
-    DateTime scheduledTime,
-  ) async {
-    try {
-      final tzDateTime = tz.TZDateTime.from(scheduledTime, tz.local);
-
-      final androidDetails = AndroidNotificationDetails(
-        'reminder_channel',
-        'Reminder Channel',
-        channelDescription: 'Channel for reminder notifications',
-        importance: Importance.max,
-        priority: Priority.high,
-        showWhen: true,
-        enableVibration: true,
-        enableLights: true,
-        color: ColorClass.blue,
-        ledColor: ColorClass.blue,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        fullScreenIntent: true,
-        ongoing: false,
-        autoCancel: true,
-        styleInformation: BigTextStyleInformation(
-          body,
-          htmlFormatBigText: true,
-          contentTitle: title,
-          htmlFormatContentTitle: true,
-        ),
-      );
-
-      final notificationDetails = NotificationDetails(
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-        android: androidDetails,
-      );
-
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-        id: id,
-        title: title,
-        body: body,
-        scheduledDate: tzDateTime,
-        notificationDetails: notificationDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.dateAndTime,
-        payload: 'reminder_$id',
-      );
-    } catch (e) {
-      rethrow;
+      // Listen for token refresh
+      _messaging.onTokenRefresh.listen((newToken) {
+        _fcmToken = newToken;
+        debugPrint('FCM Token refreshed: $newToken');
+      });
     }
+  }
+
+  /// Initialize FCM token with iOS APNs handling
+  static Future<void> _initializeToken() async {
+    try {
+      // On iOS, we need to wait for APNs token first
+      // On iOS, we need to wait for APNs token first
+      if (Platform.isIOS) {
+        // try-catch specific for APNs to avoid crashing if capability is missing
+        try {
+          String? apnsToken = await _messaging.getAPNSToken();
+
+          // If APNs token is not ready, wait and retry
+          if (apnsToken == null) {
+            debugPrint('Waiting for APNs token...');
+            await Future.delayed(const Duration(seconds: 3));
+            apnsToken = await _messaging.getAPNSToken();
+          }
+
+          if (apnsToken == null) {
+            debugPrint(
+                'APNs token not available. Push notifications will NOT work on this device (No Capability/Sim).');
+            return;
+          }
+          debugPrint('APNs Token received: ${apnsToken.substring(0, 20)}...');
+        } catch (e) {
+          debugPrint(
+              'Failed to get APNs token (likely missing Push Capability): $e');
+          return;
+        }
+      }
+
+      // Now get FCM token
+      _fcmToken = await _messaging.getToken();
+      debugPrint('FCM Token: $_fcmToken');
+    } catch (e) {
+      debugPrint('Error getting FCM token: $e');
+      // On iOS Simulator, this is expected to fail
+      if (Platform.isIOS) {
+        debugPrint('Note: Push notifications may not work on iOS Simulator.');
+      }
+    }
+  }
+
+  /// Handle messages when app is in foreground
+  static void _handleForegroundMessage(RemoteMessage message) {
+    debugPrint('Foreground message: ${message.notification?.title}');
+    // The message will be shown automatically by system on Android 13+
+  }
+
+  /// Handle notification tap when app was in background/terminated
+  static void _handleMessageOpenedApp(RemoteMessage message) {
+    debugPrint('Message opened app: ${message.notification?.title}');
+    // Navigate to specific screen based on message data if needed
+  }
+
+  /// Subscribe to a topic (optional, for broadcast notifications)
+  static Future<void> subscribeToTopic(String topic) async {
+    await _messaging.subscribeToTopic(topic);
+    debugPrint('Subscribed to topic: $topic');
+  }
+
+  /// Unsubscribe from a topic
+  static Future<void> unsubscribeFromTopic(String topic) async {
+    await _messaging.unsubscribeFromTopic(topic);
+    debugPrint('Unsubscribed from topic: $topic');
   }
 }

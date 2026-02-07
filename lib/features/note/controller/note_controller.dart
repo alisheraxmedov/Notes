@@ -3,12 +3,11 @@ import 'package:get/get.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:notes/core/const/colors.dart';
 import 'package:notes/data/local/database.dart';
-import 'package:notes/data/services/notification_service.dart';
 
 class NoteController extends GetxController {
-  final AppDatabase _db = AppDatabase(); // Drift Database Instance
+  final AppDatabase _db = Get.find<AppDatabase>();
 
-  RxList<Note> allNotesList = <Note>[].obs; // Use Drift 'Note' class
+  RxList<Note> allNotesList = <Note>[].obs;
   RxBool isLoading = false.obs;
 
   // Date and Time for Note Creation
@@ -129,7 +128,7 @@ class NoteController extends GetxController {
   }
 
   Future<void> updateNotes({
-    required int id, // Drift ID is int
+    required int id,
     required String title,
     required String content,
     required String date,
@@ -268,6 +267,7 @@ class NoteController extends GetxController {
   Future<void> scheduleNotification({
     required String title,
     required String text,
+    int? noteId,
   }) async {
     if (notificationDate.value != "Date" && notificationTime.value != "Time") {
       try {
@@ -279,13 +279,20 @@ class NoteController extends GetxController {
             int.parse(d[2]), int.parse(t[0]), int.parse(t[1]));
 
         if (scheduledDate.isAfter(now)) {
-          int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-          await NotificationService.scheduleNotification(
-            notificationId,
-            title,
-            text,
-            scheduledDate,
-          );
+          // Import cloud_firestore and save reminder to Firestore
+          // This will be picked up by your server to send FCM notification
+          debugPrint('Reminder scheduled for: $scheduledDate');
+          debugPrint('Title: $title, Text: $text');
+
+          // await FirebaseFirestore.instance.collection('reminders').add({
+          //   'fcmToken': NotificationService.fcmToken,
+          //   'title': title,
+          //   'body': text,
+          //   'scheduledTime': scheduledDate.toIso8601String(),
+          //   'noteId': noteId,
+          //   'sent': false,
+          //   'createdAt': FieldValue.serverTimestamp(),
+          // });
         }
       } catch (e) {
         debugPrint("Error scheduling notification: $e");
