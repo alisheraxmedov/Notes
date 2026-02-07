@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:notes/core/const/item_colors.dart';
-import 'package:notes/core/widgets/circle_container.dart';
+import 'package:notes/core/utils/date_formatter.dart';
 import 'package:notes/core/widgets/notes_card.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
@@ -21,13 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController searchController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // Sync search text with controller if needed (bi-directional)
-    // currently just one-way from UI to Controller is enough
-  }
-
-  @override
   void dispose() {
     searchController.dispose();
     super.dispose();
@@ -36,379 +29,170 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: Obx(
-        () {
-          // Use controller's filtered list
-          if (noteController.filteredNotesList.isEmpty) {
-            return Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withAlpha(125),
-                  ],
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.05,
-                  vertical: width * 0.05,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
+      backgroundColor: colorScheme.surfaceDim,
+      body: SafeArea(
+        child: Obx(() {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+            child: Column(
+              children: [
 //===============================================================================
 //=================================== HEADER ====================================
 //===============================================================================
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: width * 0.12,
-                        bottom: width * 0.05,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Premium Title with subtle glow effect
-                          ShaderMask(
-                            shaderCallback: (bounds) => LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.secondary,
-                                Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withAlpha(200),
-                                Theme.of(context).colorScheme.secondary,
-                              ],
-                            ).createShader(bounds),
-                            child: TextWidget(
-                              width: width,
-                              text: "app_title".tr(),
-                              fontSize: width * 0.085,
-                              fontWeight: FontWeight.w700,
-                              textColor: Colors.white,
-                            ),
-                          ),
-                          // Enhanced Settings Button with glow
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondary
-                                      .withAlpha(80),
-                                  blurRadius: 12,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: CircleContainer(
-                              icon: Icons.settings_outlined,
-                              width: width,
-                              color: Theme.of(context).colorScheme.secondary,
-                              onPressed: () {
-                                Get.to(
-                                  const SettingScreen(),
-                                  transition: Transition.circularReveal,
-                                  arguments: ['', '', ''],
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-//===============================================================================
-//================================= SEARCH BAR ==================================
-//===============================================================================
-                    // Premium Search Bar with glassmorphism effect
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .secondary
-                                .withAlpha(60),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: TextField(
-                        controller: searchController,
-                        onChanged: (val) {
-                          noteController.searchQuery.value = val;
-                        },
-                        cursorColor: Theme.of(context).colorScheme.primary,
-                        decoration: InputDecoration(
-                          hintText: "search".tr(),
-                          hintStyle: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withAlpha(150),
-                            fontFamily: "Courier",
-                            fontSize: width * 0.04,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          border: InputBorder.none,
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.only(
-                                left: width * 0.04, right: width * 0.02),
-                            child: Icon(
-                              Icons.search_rounded,
-                              color: Theme.of(context).colorScheme.surfaceDim,
-                              size: width * 0.065,
-                            ),
-                          ),
-                          prefixIconConstraints: BoxConstraints(
-                            minWidth: width * 0.12,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: width * 0.04,
-                            vertical: width * 0.04,
-                          ),
-                        ),
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.surfaceDim,
-                          fontFamily: "Courier",
-                          fontSize: width * 0.04,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-//===============================================================================
-//=============================== EMPTY STATE ===================================
-//===============================================================================
-                    Expanded(
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(height: width * 0.1),
-                              // Decorative emoji - different for each case
-                              Container(
-                                padding: EdgeInsets.all(width * 0.06),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondary
-                                      .withAlpha(20),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: TextWidget(
-                                  width: width,
-                                  text: noteController.allNotesList.isEmpty
-                                      ? "📝"
-                                      : "🔍",
-                                  fontSize: width * 0.15,
-                                ),
-                              ),
-                              SizedBox(height: width * 0.06),
-                              // Main empty text
-                              ShaderMask(
-                                shaderCallback: (bounds) => LinearGradient(
-                                  colors: [
-                                    Theme.of(context).colorScheme.secondary,
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .secondary
-                                        .withAlpha(180),
-                                  ],
-                                ).createShader(bounds),
-                                child: TextWidget(
-                                  width: width,
-                                  text: noteController.allNotesList.isEmpty
-                                      ? "no_notes".tr()
-                                      : "search_no_results".tr(),
-                                  fontSize: width * 0.055,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.5,
-                                  textColor: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: width * 0.03),
-                              // Subtitle hint - different for each case
-                              TextWidget(
-                                width: width,
-                                text: noteController.allNotesList.isEmpty
-                                    ? "no_notes_hint".tr()
-                                    : "search_no_results_hint".tr(),
-                                fontSize: width * 0.035,
-                                fontWeight: FontWeight.w500,
-                                textAlign: TextAlign.center,
-                                textColor: Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withAlpha(150),
-                              ),
-                              SizedBox(height: width * 0.1),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          return Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withAlpha(125),
-                ],
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(width * 0.05),
-              child: Column(
-                children: [
-//===============================================================================
-//=================================== HEADER ====================================
-//===============================================================================
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: width * 0.12,
-                      bottom: width * 0.05,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [
-                              Theme.of(context).colorScheme.secondary,
-                              Theme.of(context)
-                                  .colorScheme
-                                  .secondary
-                                  .withAlpha(200),
-                              Theme.of(context).colorScheme.secondary,
-                            ],
-                          ).createShader(bounds),
-                          child: TextWidget(
-                            width: width,
-                            text: "app_title".tr(),
-                            fontSize: width * 0.085,
-                            fontWeight: FontWeight.w700,
-                            textColor: Colors.white,
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withAlpha(80),
-                                blurRadius: 12,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: CircleContainer(
-                            icon: Icons.settings_outlined,
-                            width: width,
-                            color: Theme.of(context).colorScheme.secondary,
-                            onPressed: () {
-                              Get.to(
-                                const SettingScreen(),
-                                transition: Transition.circularReveal,
-                                arguments: ['', '', ''],
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: width * 0.04,
+                    bottom: width * 0.05,
                   ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // App Title
+                      TextWidget(
+                        width: width,
+                        text: "app_title".tr(),
+                        fontSize: width * 0.075,
+                        fontWeight: FontWeight.w700,
+                        textColor: colorScheme.secondary,
+                      ),
+                      // Settings Button
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            const SettingScreen(),
+                            transition: Transition.cupertino,
+                            arguments: ['', '', ''],
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(width * 0.03),
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondary.withAlpha(15),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(
+                            Icons.settings_outlined,
+                            size: width * 0.06,
+                            color: colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 //===============================================================================
 //================================= SEARCH BAR ==================================
 //===============================================================================
-                  // Premium Search Bar with glassmorphism effect
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .secondary
-                              .withAlpha(60),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: searchController,
-                      onChanged: (val) {
-                        noteController.searchQuery.value = val;
-                      },
-                      cursorColor: Theme.of(context).colorScheme.primary,
-                      decoration: InputDecoration(
-                        hintText: "search".tr(),
-                        hintStyle: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withAlpha(150),
-                          fontFamily: "Courier",
-                          fontSize: width * 0.04,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        border: InputBorder.none,
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.only(
-                              left: width * 0.04, right: width * 0.02),
-                          child: Icon(
-                            Icons.search_rounded,
-                            color: Theme.of(context).colorScheme.surfaceDim,
-                            size: width * 0.065,
-                          ),
-                        ),
-                        prefixIconConstraints: BoxConstraints(
-                          minWidth: width * 0.12,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: width * 0.04,
-                          vertical: width * 0.04,
-                        ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.secondary.withAlpha(10),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
                       ),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surfaceDim,
+                    ],
+                  ),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (val) {
+                      noteController.searchQuery.value = val;
+                    },
+                    cursorColor: colorScheme.secondary,
+                    decoration: InputDecoration(
+                      hintText: "search".tr(),
+                      hintStyle: TextStyle(
+                        color: colorScheme.inversePrimary.withAlpha(100),
                         fontFamily: "Courier",
                         fontSize: width * 0.04,
                         fontWeight: FontWeight.w500,
                       ),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(
+                            left: width * 0.04, right: width * 0.02),
+                        child: Icon(
+                          Icons.search_rounded,
+                          color: colorScheme.secondary.withAlpha(150),
+                          size: width * 0.06,
+                        ),
+                      ),
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: width * 0.12,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: width * 0.04,
+                        vertical: width * 0.04,
+                      ),
+                    ),
+                    style: TextStyle(
+                      color: colorScheme.inversePrimary,
+                      fontFamily: "Courier",
+                      fontSize: width * 0.04,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-
+                ),
+                SizedBox(height: width * 0.04),
 //===============================================================================
 //================================= NOTES LIST ==================================
 //===============================================================================
+                if (noteController.filteredNotesList.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(width * 0.06),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondary.withAlpha(15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              noteController.allNotesList.isEmpty
+                                  ? Icons.note_add_outlined
+                                  : Icons.search_off_rounded,
+                              size: width * 0.15,
+                              color: colorScheme.secondary.withAlpha(100),
+                            ),
+                          ),
+                          SizedBox(height: width * 0.06),
+                          TextWidget(
+                            width: width,
+                            text: noteController.allNotesList.isEmpty
+                                ? "no_notes".tr()
+                                : "search_no_results".tr(),
+                            fontSize: width * 0.045,
+                            fontWeight: FontWeight.w600,
+                            textColor: colorScheme.secondary,
+                          ),
+                          SizedBox(height: width * 0.02),
+                          TextWidget(
+                            width: width,
+                            text: noteController.allNotesList.isEmpty
+                                ? "no_notes_hint".tr()
+                                : "search_no_results_hint".tr(),
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w400,
+                            textAlign: TextAlign.center,
+                            textColor:
+                                colorScheme.inversePrimary.withAlpha(120),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
                   Expanded(
                     child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
                       itemCount: noteController.filteredNotesList.length,
                       itemBuilder: (context, index) {
                         final reversedIndex =
@@ -418,47 +202,55 @@ class _HomeScreenState extends State<HomeScreen> {
                         final realIndex =
                             noteController.allNotesList.indexOf(note);
 
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: width * 0.03),
-                          child: NoteCard(
-                            id: note.id, // Pass Drift ID
-                            index: realIndex,
-                            width: width,
-                            title: note.title,
-                            content: note.content,
-                            editedDate:
-                                "${"edited".tr()}: ${note.date} ${note.time}",
-                            color: ItemsColor.itemsColor[
-                                reversedIndex % ItemsColor.itemsColor.length],
-                            reTime: note.nDate == "Date" || note.nDate == null
-                                ? "${"reminder_time".tr()}: ${"not_specified".tr()}"
-                                : "${"reminder_time".tr()}: ${note.nDate} ${note.nTime}",
-                          ),
+                        return NoteCard(
+                          id: note.id,
+                          index: realIndex,
+                          width: width,
+                          title: note.title,
+                          content: note.content,
+                          editedDate:
+                              "${"edited".tr()}: ${DateFormatter.formatDate(note.date)} ${note.time}",
+                          color: ItemsColor.getColors(context)[reversedIndex %
+                              ItemsColor.getColors(context).length],
+                          reTime: note.nDate == "Date" || note.nDate == null
+                              ? "${"reminder_time".tr()}: ${"not_specified".tr()}"
+                              : "${"reminder_time".tr()}: ${DateFormatter.formatDate(note.nDate)} ${note.nTime}",
                         );
                       },
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
           );
-        },
+        }),
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        onPressed: () {
-          Get.to(
-            const AddNoteScreen(),
-            transition: Transition.circularReveal,
-            arguments: ['', '', ''],
-          )?.then((value) {});
-          noteController.initialDateTime();
-        },
-        child: Icon(
-          Icons.add_rounded,
-          size: width * 0.08,
-          color: Theme.of(context).iconTheme.color,
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.secondary.withAlpha(60),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          shape: const CircleBorder(),
+          elevation: 0,
+          onPressed: () {
+            Get.to(
+              const AddNoteScreen(),
+              transition: Transition.cupertino,
+              arguments: ['', '', ''],
+            )?.then((value) {});
+            noteController.initialDateTime();
+          },
+          child: Icon(
+            Icons.add_rounded,
+            size: width * 0.08,
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

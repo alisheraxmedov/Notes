@@ -174,6 +174,22 @@ class NoteController extends GetxController {
     }
   }
 
+  Future<void> updateNoteReminder(int id, String nDate, String nTime) async {
+    try {
+      final companion = NotesCompanion(
+        nDate: drift.Value(nDate),
+        nTime: drift.Value(nTime),
+        updated: drift.Value(DateTime.now()),
+      );
+
+      await (_db.update(_db.notes)..where((t) => t.id.equals(id)))
+          .write(companion);
+      await fetchNotes();
+    } catch (e) {
+      debugPrint("Error updating reminder: $e");
+    }
+  }
+
   Future<void> deleteNote(int id) async {
     try {
       await (_db.delete(_db.notes)..where((t) => t.id.equals(id))).go();
@@ -212,6 +228,10 @@ class NoteController extends GetxController {
     DateTime dateTime = DateTime.now();
     selectedDate.value = dateTime.day.toString();
 
+    // Reset notification values for new notes
+    notificationDate.value = "Date";
+    notificationTime.value = "Time";
+
     const months = [
       "January",
       "February",
@@ -234,11 +254,15 @@ class NoteController extends GetxController {
   }
 
   void setNotificationDate(DateTime date) {
-    notificationDate.value = "${date.year}-${date.month}-${date.day}";
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    notificationDate.value = "${date.year}-$month-$day";
   }
 
   void setNotificationTime(TimeOfDay time) {
-    notificationTime.value = "${time.hour}:${time.minute}";
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    notificationTime.value = "$hour:$minute";
   }
 
   Future<void> scheduleNotification({

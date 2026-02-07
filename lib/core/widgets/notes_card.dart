@@ -1,12 +1,13 @@
+import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:notes/features/note/view/add_note_view.dart';
-import 'package:notes/core/widgets/circle_container.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
 class NoteCard extends StatelessWidget {
-  final int id; // Drift ID
+  final int id;
   final int index;
   final double width;
   final String title;
@@ -17,9 +18,9 @@ class NoteCard extends StatelessWidget {
 
   const NoteCard({
     super.key,
-    required this.id, // Add id
+    required this.id,
     required this.width,
-    required this.index, // Keep index for color logic if needed, or better logic
+    required this.index,
     required this.title,
     required this.content,
     required this.editedDate,
@@ -27,142 +28,356 @@ class NoteCard extends StatelessWidget {
     this.color,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: color,
-      margin: EdgeInsets.symmetric(
-        vertical: width * 0.02,
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: width * 0.03,
-          vertical: width * 0.02,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 5,
-              child: SizedBox(
-                height: width * 0.44,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-//===============================================================================
-//================================= NOTE TITLE ==================================
-//===============================================================================
-                    Expanded(
-                      flex: 2,
-                      child: TextWidget(
-                        width: width,
-                        text: title,
-                        fontSize: width * 0.07,
-                        fontWeight: FontWeight.bold,
+  String _getPlainTextFromContent(String content) {
+    if (content.isEmpty) return '';
+    try {
+      final json = jsonDecode(content) as List;
+      final buffer = StringBuffer();
+      for (final op in json) {
+        if (op is Map && op['insert'] is String) {
+          buffer.write(op['insert']);
+        }
+      }
+      return buffer.toString().trim();
+    } catch (_) {
+      return content;
+    }
+  }
+
+  void _showReminderDialog(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final NoteController noteController = Get.find();
+    noteController.initialDateTime();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: colorScheme.surface,
+          title: TextWidget(
+            width: width,
+            text: "set_reminder".tr(),
+            fontSize: width * 0.05,
+            fontWeight: FontWeight.w700,
+            textColor: colorScheme.inversePrimary,
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: dialogContext,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2101),
+                  );
+                  if (picked != null) {
+                    noteController.setNotificationDate(picked);
+                  }
+                },
+                child: Obx(
+                  () => Container(
+                    alignment: Alignment.center,
+                    height: width * 0.12,
+                    width: width * 0.3,
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondary.withAlpha(15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colorScheme.secondary.withAlpha(40),
+                        width: 1.5,
                       ),
                     ),
-//===============================================================================
-//================================= NOTE TEXT ===================================
-//===============================================================================
-                    Expanded(
-                      flex: 4,
-                      child: SizedBox(
-                        height: width * 0.21,
-                        width: width * 0.6,
-                        child: Text(
-                          content,
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontFamily: "Courier",
-                                    fontSize: width * 0.035,
-                                  ),
-                        ),
-                      ),
+                    child: TextWidget(
+                      width: width,
+                      text: "${noteController.notificationDate}",
+                      fontSize: width * 0.035,
+                      fontWeight: FontWeight.w600,
+                      textColor: colorScheme.secondary,
                     ),
-                    Divider(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-//===============================================================================
-//================================= NOTED TIME ==================================
-//===============================================================================
-                          TextWidget(
-                            width: width,
-                            text: editedDate,
-                            fontSize: width * 0.025,
-                          ),
-//===============================================================================
-//================================= ALARM TIME ==================================
-//===============================================================================
-                          TextWidget(
-                            width: width,
-                            text: reTime,
-                            fontSize: width * 0.025,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                height: width * 0.44,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-//===============================================================================
-//================================ EDIT BUTTON ==================================
-//===============================================================================
-                    CircleContainer(
-                      icon: Icons.edit,
-                      width: width,
-                      color: Colors.cyan[100]!,
-                      onPressed: () {
-                        final NoteController noteController = Get.find();
-                        Get.to(
-                          const AddNoteScreen(),
-                          arguments: [
-                            id,
-                            title,
-                            content
-                          ], // Pass ID instead of index
-                        );
-                        noteController.initialDateTime();
-                        noteController.updateNoteLength(content);
-                      },
+              SizedBox(width: width * 0.02),
+              GestureDetector(
+                onTap: () async {
+                  final TimeOfDay? picked = await showTimePicker(
+                    context: dialogContext,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (picked != null) {
+                    noteController.setNotificationTime(picked);
+                  }
+                },
+                child: Obx(
+                  () => Container(
+                    alignment: Alignment.center,
+                    height: width * 0.12,
+                    width: width * 0.3,
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondary.withAlpha(15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colorScheme.secondary.withAlpha(40),
+                        width: 1.5,
+                      ),
                     ),
-//===============================================================================
-//============================ NOTIFICATION BUTTON ==============================
-//===============================================================================
-                    CircleContainer(
-                      icon: Icons.alarm,
+                    child: TextWidget(
                       width: width,
-                      color: Colors.cyan[100]!,
-                      onPressed: () {},
+                      text: "${noteController.notificationTime}",
+                      fontSize: width * 0.035,
+                      fontWeight: FontWeight.w600,
+                      textColor: colorScheme.secondary,
                     ),
-//===============================================================================
-//=============================== DELETE BUTTON =================================
-//===============================================================================
-                    CircleContainer(
-                      icon: Icons.delete,
-                      width: width,
-                      color: Colors.cyan[100]!,
-                      onPressed: () {
-                        NoteController noteController = Get.find();
-                        noteController.deleteNote(id); // Use deleteNote(id)
-                      },
-                    ),
-                  ],
+                  ),
                 ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: TextWidget(
+                width: width,
+                text: "close".tr(),
+                fontSize: width * 0.04,
+                fontWeight: FontWeight.w500,
+                textColor: colorScheme.inversePrimary.withAlpha(150),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final selectedDate = noteController.notificationDate.value;
+                final selectedTime = noteController.notificationTime.value;
+
+                if (selectedDate != "Date" && selectedTime != "Time") {
+                  final dateParts =
+                      selectedDate.split('-').map(int.parse).toList();
+                  final timeParts =
+                      selectedTime.split(':').map(int.parse).toList();
+                  final scheduledDateTime = DateTime(
+                    dateParts[0],
+                    dateParts[1],
+                    dateParts[2],
+                    timeParts[0],
+                    timeParts[1],
+                  );
+
+                  if (scheduledDateTime.isAfter(DateTime.now())) {
+                    noteController.updateNoteReminder(
+                      id,
+                      selectedDate,
+                      selectedTime,
+                    );
+                    noteController.scheduleNotification(
+                      title: title,
+                      text: _getPlainTextFromContent(content),
+                    );
+                    Navigator.of(dialogContext).pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("error_time".tr())),
+                    );
+                  }
+                }
+              },
+              child: TextWidget(
+                width: width,
+                text: "ok".tr(),
+                fontSize: width * 0.04,
+                fontWeight: FontWeight.w600,
+                textColor: colorScheme.secondary,
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: width * 0.015),
+      decoration: BoxDecoration(
+        color: color ?? colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.secondary.withAlpha(15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(width * 0.04),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left side - Content
+            Expanded(
+              flex: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+//===============================================================================
+//================================= NOTE TITLE ==================================
+//===============================================================================
+                  TextWidget(
+                    width: width,
+                    text: title,
+                    fontSize: width * 0.055,
+                    fontWeight: FontWeight.w700,
+                    textColor: colorScheme.secondary,
+                  ),
+                  SizedBox(height: width * 0.02),
+//===============================================================================
+//================================= NOTE TEXT ===================================
+//===============================================================================
+                  Text(
+                    _getPlainTextFromContent(content),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontFamily: "Courier",
+                          fontSize: width * 0.035,
+                          height: 1.4,
+                          color: colorScheme.inversePrimary,
+                        ),
+                  ),
+                  SizedBox(height: width * 0.03),
+                  Divider(
+                    color: colorScheme.secondary.withAlpha(30),
+                    thickness: 1,
+                  ),
+                  SizedBox(height: width * 0.02),
+//===============================================================================
+//================================= META INFO ===================================
+//===============================================================================
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time_rounded,
+                        size: width * 0.035,
+                        color: colorScheme.secondary.withAlpha(150),
+                      ),
+                      SizedBox(width: width * 0.015),
+                      Expanded(
+                        child: TextWidget(
+                          width: width,
+                          text: editedDate,
+                          fontSize: width * 0.028,
+                          textColor: colorScheme.inversePrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (reTime.isNotEmpty &&
+                      !reTime.contains("not_specified")) ...[
+                    SizedBox(height: width * 0.015),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.notifications_outlined,
+                          size: width * 0.035,
+                          color: colorScheme.secondary.withAlpha(150),
+                        ),
+                        SizedBox(width: width * 0.015),
+                        Expanded(
+                          child: TextWidget(
+                            width: width,
+                            text: reTime,
+                            fontSize: width * 0.028,
+                            textColor: colorScheme.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            SizedBox(width: width * 0.03),
+            // Right side - Action buttons
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+//===============================================================================
+//================================ EDIT BUTTON ==================================
+//===============================================================================
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.edit_outlined,
+                  color: colorScheme.secondary,
+                  onPressed: () {
+                    final NoteController noteController = Get.find();
+                    Get.to(
+                      const AddNoteScreen(),
+                      arguments: [id, title, content],
+                    );
+                    noteController.initialDateTime();
+                    noteController
+                        .updateNoteLength(_getPlainTextFromContent(content));
+                  },
+                ),
+                SizedBox(height: width * 0.025),
+//===============================================================================
+//============================ NOTIFICATION BUTTON ==============================
+//===============================================================================
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.notifications_outlined,
+                  color: colorScheme.secondary,
+                  onPressed: () => _showReminderDialog(context),
+                ),
+                SizedBox(height: width * 0.025),
+//===============================================================================
+//=============================== DELETE BUTTON =================================
+//===============================================================================
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.delete_outline_rounded,
+                  color: Colors.red.shade400,
+                  onPressed: () {
+                    NoteController noteController = Get.find();
+                    noteController.deleteNote(id);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required BuildContext context,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: EdgeInsets.all(width * 0.025),
+        decoration: BoxDecoration(
+          color: color.withAlpha(20),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          size: width * 0.055,
+          color: color,
         ),
       ),
     );
