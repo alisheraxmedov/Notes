@@ -8,6 +8,7 @@ import 'package:notes/data/local/database.dart';
 import 'package:notes/data/models/user_model.dart';
 import 'package:notes/data/services/google_auth_service.dart';
 import 'package:notes/data/services/google_drive_service.dart';
+import 'package:notes/features/note/controller/note_controller.dart';
 
 /// Controller for managing user authentication state.
 ///
@@ -141,6 +142,10 @@ class AuthController extends GetxController {
       final driveService = GoogleDriveService(Get.find<AppDatabase>());
       driveService.setAuthToken(token);
       await driveService.syncNotes();
+
+      if (Get.isRegistered<NoteController>()) {
+        Get.find<NoteController>().fetchNotes();
+      }
 
       final now = DateTime.now();
       lastSyncTime.value =
