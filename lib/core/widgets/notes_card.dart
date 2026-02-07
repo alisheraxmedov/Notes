@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:notes/features/note/view/add_note_view.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
-class NoteCard extends StatelessWidget {
+class NoteCard extends StatefulWidget {
   final int id;
   final int index;
   final double width;
@@ -28,6 +29,51 @@ class NoteCard extends StatelessWidget {
     this.color,
   });
 
+  @override
+  State<NoteCard> createState() => _NoteCardState();
+}
+
+class _NoteCardState extends State<NoteCard> {
+  late QuillController _quillController;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _quillController = _createQuillController(widget.content);
+  }
+
+  @override
+  void didUpdateWidget(covariant NoteCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.content != widget.content) {
+      _quillController = _createQuillController(widget.content);
+    }
+  }
+
+  QuillController _createQuillController(String content) {
+    if (content.isEmpty) {
+      return QuillController.basic();
+    }
+    try {
+      final json = jsonDecode(content);
+      final doc = Document.fromJson(json);
+      return QuillController(
+        document: doc,
+        selection: const TextSelection.collapsed(offset: 0),
+        readOnly: true,
+      );
+    } catch (_) {
+      // Plain text fallback
+      final doc = Document()..insert(0, content);
+      return QuillController(
+        document: doc,
+        selection: const TextSelection.collapsed(offset: 0),
+        readOnly: true,
+      );
+    }
+  }
+
   String _getPlainTextFromContent(String content) {
     if (content.isEmpty) return '';
     try {
@@ -44,6 +90,13 @@ class NoteCard extends StatelessWidget {
     }
   }
 
+  @override
+  void dispose() {
+    _quillController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   void _showReminderDialog(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final NoteController noteController = Get.find();
@@ -58,9 +111,9 @@ class NoteCard extends StatelessWidget {
           ),
           backgroundColor: colorScheme.surface,
           title: TextWidget(
-            width: width,
+            width: widget.width,
             text: "set_reminder".tr(),
-            fontSize: width * 0.05,
+            fontSize: widget.width * 0.05,
             fontWeight: FontWeight.w700,
             textColor: colorScheme.inversePrimary,
           ),
@@ -82,8 +135,8 @@ class NoteCard extends StatelessWidget {
                 child: Obx(
                   () => Container(
                     alignment: Alignment.center,
-                    height: width * 0.12,
-                    width: width * 0.3,
+                    height: widget.width * 0.12,
+                    width: widget.width * 0.3,
                     decoration: BoxDecoration(
                       color: colorScheme.secondary.withAlpha(15),
                       borderRadius: BorderRadius.circular(12),
@@ -93,16 +146,16 @@ class NoteCard extends StatelessWidget {
                       ),
                     ),
                     child: TextWidget(
-                      width: width,
+                      width: widget.width,
                       text: "${noteController.notificationDate}",
-                      fontSize: width * 0.035,
+                      fontSize: widget.width * 0.035,
                       fontWeight: FontWeight.w600,
                       textColor: colorScheme.secondary,
                     ),
                   ),
                 ),
               ),
-              SizedBox(width: width * 0.02),
+              SizedBox(width: widget.width * 0.02),
               GestureDetector(
                 onTap: () async {
                   final TimeOfDay? picked = await showTimePicker(
@@ -116,8 +169,8 @@ class NoteCard extends StatelessWidget {
                 child: Obx(
                   () => Container(
                     alignment: Alignment.center,
-                    height: width * 0.12,
-                    width: width * 0.3,
+                    height: widget.width * 0.12,
+                    width: widget.width * 0.3,
                     decoration: BoxDecoration(
                       color: colorScheme.secondary.withAlpha(15),
                       borderRadius: BorderRadius.circular(12),
@@ -127,9 +180,9 @@ class NoteCard extends StatelessWidget {
                       ),
                     ),
                     child: TextWidget(
-                      width: width,
+                      width: widget.width,
                       text: "${noteController.notificationTime}",
-                      fontSize: width * 0.035,
+                      fontSize: widget.width * 0.035,
                       fontWeight: FontWeight.w600,
                       textColor: colorScheme.secondary,
                     ),
@@ -142,9 +195,9 @@ class NoteCard extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: TextWidget(
-                width: width,
+                width: widget.width,
                 text: "close".tr(),
-                fontSize: width * 0.04,
+                fontSize: widget.width * 0.04,
                 fontWeight: FontWeight.w500,
                 textColor: colorScheme.inversePrimary.withAlpha(150),
               ),
@@ -169,13 +222,13 @@ class NoteCard extends StatelessWidget {
 
                   if (scheduledDateTime.isAfter(DateTime.now())) {
                     noteController.updateNoteReminder(
-                      id,
+                      widget.id,
                       selectedDate,
                       selectedTime,
                     );
                     noteController.scheduleNotification(
-                      title: title,
-                      text: _getPlainTextFromContent(content),
+                      title: widget.title,
+                      text: _getPlainTextFromContent(widget.content),
                     );
                     Navigator.of(dialogContext).pop();
                   } else {
@@ -186,9 +239,9 @@ class NoteCard extends StatelessWidget {
                 }
               },
               child: TextWidget(
-                width: width,
+                width: widget.width,
                 text: "ok".tr(),
-                fontSize: width * 0.04,
+                fontSize: widget.width * 0.04,
                 fontWeight: FontWeight.w600,
                 textColor: colorScheme.secondary,
               ),
@@ -204,9 +257,9 @@ class NoteCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: width * 0.015),
+      margin: EdgeInsets.symmetric(vertical: widget.width * 0.015),
       decoration: BoxDecoration(
-        color: color ?? colorScheme.surface,
+        color: widget.color ?? colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -218,7 +271,7 @@ class NoteCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(width * 0.04),
+        padding: EdgeInsets.all(widget.width * 0.04),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -233,33 +286,59 @@ class NoteCard extends StatelessWidget {
 //================================= NOTE TITLE ==================================
 //===============================================================================
                   TextWidget(
-                    width: width,
-                    text: title,
-                    fontSize: width * 0.055,
+                    width: widget.width,
+                    text: widget.title,
+                    fontSize: widget.width * 0.055,
                     fontWeight: FontWeight.w700,
                     textColor: colorScheme.secondary,
                   ),
-                  SizedBox(height: width * 0.02),
+                  SizedBox(height: widget.width * 0.02),
 //===============================================================================
 //================================= NOTE TEXT ===================================
 //===============================================================================
-                  Text(
-                    _getPlainTextFromContent(content),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontFamily: "Courier",
-                          fontSize: width * 0.035,
-                          height: 1.4,
-                          color: colorScheme.inversePrimary,
+                  SizedBox(
+                    height: widget.width *
+                        0.035 *
+                        1.4 *
+                        3, // Approx 3 lines: fontSize * height * lines
+                    child: ClipRect(
+                      child: QuillEditor(
+                        controller: _quillController,
+                        focusNode: _focusNode,
+                        scrollController: ScrollController(),
+                        config: QuillEditorConfig(
+                          autoFocus: false,
+                          expands: false,
+                          padding: EdgeInsets.zero,
+                          scrollable: false,
+                          enableInteractiveSelection: false,
+                          enableSelectionToolbar: false,
+                          showCursor: false,
+                          customStyles: DefaultStyles(
+                            paragraph: DefaultTextBlockStyle(
+                              TextStyle(
+                                fontFamily: "Courier",
+                                color: colorScheme.inversePrimary,
+                                fontSize: widget.width * 0.035,
+                                height: 1.4,
+                              ),
+                              HorizontalSpacing.zero,
+                              VerticalSpacing.zero,
+                              VerticalSpacing.zero,
+                              null,
+                            ),
+                          ),
                         ),
+                      ),
+                    ),
                   ),
-                  SizedBox(height: width * 0.03),
+
+                  SizedBox(height: widget.width * 0.03),
                   Divider(
                     color: colorScheme.secondary.withAlpha(30),
                     thickness: 1,
                   ),
-                  SizedBox(height: width * 0.02),
+                  SizedBox(height: widget.width * 0.02),
 //===============================================================================
 //================================= META INFO ===================================
 //===============================================================================
@@ -267,36 +346,36 @@ class NoteCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.access_time_rounded,
-                        size: width * 0.035,
+                        size: widget.width * 0.035,
                         color: colorScheme.secondary.withAlpha(150),
                       ),
-                      SizedBox(width: width * 0.015),
+                      SizedBox(width: widget.width * 0.015),
                       Expanded(
                         child: TextWidget(
-                          width: width,
-                          text: editedDate,
-                          fontSize: width * 0.028,
+                          width: widget.width,
+                          text: widget.editedDate,
+                          fontSize: widget.width * 0.028,
                           textColor: colorScheme.inversePrimary,
                         ),
                       ),
                     ],
                   ),
-                  if (reTime.isNotEmpty &&
-                      !reTime.contains("not_specified")) ...[
-                    SizedBox(height: width * 0.015),
+                  if (widget.reTime.isNotEmpty &&
+                      !widget.reTime.contains("not_specified")) ...[
+                    SizedBox(height: widget.width * 0.015),
                     Row(
                       children: [
                         Icon(
                           Icons.notifications_outlined,
-                          size: width * 0.035,
+                          size: widget.width * 0.035,
                           color: colorScheme.secondary.withAlpha(150),
                         ),
-                        SizedBox(width: width * 0.015),
+                        SizedBox(width: widget.width * 0.015),
                         Expanded(
                           child: TextWidget(
-                            width: width,
-                            text: reTime,
-                            fontSize: width * 0.028,
+                            width: widget.width,
+                            text: widget.reTime,
+                            fontSize: widget.width * 0.028,
                             textColor: colorScheme.secondary,
                           ),
                         ),
@@ -306,7 +385,7 @@ class NoteCard extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(width: width * 0.03),
+            SizedBox(width: widget.width * 0.03),
             // Right side - Action buttons
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -322,14 +401,14 @@ class NoteCard extends StatelessWidget {
                     final NoteController noteController = Get.find();
                     Get.to(
                       const AddNoteScreen(),
-                      arguments: [id, title, content],
+                      arguments: [widget.id, widget.title, widget.content],
                     );
                     noteController.initialDateTime();
-                    noteController
-                        .updateNoteLength(_getPlainTextFromContent(content));
+                    noteController.updateNoteLength(
+                        _getPlainTextFromContent(widget.content));
                   },
                 ),
-                SizedBox(height: width * 0.025),
+                SizedBox(height: widget.width * 0.025),
 //===============================================================================
 //============================ NOTIFICATION BUTTON ==============================
 //===============================================================================
@@ -339,7 +418,7 @@ class NoteCard extends StatelessWidget {
                   color: colorScheme.secondary,
                   onPressed: () => _showReminderDialog(context),
                 ),
-                SizedBox(height: width * 0.025),
+                SizedBox(height: widget.width * 0.025),
 //===============================================================================
 //=============================== DELETE BUTTON =================================
 //===============================================================================
@@ -349,7 +428,7 @@ class NoteCard extends StatelessWidget {
                   color: Colors.red.shade400,
                   onPressed: () {
                     NoteController noteController = Get.find();
-                    noteController.deleteNote(id);
+                    noteController.deleteNote(widget.id);
                   },
                 ),
               ],
@@ -369,14 +448,14 @@ class NoteCard extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: EdgeInsets.all(width * 0.025),
+        padding: EdgeInsets.all(widget.width * 0.025),
         decoration: BoxDecoration(
           color: color.withAlpha(20),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           icon,
-          size: width * 0.055,
+          size: widget.width * 0.055,
           color: color,
         ),
       ),
