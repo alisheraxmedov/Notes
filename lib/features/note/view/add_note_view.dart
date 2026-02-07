@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:notes/core/const/colors.dart';
 import 'package:notes/core/widgets/notification_dialog.dart';
+import 'package:notes/core/widgets/text_formatting_toolbar.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
@@ -17,31 +19,80 @@ class AddNoteScreen extends StatefulWidget {
 
 class AddNoteScreenState extends State<AddNoteScreen> {
   late TextEditingController _titleController;
-  late TextEditingController _contentController;
+  late QuillController _quillController;
+  final FocusNode _editorFocusNode = FocusNode();
+  bool _isKeyboardVisible = false;
 
   @override
   void initState() {
     super.initState();
+    _editorFocusNode.addListener(_onFocusChange);
 
     if (Get.arguments != null && Get.arguments.length >= 3) {
       if (Get.arguments[0] is int) {
         _titleController = TextEditingController(text: Get.arguments[1] ?? '');
-        _contentController =
-            TextEditingController(text: Get.arguments[2] ?? '');
+        // Try to load existing content as Delta JSON, fallback to plain text
+        final content = Get.arguments[2] ?? '';
+        _quillController = _createQuillController(content);
       } else {
         _titleController = TextEditingController();
-        _contentController = TextEditingController();
+        _quillController = QuillController.basic();
       }
     } else {
       _titleController = TextEditingController();
-      _contentController = TextEditingController();
+      _quillController = QuillController.basic();
     }
+
+    _quillController.addListener(_onContentChanged);
+  }
+
+  QuillController _createQuillController(String content) {
+    if (content.isEmpty) {
+      return QuillController.basic();
+    }
+    try {
+      final json = jsonDecode(content);
+      final doc = Document.fromJson(json);
+      return QuillController(
+        document: doc,
+        selection: const TextSelection.collapsed(offset: 0),
+      );
+    } catch (_) {
+      // Plain text fallback
+      final doc = Document()..insert(0, content);
+      return QuillController(
+        document: doc,
+        selection: const TextSelection.collapsed(offset: 0),
+      );
+    }
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isKeyboardVisible = _editorFocusNode.hasFocus;
+    });
+  }
+
+  void _onContentChanged() {
+    final NoteController noteController = Get.find();
+    noteController.updateNoteLength(_quillController.document.toPlainText());
+  }
+
+  String _getContentAsJson() {
+    return jsonEncode(_quillController.document.toDelta().toJson());
+  }
+
+  String _getPlainText() {
+    return _quillController.document.toPlainText();
   }
 
   @override
   void dispose() {
+    _editorFocusNode.removeListener(_onFocusChange);
+    _editorFocusNode.dispose();
     _titleController.dispose();
-    _contentController.dispose();
+    _quillController.removeListener(_onContentChanged);
+    _quillController.dispose();
     super.dispose();
   }
 
@@ -49,346 +100,293 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
     final NoteController noteController = Get.find();
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: colorScheme.surfaceDim,
       appBar: AppBar(
+        backgroundColor: colorScheme.surfaceDim,
         toolbarHeight: width * 0.16,
         centerTitle: true,
         elevation: 0,
         leading: Padding(
-          padding: EdgeInsets.only(left: width * 0.02),
-          child: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Container(
-              padding: EdgeInsets.all(width * 0.02),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.secondary.withAlpha(30),
-              ),
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Theme.of(context).colorScheme.inversePrimary,
-                size: width * 0.05,
+          padding: EdgeInsets.only(left: width * 0.03),
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.all(width * 0.025),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondary.withAlpha(15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: colorScheme.secondary,
+                  size: width * 0.05,
+                ),
               ),
             ),
           ),
         ),
-        title: ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.inversePrimary,
-              Theme.of(context).colorScheme.inversePrimary.withAlpha(180),
-              Theme.of(context).colorScheme.inversePrimary,
-            ],
-          ).createShader(bounds),
-          child: TextWidget(
-            width: width,
-            text: "add_note".tr(),
-            fontSize: width * 0.065,
-            textColor: ColorClass.white,
-            fontWeight: FontWeight.w700,
-          ),
+        title: TextWidget(
+          width: width,
+          text: "add_note".tr(),
+          fontSize: width * 0.055,
+          textColor: colorScheme.secondary,
+          fontWeight: FontWeight.w700,
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: width * 0.02),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        Theme.of(context).colorScheme.secondary.withAlpha(40),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: NotificationDialog(
-                width: width,
-                noteController: noteController,
-                title: _titleController.text,
-                text: _contentController.text,
-              ),
+            padding: EdgeInsets.only(right: width * 0.03),
+            child: NotificationDialog(
+              width: width,
+              noteController: noteController,
+              title: _titleController.text,
+              text: _getPlainText(),
             ),
           ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.primary.withAlpha(200),
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: width * 0.04),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: width * 0.04),
 //===============================================================================
 //================================ TITLE FIELD ==================================
 //===============================================================================
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorClass.black.withAlpha(10),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+            Container(
+              decoration: const BoxDecoration(),
+              child: TextField(
+                cursorColor: colorScheme.secondary,
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: "title".tr(),
+                  labelStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontFamily: "Courier",
+                        fontSize: width * 0.04,
+                        color: colorScheme.inversePrimary.withAlpha(100),
+                      ),
+                  floatingLabelStyle: TextStyle(
+                    fontFamily: "Courier",
+                    fontSize: width * 0.035,
+                    color: colorScheme.secondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: width * 0.04,
+                    vertical: width * 0.04,
+                  ),
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.only(
+                        left: width * 0.04, right: width * 0.02),
+                    child: Icon(
+                      Icons.title_rounded,
+                      color: colorScheme.secondary.withAlpha(150),
+                      size: width * 0.055,
                     ),
-                  ],
+                  ),
+                  prefixIconConstraints: BoxConstraints(minWidth: width * 0.12),
                 ),
-                child: TextField(
-                  cursorColor: Theme.of(context).colorScheme.secondary,
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: "title".tr(),
-                    labelStyle:
-                        Theme.of(context).textTheme.titleSmall!.copyWith(
-                              fontFamily: "Courier",
-                              fontSize: width * 0.04,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondary
-                                  .withAlpha(150),
-                            ),
-                    floatingLabelStyle: TextStyle(
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       fontFamily: "Courier",
-                      fontSize: width * 0.035,
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: colorScheme.inversePrimary,
+                      fontSize: width * 0.045,
                       fontWeight: FontWeight.w600,
                     ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: width * 0.04,
-                      vertical: width * 0.04,
-                    ),
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.only(
-                          left: width * 0.03, right: width * 0.02),
-                      child: Icon(
-                        Icons.title_rounded,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withAlpha(180),
-                        size: width * 0.055,
-                      ),
-                    ),
-                    prefixIconConstraints:
-                        BoxConstraints(minWidth: width * 0.12),
-                  ),
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontFamily: "Courier",
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
               ),
-              SizedBox(height: width * 0.04),
+            ),
+            SizedBox(height: width * 0.04),
 //===============================================================================
 //=============================== DATE & CHARS BADGE ============================
 //===============================================================================
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.04,
-                  vertical: width * 0.025,
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.04,
+                vertical: width * 0.025,
+              ),
+              decoration: BoxDecoration(
+                color: colorScheme.secondary.withAlpha(15),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    size: width * 0.035,
+                    color: colorScheme.secondary,
+                  ),
+                  SizedBox(width: width * 0.02),
+                  TextWidget(
+                    width: width,
+                    text:
+                        "${noteController.selectedMonth} ${noteController.selectedDate}",
+                    fontSize: width * 0.03,
+                    fontWeight: FontWeight.w600,
+                    textColor: colorScheme.secondary,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: width * 0.025),
+                    height: width * 0.04,
+                    width: 1.5,
+                    color: colorScheme.secondary.withAlpha(50),
+                  ),
+                  Icon(
+                    Icons.text_fields_rounded,
+                    size: width * 0.035,
+                    color: colorScheme.secondary,
+                  ),
+                  SizedBox(width: width * 0.015),
+                  Obx(
+                    () => TextWidget(
+                      width: width,
+                      text: "${noteController.noteLength} ${"chars".tr()}",
+                      fontSize: width * 0.03,
+                      fontWeight: FontWeight.w600,
+                      textColor: colorScheme.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: width * 0.04),
+//===============================================================================
+//=============================== CONTENT FIELD =================================
+//===============================================================================
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(width * 0.04),
+                decoration: const BoxDecoration(),
+                child: QuillEditor(
+                  controller: _quillController,
+                  focusNode: _editorFocusNode,
+                  scrollController: ScrollController(),
+                  config: QuillEditorConfig(
+                    placeholder: "write".tr(),
+                    padding: EdgeInsets.zero,
+                    customStyles: DefaultStyles(
+                      paragraph: DefaultTextBlockStyle(
+                        TextStyle(
+                          fontFamily: "Courier",
+                          color: colorScheme.inversePrimary,
+                          fontSize: width * 0.04,
+                          height: 1.5,
+                        ),
+                        HorizontalSpacing.zero,
+                        VerticalSpacing.zero,
+                        VerticalSpacing.zero,
+                        null,
+                      ),
+                      placeHolder: DefaultTextBlockStyle(
+                        TextStyle(
+                          fontFamily: "Courier",
+                          color: colorScheme.inversePrimary.withAlpha(80),
+                          fontSize: width * 0.04,
+                        ),
+                        HorizontalSpacing.zero,
+                        VerticalSpacing.zero,
+                        VerticalSpacing.zero,
+                        null,
+                      ),
+                    ),
+                  ),
                 ),
+              ),
+            ),
+            SizedBox(height: width * 0.02),
+//===============================================================================
+//============================= FORMATTING TOOLBAR ==============================
+//===============================================================================
+            if (_isKeyboardVisible)
+              RichTextFormattingToolbar(
+                controller: _quillController,
+                width: width,
+                colorScheme: colorScheme,
+              ),
+            SizedBox(height: width * 0.03),
+//===============================================================================
+//================================ SAVE BUTTON ==================================
+//===============================================================================
+            GestureDetector(
+              onTap: () async {
+                DateTime dateTime = DateTime.now();
+
+                if (Get.arguments != null &&
+                    Get.arguments.length >= 3 &&
+                    Get.arguments[0] is int) {
+                  final int id = Get.arguments[0];
+                  await noteController.updateNotes(
+                    id: id,
+                    title: _titleController.text,
+                    content: _getContentAsJson(),
+                    date:
+                        "${dateTime.day.toString().padLeft(2, '0')}:${dateTime.month.toString().padLeft(2, '0')}:${dateTime.year}",
+                    time:
+                        "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}",
+                    nDate: noteController.notificationDate.value,
+                    nTime: noteController.notificationTime.value,
+                    today:
+                        "${noteController.selectedMonth} ${noteController.selectedDate}",
+                  );
+                } else {
+                  await noteController.addNotes(
+                    title: _titleController.text,
+                    content: _getContentAsJson(),
+                    date:
+                        "${dateTime.day.toString().padLeft(2, '0')}:${dateTime.month.toString().padLeft(2, '0')}:${dateTime.year}",
+                    time:
+                        "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}",
+                    nDate: noteController.notificationDate.value,
+                    nTime: noteController.notificationTime.value,
+                    today:
+                        "${noteController.selectedMonth} ${noteController.selectedDate}",
+                  );
+                }
+
+                Navigator.of(context).pop();
+                noteController.updateNoteLength('');
+              },
+              child: Container(
+                height: width * 0.14,
+                width: width,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(25),
+                  color: colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          Theme.of(context).colorScheme.secondary.withAlpha(60),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      color: colorScheme.secondary.withAlpha(50),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.calendar_today_rounded,
-                      size: width * 0.035,
-                      color: Theme.of(context).colorScheme.primary,
+                      Icons.save_rounded,
+                      color: colorScheme.onSecondary,
+                      size: width * 0.06,
                     ),
-                    SizedBox(width: width * 0.02),
+                    SizedBox(width: width * 0.03),
                     TextWidget(
                       width: width,
-                      text:
-                          "${noteController.selectedMonth} ${noteController.selectedDate}",
-                      fontSize: width * 0.03,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: width * 0.025),
-                      height: width * 0.04,
-                      width: 1.5,
-                      color:
-                          Theme.of(context).colorScheme.primary.withAlpha(100),
-                    ),
-                    Icon(
-                      Icons.text_fields_rounded,
-                      size: width * 0.035,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    SizedBox(width: width * 0.015),
-                    Obx(
-                      () => TextWidget(
-                        width: width,
-                        text: "${noteController.noteLength} ${"chars".tr()}",
-                        fontSize: width * 0.03,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      text: "save".tr(),
+                      fontSize: width * 0.05,
+                      fontWeight: FontWeight.w700,
+                      textColor: colorScheme.onSecondary,
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: width * 0.05),
-//===============================================================================
-//=============================== CONTENT FIELD =================================
-//===============================================================================
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ColorClass.black.withAlpha(10),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    cursorColor: Theme.of(context).colorScheme.secondary,
-                    controller: _contentController,
-                    onChanged: (value) {
-                      noteController.updateNoteLength(value.toString());
-                    },
-                    decoration: InputDecoration(
-                      hintText: "write".tr(),
-                      hintStyle:
-                          Theme.of(context).textTheme.titleSmall!.copyWith(
-                                fontFamily: "Courier",
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withAlpha(120),
-                                fontSize: width * 0.04,
-                              ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(width * 0.04),
-                    ),
-                    maxLines: null,
-                    expands: true,
-                    textAlignVertical: TextAlignVertical.top,
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontFamily: "Courier",
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: width * 0.04,
-                          height: 1.5,
-                        ),
-                  ),
-                ),
-              ),
-              SizedBox(height: width * 0.05),
-//===============================================================================
-//================================ SAVE BUTTON ==================================
-//===============================================================================
-              GestureDetector(
-                onTap: () async {
-                  DateTime dateTime = DateTime.now();
-
-                  // Check if we are updating or creating
-                  if (Get.arguments != null &&
-                      Get.arguments.length >= 3 &&
-                      Get.arguments[0] is int) {
-                    // Update
-                    final int id = Get.arguments[0];
-                    await noteController.updateNotes(
-                      id: id,
-                      title: _titleController.text,
-                      content: _contentController.text,
-                      date:
-                          "${dateTime.day}:${dateTime.month}:${dateTime.year}",
-                      time: "${dateTime.hour}:${dateTime.minute}",
-                      nDate: noteController.notificationDate.value,
-                      nTime: noteController.notificationTime.value,
-                      today:
-                          "${noteController.selectedMonth} ${noteController.selectedDate}",
-                    );
-                  } else {
-                    // Create
-                    await noteController.addNotes(
-                      title: _titleController.text,
-                      content: _contentController.text,
-                      date:
-                          "${dateTime.day}:${dateTime.month}:${dateTime.year}",
-                      time: "${dateTime.hour}:${dateTime.minute}",
-                      nDate: noteController.notificationDate.value,
-                      nTime: noteController.notificationTime.value,
-                      today:
-                          "${noteController.selectedMonth} ${noteController.selectedDate}",
-                    );
-                  }
-
-                  Navigator.of(context).pop();
-                  noteController.updateNoteLength('');
-                },
-                child: Container(
-                  height: width * 0.14,
-                  width: width,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withAlpha(100),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.save_rounded,
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        size: width * 0.06,
-                      ),
-                      SizedBox(width: width * 0.03),
-                      TextWidget(
-                        width: width,
-                        text: "save".tr(),
-                        fontSize: width * 0.055,
-                        fontWeight: FontWeight.w700,
-                        textColor: Theme.of(context).scaffoldBackgroundColor,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: width * 0.08),
-            ],
-          ),
+            ),
+            SizedBox(height: width * 0.08),
+          ],
         ),
       ),
     );
