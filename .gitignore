@@ -64,6 +64,7 @@ lib/firebase_options.dart
 # Platform Configs
 android/local.properties
 ios/Flutter/Generated.xcconfig
+ios/Flutter/Config.xcconfig
 macos/Flutter/Generated.xcconfig
 *.env
 .env*

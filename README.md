@@ -16,6 +16,16 @@ A partially feature-rich Flutter application for managing personal notes with ro
 
 **IMPORTANT:** This project relies on sensitive API keys and configuration files that are **NOT** included in the repository for security reasons. You **MUST** generate them yourself to run the app.
 
+### 🚫 Ignored Files (Missing after clone)
+The following files are added to `.gitignore` and will **NOT** be present when you clone the repo. You must recreate them:
+*   `android/app/google-services.json` (Firebase Config for Android)
+*   `ios/Runner/GoogleService-Info.plist` (Firebase Config for iOS)
+*   `macos/Runner/GoogleService-Info.plist` (Firebase Config for macOS)
+*   `lib/firebase_options.dart` (Firebase Options for Flutter)
+*   `lib/core/config/app_secrets.dart` (Google Client ID & Scopes)
+*   `android/key.properties` (Keystore credentials for Release build)
+*   `ios/Flutter/Config.xcconfig` (Google Sign-In URL Scheme for iOS)
+
 ### 📋 Prerequisites
 
 *   Flutter SDK (Latest Stable)
@@ -49,6 +59,22 @@ class AppSecrets {
 ```
 
 > **Note:** We also ignore `lib/firebase_options.dart` to prevent your specific Firebase configuration from leaking. You will generate this in the next step.
+
+---
+
+### Phase 1.5: 🍎 iOS Configuration (Config.xcconfig)
+
+For Google Sign-In to work on iOS, we need to set the `REVERSED_CLIENT_ID` in a way that doesn't expose it in `Info.plist`.
+
+1.  Navigate to `ios/Flutter/`.
+2.  Create a new file named `Config.xcconfig`.
+3.  Add the following line (replace with your actual REVERSED_CLIENT_ID from GoogleService-Info.plist):
+
+```xcconfig
+// File: ios/Flutter/Config.xcconfig
+GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.YOUR_ID_HERE
+```
+> **Tip:** You can find this ID in `ios/Runner/GoogleService-Info.plist` under the key `REVERSED_CLIENT_ID`.
 
 ---
 
