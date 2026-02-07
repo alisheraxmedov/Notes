@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:notes/core/const/colors.dart';
 import 'package:notes/core/widgets/selectable_text.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/settings/controller/settings_controller.dart';
@@ -32,42 +31,45 @@ class _SettingScreenState extends State<SettingScreen> {
 //===============================================================================
 //================================ BACK BUTTON ==================================
 //===============================================================================
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: width * 0.02),
-                  child: IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Container(
-                      padding: EdgeInsets.all(width * 0.02),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.03,
+                vertical: width * 0.02,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      padding: EdgeInsets.all(width * 0.025),
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colorScheme.secondary.withAlpha(30),
+                        color: colorScheme.secondary.withAlpha(15),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         Icons.arrow_back_ios_new_rounded,
-                        color: colorScheme.inversePrimary,
+                        color: colorScheme.secondary,
                         size: width * 0.05,
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 //===============================================================================
 //=============================== PROFILE SECTION ===============================
 //===============================================================================
             SizedBox(height: width * 0.02),
-            // Profile Image - Dynamic based on auth state
+            // Profile Image
             Obx(() => Container(
-                  width: width * 0.28,
-                  height: width * 0.28,
+                  width: width * 0.26,
+                  height: width * 0.26,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: colorScheme.secondary.withAlpha(30),
+                    color: colorScheme.secondary.withAlpha(15),
                     border: Border.all(
-                      color: colorScheme.secondary.withAlpha(80),
+                      color: colorScheme.secondary.withAlpha(40),
                       width: 3,
                     ),
                   ),
@@ -78,50 +80,46 @@ class _SettingScreenState extends State<SettingScreen> {
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Icon(
                               Icons.person_rounded,
-                              size: width * 0.15,
-                              color: colorScheme.secondary.withAlpha(150),
+                              size: width * 0.12,
+                              color: colorScheme.secondary.withAlpha(100),
                             ),
                           )
                         : Icon(
                             Icons.person_rounded,
-                            size: width * 0.15,
-                            color: colorScheme.secondary.withAlpha(150),
+                            size: width * 0.12,
+                            color: colorScheme.secondary.withAlpha(100),
                           ),
                   ),
                 )),
-            SizedBox(height: width * 0.05),
-            // User Name - Dynamic
+            SizedBox(height: width * 0.04),
+            // User Name
             Obx(() => TextWidget(
                   width: width,
                   text: authController.displayName,
-                  fontSize: width * 0.06,
+                  fontSize: width * 0.055,
                   fontWeight: FontWeight.w700,
                   textColor: colorScheme.secondary,
                 )),
-            SizedBox(height: width * 0.04),
-            // Email Badge - Dynamic
+            SizedBox(height: width * 0.03),
+            // Email Badge
             Obx(() => Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.06,
-                    vertical: width * 0.025,
+                    horizontal: width * 0.05,
+                    vertical: width * 0.02,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.secondary.withAlpha(25),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: colorScheme.secondary.withAlpha(60),
-                      width: 1.5,
-                    ),
+                    color: colorScheme.secondary.withAlpha(15),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: SelectableTextWidget(
                     width: width,
                     text: authController.email,
-                    fontSize: width * 0.035,
-                    fontWeight: FontWeight.w600,
+                    fontSize: width * 0.032,
+                    fontWeight: FontWeight.w500,
                     textColor: colorScheme.secondary,
                   ),
                 )),
-            SizedBox(height: width * 0.08),
+            SizedBox(height: width * 0.06),
 //===============================================================================
 //=============================== SETTINGS LIST =================================
 //===============================================================================
@@ -129,22 +127,23 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: colorScheme.onSurfaceVariant,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(width * 0.08),
                     topRight: Radius.circular(width * 0.08),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: colorScheme.onSurface.withAlpha(15),
+                      color: colorScheme.secondary.withAlpha(10),
                       blurRadius: 20,
-                      offset: const Offset(0, -5),
+                      offset: const Offset(0, -4),
                     ),
                   ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(width * 0.05),
                   child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
                         SizedBox(height: width * 0.03),
@@ -170,7 +169,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           width: width,
                           colorScheme: colorScheme,
                         ),
-                        // Logout - only show when logged in
+                        // Logout
                         Obx(() => authController.isLoggedIn
                             ? Column(
                                 children: [
@@ -180,8 +179,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                     width: width,
                                     icon: Icons.logout_rounded,
                                     title: "logout".tr(),
-                                    iconColor: ColorClass.red,
-                                    textColor: ColorClass.red,
+                                    iconColor: Colors.red.shade400,
+                                    textColor: Colors.red.shade400,
                                     onTap: () => _showLogoutDialog(context),
                                   ),
                                 ],
@@ -199,10 +198,6 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  //================================================================================
-  //=============================== SETTINGS ITEMS =================================
-  //================================================================================
-
   Widget _buildSettingsItem({
     required BuildContext context,
     required double width,
@@ -213,18 +208,18 @@ class _SettingScreenState extends State<SettingScreen> {
     Color? textColor,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: width * 0.04),
+        padding: EdgeInsets.symmetric(vertical: width * 0.035),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(width * 0.025),
               decoration: BoxDecoration(
-                color: (iconColor ?? colorScheme.secondary).withAlpha(20),
-                borderRadius: BorderRadius.circular(10),
+                color: (iconColor ?? colorScheme.secondary).withAlpha(15),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
@@ -239,13 +234,13 @@ class _SettingScreenState extends State<SettingScreen> {
                 text: title,
                 fontSize: width * 0.04,
                 fontWeight: FontWeight.w500,
-                textColor: textColor ?? colorScheme.onSurface,
+                textColor: textColor ?? colorScheme.inversePrimary,
               ),
             ),
             Icon(
               Icons.chevron_right_rounded,
               size: width * 0.06,
-              color: colorScheme.secondary,
+              color: colorScheme.secondary.withAlpha(100),
             ),
           ],
         ),
@@ -253,24 +248,20 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  //================================================================================
-  //=============================== THEME ITEM =====================================
-  //================================================================================
-
   Widget _buildThemeItem({
     required BuildContext context,
     required double width,
     required ColorScheme colorScheme,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: width * 0.04),
+      padding: EdgeInsets.symmetric(vertical: width * 0.035),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.all(width * 0.025),
             decoration: BoxDecoration(
-              color: colorScheme.secondary.withAlpha(20),
-              borderRadius: BorderRadius.circular(10),
+              color: colorScheme.secondary.withAlpha(15),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.palette_outlined,
@@ -285,7 +276,7 @@ class _SettingScreenState extends State<SettingScreen> {
               text: "theme".tr(),
               fontSize: width * 0.04,
               fontWeight: FontWeight.w500,
-              textColor: colorScheme.onSurface,
+              textColor: colorScheme.inversePrimary,
             ),
           ),
           Obx(
@@ -295,9 +286,9 @@ class _SettingScreenState extends State<SettingScreen> {
                 settingsController.changeTheme(value);
               },
               activeThumbColor: colorScheme.secondary,
-              activeTrackColor: colorScheme.secondary.withAlpha(80),
-              inactiveThumbColor: colorScheme.secondary.withAlpha(150),
-              inactiveTrackColor: colorScheme.secondary.withAlpha(40),
+              activeTrackColor: colorScheme.secondary.withAlpha(60),
+              inactiveThumbColor: colorScheme.secondary.withAlpha(120),
+              inactiveTrackColor: colorScheme.secondary.withAlpha(30),
             ),
           ),
         ],
@@ -305,24 +296,20 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  //================================================================================
-  //=============================== LANGUAGE ITEM ==================================
-  //================================================================================
-
   Widget _buildLanguageItem({
     required BuildContext context,
     required double width,
     required ColorScheme colorScheme,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: width * 0.04),
+      padding: EdgeInsets.symmetric(vertical: width * 0.035),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.all(width * 0.025),
             decoration: BoxDecoration(
-              color: colorScheme.secondary.withAlpha(20),
-              borderRadius: BorderRadius.circular(10),
+              color: colorScheme.secondary.withAlpha(15),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.language_rounded,
@@ -337,7 +324,7 @@ class _SettingScreenState extends State<SettingScreen> {
               text: "language".tr(),
               fontSize: width * 0.04,
               fontWeight: FontWeight.w500,
-              textColor: colorScheme.onSurface,
+              textColor: colorScheme.inversePrimary,
             ),
           ),
           Container(
@@ -347,12 +334,12 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             decoration: BoxDecoration(
               color: colorScheme.secondary.withAlpha(15),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<Locale>(
                 dropdownColor: colorScheme.surface,
-                elevation: 4,
+                elevation: 2,
                 value: context.locale,
                 icon: Icon(
                   Icons.keyboard_arrow_down_rounded,
@@ -397,16 +384,11 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _buildDivider(ColorScheme colorScheme) {
     return Divider(
-      color: colorScheme.onSurface.withAlpha(20),
+      color: colorScheme.secondary.withAlpha(15),
       thickness: 1,
     );
   }
 
-  //================================================================================
-  //=============================== LOGOUT DIALOG ==================================
-  //================================================================================
-
-  /// Shows logout confirmation dialog.
   void _showLogoutDialog(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final width = MediaQuery.sizeOf(context).width;
@@ -415,21 +397,21 @@ class _SettingScreenState extends State<SettingScreen> {
       AlertDialog(
         backgroundColor: colorScheme.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         title: TextWidget(
           width: width,
           text: "logout".tr(),
           fontSize: width * 0.05,
           fontWeight: FontWeight.w700,
-          textColor: colorScheme.onSurface,
+          textColor: colorScheme.inversePrimary,
         ),
         content: TextWidget(
           width: width,
           text: "logout_confirm".tr(),
           fontSize: width * 0.038,
           fontWeight: FontWeight.w400,
-          textColor: colorScheme.onSurface.withAlpha(180),
+          textColor: colorScheme.inversePrimary.withAlpha(150),
         ),
         actions: [
           TextButton(
@@ -439,7 +421,7 @@ class _SettingScreenState extends State<SettingScreen> {
               text: "cancel".tr(),
               fontSize: width * 0.038,
               fontWeight: FontWeight.w600,
-              textColor: colorScheme.primary,
+              textColor: colorScheme.secondary,
             ),
           ),
           TextButton(
@@ -452,7 +434,7 @@ class _SettingScreenState extends State<SettingScreen> {
               text: "logout".tr(),
               fontSize: width * 0.038,
               fontWeight: FontWeight.w600,
-              textColor: ColorClass.red,
+              textColor: Colors.red.shade400,
             ),
           ),
         ],

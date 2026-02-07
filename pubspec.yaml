@@ -32,6 +32,7 @@ dependencies:
   googleapis_auth: ^2.0.0
   dio: ^5.9.1
   http_parser: ^4.1.2
+  flutter_quill: ^11.5.0
 
 dev_dependencies:
   flutter_test:
