@@ -20,14 +20,49 @@ class Notes extends Table {
   DateTimeColumn get updated => dateTime().nullable()();
 }
 
-@DriftDatabase(tables: [Notes])
+class SettingsTable extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
+@DriftDatabase(tables: [Notes, SettingsTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'notes_db');
+  }
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.createTable(settingsTable);
+        }
+      },
+    );
+  }
+
+  // API Key helpers
+  Future<void> saveApiKey(String apiKey) async {
+    await into(settingsTable).insertOnConflictUpdate(
+      SettingsTableCompanion.insert(key: 'api_key', value: apiKey),
+    );
+  }
+
+  Future<String?> getApiKey() async {
+    final query = select(settingsTable)..where((t) => t.key.equals('api_key'));
+    final result = await query.getSingleOrNull();
+    return result?.value;
   }
 }
