@@ -1,0 +1,21 @@
+services:
+  notification-service:
+    build: .
+    container_name: notes-notification-service
+    ports:
+      - "8008:8008"
+    volumes:
+      - ./data:/app/data
+      - ./auth-83d45-firebase-adminsdk-non6r-093b98d067.json:/app/auth-83d45-firebase-adminsdk-non6r-093b98d067.json:ro
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:///./data/notifications.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+

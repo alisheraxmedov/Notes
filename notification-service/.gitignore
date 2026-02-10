@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# Environment
+.env
+
+# Firebase
+service-account.json
+
+# Database
+*.db
+data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# UV
+.uv/
+
+# OS
+.DS_Store
+Thumbs.db
+auth-83d45-firebase-adminsdk-non6r-093b98d067.json
