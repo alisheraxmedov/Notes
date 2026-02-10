@@ -9,7 +9,9 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8008
     debug: bool = False
-    api_key: str = "c51f163cf3af977d58c8ad6723addf179517a99e2011d954e9e056ca7feb0ef6"  # CHANGE THIS IN .ENV FOR PROD
+    api_key: str = ""
+    max_retries: int = 3
+    batch_size: int = 500
 
     class Config:
         env_file = ".env"

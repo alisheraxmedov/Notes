@@ -15,3 +15,5 @@ class ScheduledNotification(Base):
     sent = Column(Boolean, default=False, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     sent_at = Column(DateTime(timezone=True), nullable=True)
+    retry_count = Column(Integer, default=0)
+    error_message = Column(String, nullable=True)

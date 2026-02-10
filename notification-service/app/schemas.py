@@ -34,3 +34,4 @@ class HealthResponse(BaseModel):
     status: str
     scheduler_running: bool
     pending_notifications: int
+    failed_notifications: int
