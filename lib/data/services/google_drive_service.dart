@@ -5,12 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:notes/data/local/database.dart';
 import 'package:drift/drift.dart';
+import 'package:notes/core/const/api_constants.dart';
 
 class GoogleDriveService {
-  static const _backupFileName = 'notes_backup.json';
-  static const _appFolderName = 'NotesAppBackup';
-  static const _baseUrl = 'https://www.googleapis.com/drive/v3';
-  static const _uploadUrl = 'https://www.googleapis.com/upload/drive/v3';
+  static const _backupFileName = ApiConstants.driveBackupFileName;
+  static const _appFolderName = ApiConstants.driveAppFolderName;
+  static const _baseUrl = ApiConstants.driveBaseUrl;
+  static const _uploadUrl = ApiConstants.driveUploadUrl;
 
   final AppDatabase _db;
   final Dio _dio = Dio();

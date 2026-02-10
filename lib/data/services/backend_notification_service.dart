@@ -4,13 +4,15 @@ import 'package:get/get.dart';
 import 'package:notes/data/local/database.dart';
 import 'package:notes/data/services/notification_service.dart';
 
+import 'package:notes/core/const/api_constants.dart';
+
 class BackendNotificationService {
-  static const String _baseUrl = "http://185.237.15.236:8008";
+  static const String _baseUrl = ApiConstants.notificationBaseUrl;
 
   static final Dio _dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    connectTimeout: ApiConstants.connectTimeout,
+    receiveTimeout: ApiConstants.receiveTimeout,
     headers: {"Content-Type": "application/json"},
   ));
 
@@ -25,12 +27,12 @@ class BackendNotificationService {
     final apiKey = await db.getApiKey();
 
     if (apiKey == null) {
-      debugPrint("❌ API Key not found in database");
+      debugPrint("API Key not found in database");
       return false;
     }
 
     if (fcmToken == null) {
-      debugPrint("❌ FCM Token not available");
+      debugPrint("FCM Token not available");
       return false;
     }
 
@@ -50,12 +52,12 @@ class BackendNotificationService {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        debugPrint("✅ Notification scheduled: $scheduledTime");
+        debugPrint("Notification scheduled: $scheduledTime");
         return true;
       }
       return false;
     } on DioException catch (e) {
-      debugPrint("❌ Request error: ${e.message}");
+      debugPrint("Request error: ${e.message}");
       return false;
     }
   }
@@ -69,9 +71,9 @@ class BackendNotificationService {
         "/schedule/$notificationId",
         options: Options(headers: {"X-API-Key": apiKey}),
       );
-      debugPrint("✅ Notification cancelled: $notificationId");
+      debugPrint("Notification cancelled: $notificationId");
     } on DioException catch (e) {
-      debugPrint("❌ Cancel error: ${e.message}");
+      debugPrint("Cancel error: ${e.message}");
     }
   }
 }
