@@ -26,6 +26,11 @@ void main() async {
   final db = AppDatabase();
   Get.put(db);
 
+  // Initialize API Key (For setup only - in prod, fetch from auth/config)
+  const apiKey =
+      "c51f163cf3af977d58c8ad6723addf179517a99e2011d954e9e056ca7feb0ef6";
+  await db.saveApiKey(apiKey);
+
   Get.put(SettingsController());
   Get.put(AuthController());
   Get.put(NoteController());

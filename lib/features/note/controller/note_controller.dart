@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:notes/core/const/colors.dart';
 import 'package:notes/data/local/database.dart';
+import 'package:notes/data/services/backend_notification_service.dart';
 
 class NoteController extends GetxController {
   final AppDatabase _db = Get.find<AppDatabase>();
@@ -279,20 +280,12 @@ class NoteController extends GetxController {
             int.parse(d[2]), int.parse(t[0]), int.parse(t[1]));
 
         if (scheduledDate.isAfter(now)) {
-          // Import cloud_firestore and save reminder to Firestore
-          // This will be picked up by your server to send FCM notification
-          debugPrint('Reminder scheduled for: $scheduledDate');
-          debugPrint('Title: $title, Text: $text');
-
-          // await FirebaseFirestore.instance.collection('reminders').add({
-          //   'fcmToken': NotificationService.fcmToken,
-          //   'title': title,
-          //   'body': text,
-          //   'scheduledTime': scheduledDate.toIso8601String(),
-          //   'noteId': noteId,
-          //   'sent': false,
-          //   'createdAt': FieldValue.serverTimestamp(),
-          // });
+          await BackendNotificationService.scheduleNotification(
+            title: title,
+            body: text,
+            scheduledTime: scheduledDate,
+            noteId: noteId,
+          );
         }
       } catch (e) {
         debugPrint("Error scheduling notification: $e");
