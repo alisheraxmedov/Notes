@@ -69,6 +69,6 @@ macos/Flutter/Generated.xcconfig
 *.env
 .env*
 
-
-google_sign_in.md
+solve.md
+ngnix.setting
 notification-service/auth-83d45-firebase-adminsdk-non6r-093b98d067.json

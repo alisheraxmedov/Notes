@@ -29,35 +29,6 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           children: [
 //===============================================================================
-//================================ BACK BUTTON ==================================
-//===============================================================================
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.03,
-                vertical: width * 0.02,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      padding: EdgeInsets.all(width * 0.025),
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondary.withAlpha(15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: colorScheme.secondary,
-                        size: width * 0.05,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-//===============================================================================
 //=============================== PROFILE SECTION ===============================
 //===============================================================================
             SizedBox(height: width * 0.02),

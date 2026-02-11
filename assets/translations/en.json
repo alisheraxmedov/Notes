@@ -49,5 +49,7 @@
   "sync_completed": "Sync completed",
   "login_required": "Login required",
   "auth_token_unavailable": "Auth token unavailable",
-  "sync_now": "Sync Now"
+  "sync_now": "Sync Now",
+  "missed_notes": "Missed Notes",
+  "no_missed_notes": "No missed notes yet"
 }

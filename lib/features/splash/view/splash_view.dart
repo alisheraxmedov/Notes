@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:lottie/lottie.dart';
 import 'package:notes/core/const/colors.dart';
-import 'package:notes/features/home/view/home_view.dart';
+import 'package:notes/features/main/view/main_view.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class SplashScreenState extends State<SplashScreen>
   void _navigateToHome() async {
     // Navigate after animation completes
     noteController.fetchNotes();
-    Get.off(() => const HomeScreen());
+    Get.off(() => const MainScreen());
   }
 
   @override

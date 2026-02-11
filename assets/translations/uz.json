@@ -49,5 +49,7 @@
   "sync_completed": "Sinxronlash yakunlandi",
   "login_required": "Tizimga kirish talab qilinadi",
   "auth_token_unavailable": "Token topilmadi",
-  "sync_now": "Sinxronlash"
+  "sync_now": "Sinxronlash",
+  "missed_notes": "O'tkazib yuborilgan",
+  "no_missed_notes": "O'tkazib yuborilgan eslatmalar yo'q"
 }

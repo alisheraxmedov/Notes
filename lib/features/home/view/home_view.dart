@@ -6,8 +6,6 @@ import 'package:notes/core/utils/date_formatter.dart';
 import 'package:notes/core/widgets/notes_card.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
-import 'package:notes/features/note/view/add_note_view.dart';
-import 'package:notes/features/settings/view/settings_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,28 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontSize: width * 0.075,
                         fontWeight: FontWeight.w700,
                         textColor: colorScheme.secondary,
-                      ),
-                      // Settings Button
-                      GestureDetector(
-                        onTap: () {
-                          Get.to(
-                            const SettingScreen(),
-                            transition: Transition.cupertino,
-                            arguments: ['', '', ''],
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(width * 0.03),
-                          decoration: BoxDecoration(
-                            color: colorScheme.secondary.withAlpha(15),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Icon(
-                            Icons.settings_outlined,
-                            size: width * 0.06,
-                            color: colorScheme.secondary,
-                          ),
-                        ),
                       ),
                     ],
                   ),
@@ -224,36 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }),
       ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.secondary.withAlpha(60),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: FloatingActionButton(
-          shape: const CircleBorder(),
-          elevation: 0,
-          onPressed: () {
-            Get.to(
-              const AddNoteScreen(),
-              transition: Transition.cupertino,
-              arguments: ['', '', ''],
-            )?.then((value) {});
-            noteController.initialDateTime();
-          },
-          child: Icon(
-            Icons.add_rounded,
-            size: width * 0.08,
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

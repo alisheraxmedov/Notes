@@ -49,5 +49,7 @@
   "sync_completed": "Синхронизация завершена",
   "login_required": "Требуется вход",
   "auth_token_unavailable": "Токен не найден",
-  "sync_now": "Синхронизировать"
+  "sync_now": "Синхронизировать",
+  "missed_notes": "Пропущенные",
+  "no_missed_notes": "Нет пропущенных заметок"
 }
