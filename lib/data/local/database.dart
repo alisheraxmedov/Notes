@@ -14,6 +14,7 @@ class Notes extends Table {
   TextColumn get nDate => text().nullable()(); // Notification Date
   TextColumn get nTime => text().nullable()(); // Notification Time
   TextColumn get today => text().nullable()(); // Modification/Sort key
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))(); // Soft delete flag
 
   // Meta fields
   DateTimeColumn get created => dateTime().withDefault(currentDateAndTime)();
@@ -33,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'notes_db');
@@ -48,6 +49,9 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.createTable(settingsTable);
+        }
+        if (from < 3) {
+          await m.addColumn(notes, notes.isDeleted);
         }
       },
     );
@@ -64,5 +68,11 @@ class AppDatabase extends _$AppDatabase {
     final query = select(settingsTable)..where((t) => t.key.equals('api_key'));
     final result = await query.getSingleOrNull();
     return result?.value;
+  }
+
+  /// Deletes all notes marked as [isDeleted] from the local database.
+  /// Used for cleanup after successful sync.
+  Future<void> deleteSoftDeletedNotes() async {
+    await (delete(notes)..where((t) => t.isDeleted.equals(true))).go();
   }
 }

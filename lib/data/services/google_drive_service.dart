@@ -49,6 +49,9 @@ class GoogleDriveService {
 
       await _uploadBackup(mergedNotes);
       await _updateLocalDb(mergedNotes);
+
+      // Cleanup: Delete soft-deleted notes from local DB after successful sync
+      await _db.deleteSoftDeletedNotes();
     } on DioException catch (e) {
       debugPrint('GoogleDriveService: Sync error (Dio): ${e.message}');
       if (e.response != null) {
@@ -115,7 +118,9 @@ class GoogleDriveService {
   Future<void> _uploadBackup(List<Map<String, dynamic>> notes) async {
     if (_folderId == null) return;
 
-    final fileContent = await compute(_encodeJsonIsolate, notes);
+    // Filter out deleted notes prevents them from appearing in Drive backup
+    final activeNotes = notes.where((n) => n['isDeleted'] != true).toList();
+    final fileContent = await compute(_encodeJsonIsolate, activeNotes);
 
     final query =
         "name='$_backupFileName' and '$_folderId' in parents and trashed=false";
@@ -177,19 +182,39 @@ class GoogleDriveService {
 
         final existing = await existingQuery.getSingleOrNull();
 
+        // Handle isDeleted flag
+        final isDeleted = noteData['isDeleted'] == true;
+
         if (existing == null) {
-          await _db.into(_db.notes).insert(NotesCompanion.insert(
-                title: noteData['title'],
-                content: noteData['content'],
-                date: noteData['date'],
-                time: noteData['time'],
-                nDate: Value(noteData['nDate']),
-                nTime: Value(noteData['nTime']),
-                today: Value(noteData['today']),
-                created: Value(DateTime.tryParse(noteData['created'] ?? '') ??
-                    DateTime.now()),
-                updated: Value(DateTime.tryParse(noteData['updated'] ?? '')),
-              ));
+          if (!isDeleted) {
+            await _db.into(_db.notes).insert(NotesCompanion.insert(
+                  title: noteData['title'],
+                  content: noteData['content'],
+                  date: noteData['date'],
+                  time: noteData['time'],
+                  nDate: Value(noteData['nDate']),
+                  nTime: Value(noteData['nTime']),
+                  today: Value(noteData['today']),
+                  created: Value(DateTime.tryParse(noteData['created'] ?? '') ??
+                      DateTime.now()),
+                  updated: Value(DateTime.tryParse(noteData['updated'] ?? '')),
+                  isDeleted: Value(isDeleted),
+                ));
+          }
+        } else {
+          // Update existing note (including deletion status if coming from merge)
+          await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id)))
+              .write(NotesCompanion(
+            title: Value(noteData['title']),
+            content: Value(noteData['content']),
+            date: Value(noteData['date']),
+            time: Value(noteData['time']),
+            nDate: Value(noteData['nDate']),
+            nTime: Value(noteData['nTime']),
+            today: Value(noteData['today']),
+            updated: Value(DateTime.tryParse(noteData['updated'] ?? '')),
+            isDeleted: Value(isDeleted),
+          ));
         }
       }
     });
@@ -205,6 +230,7 @@ class GoogleDriveService {
         'today': note.today,
         'created': note.created.toIso8601String(),
         'updated': note.updated?.toIso8601String(),
+        'isDeleted': note.isDeleted,
       };
 }
 
@@ -241,6 +267,7 @@ List<Map<String, dynamic>> _mergeNotesIsolate(_MergeParams params) {
           DateTime.tryParse(existing['updated'] ?? existing['created'] ?? '') ??
               DateTime(2000);
 
+      // If local is newer, override cloud (including deletion status)
       if (localUpdated.isAfter(cloudUpdated)) {
         merged[key] = note;
       }

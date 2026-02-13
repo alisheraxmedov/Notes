@@ -53,6 +53,16 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   late final GeneratedColumn<String> today = GeneratedColumn<String>(
       'today', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isDeletedMeta =
+      const VerificationMeta('isDeleted');
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+      'is_deleted', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_deleted" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _createdMeta =
       const VerificationMeta('created');
   @override
@@ -68,8 +78,19 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
       'updated', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, title, content, date, time, nDate, nTime, today, created, updated];
+  List<GeneratedColumn> get $columns => [
+        id,
+        title,
+        content,
+        date,
+        time,
+        nDate,
+        nTime,
+        today,
+        isDeleted,
+        created,
+        updated
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -119,6 +140,10 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
       context.handle(
           _todayMeta, today.isAcceptableOrUnknown(data['today']!, _todayMeta));
     }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
     if (data.containsKey('created')) {
       context.handle(_createdMeta,
           created.isAcceptableOrUnknown(data['created']!, _createdMeta));
@@ -152,6 +177,8 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
           .read(DriftSqlType.string, data['${effectivePrefix}n_time']),
       today: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}today']),
+      isDeleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
       created: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created'])!,
       updated: attachedDatabase.typeMapping
@@ -174,6 +201,7 @@ class Note extends DataClass implements Insertable<Note> {
   final String? nDate;
   final String? nTime;
   final String? today;
+  final bool isDeleted;
   final DateTime created;
   final DateTime? updated;
   const Note(
@@ -185,6 +213,7 @@ class Note extends DataClass implements Insertable<Note> {
       this.nDate,
       this.nTime,
       this.today,
+      required this.isDeleted,
       required this.created,
       this.updated});
   @override
@@ -204,6 +233,7 @@ class Note extends DataClass implements Insertable<Note> {
     if (!nullToAbsent || today != null) {
       map['today'] = Variable<String>(today);
     }
+    map['is_deleted'] = Variable<bool>(isDeleted);
     map['created'] = Variable<DateTime>(created);
     if (!nullToAbsent || updated != null) {
       map['updated'] = Variable<DateTime>(updated);
@@ -224,6 +254,7 @@ class Note extends DataClass implements Insertable<Note> {
           nTime == null && nullToAbsent ? const Value.absent() : Value(nTime),
       today:
           today == null && nullToAbsent ? const Value.absent() : Value(today),
+      isDeleted: Value(isDeleted),
       created: Value(created),
       updated: updated == null && nullToAbsent
           ? const Value.absent()
@@ -243,6 +274,7 @@ class Note extends DataClass implements Insertable<Note> {
       nDate: serializer.fromJson<String?>(json['nDate']),
       nTime: serializer.fromJson<String?>(json['nTime']),
       today: serializer.fromJson<String?>(json['today']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
       created: serializer.fromJson<DateTime>(json['created']),
       updated: serializer.fromJson<DateTime?>(json['updated']),
     );
@@ -259,6 +291,7 @@ class Note extends DataClass implements Insertable<Note> {
       'nDate': serializer.toJson<String?>(nDate),
       'nTime': serializer.toJson<String?>(nTime),
       'today': serializer.toJson<String?>(today),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
       'created': serializer.toJson<DateTime>(created),
       'updated': serializer.toJson<DateTime?>(updated),
     };
@@ -273,6 +306,7 @@ class Note extends DataClass implements Insertable<Note> {
           Value<String?> nDate = const Value.absent(),
           Value<String?> nTime = const Value.absent(),
           Value<String?> today = const Value.absent(),
+          bool? isDeleted,
           DateTime? created,
           Value<DateTime?> updated = const Value.absent()}) =>
       Note(
@@ -284,6 +318,7 @@ class Note extends DataClass implements Insertable<Note> {
         nDate: nDate.present ? nDate.value : this.nDate,
         nTime: nTime.present ? nTime.value : this.nTime,
         today: today.present ? today.value : this.today,
+        isDeleted: isDeleted ?? this.isDeleted,
         created: created ?? this.created,
         updated: updated.present ? updated.value : this.updated,
       );
@@ -297,6 +332,7 @@ class Note extends DataClass implements Insertable<Note> {
       nDate: data.nDate.present ? data.nDate.value : this.nDate,
       nTime: data.nTime.present ? data.nTime.value : this.nTime,
       today: data.today.present ? data.today.value : this.today,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
       created: data.created.present ? data.created.value : this.created,
       updated: data.updated.present ? data.updated.value : this.updated,
     );
@@ -313,6 +349,7 @@ class Note extends DataClass implements Insertable<Note> {
           ..write('nDate: $nDate, ')
           ..write('nTime: $nTime, ')
           ..write('today: $today, ')
+          ..write('isDeleted: $isDeleted, ')
           ..write('created: $created, ')
           ..write('updated: $updated')
           ..write(')'))
@@ -320,8 +357,8 @@ class Note extends DataClass implements Insertable<Note> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, title, content, date, time, nDate, nTime, today, created, updated);
+  int get hashCode => Object.hash(id, title, content, date, time, nDate, nTime,
+      today, isDeleted, created, updated);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -334,6 +371,7 @@ class Note extends DataClass implements Insertable<Note> {
           other.nDate == this.nDate &&
           other.nTime == this.nTime &&
           other.today == this.today &&
+          other.isDeleted == this.isDeleted &&
           other.created == this.created &&
           other.updated == this.updated);
 }
@@ -347,6 +385,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
   final Value<String?> nDate;
   final Value<String?> nTime;
   final Value<String?> today;
+  final Value<bool> isDeleted;
   final Value<DateTime> created;
   final Value<DateTime?> updated;
   const NotesCompanion({
@@ -358,6 +397,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     this.nDate = const Value.absent(),
     this.nTime = const Value.absent(),
     this.today = const Value.absent(),
+    this.isDeleted = const Value.absent(),
     this.created = const Value.absent(),
     this.updated = const Value.absent(),
   });
@@ -370,6 +410,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     this.nDate = const Value.absent(),
     this.nTime = const Value.absent(),
     this.today = const Value.absent(),
+    this.isDeleted = const Value.absent(),
     this.created = const Value.absent(),
     this.updated = const Value.absent(),
   })  : title = Value(title),
@@ -385,6 +426,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Expression<String>? nDate,
     Expression<String>? nTime,
     Expression<String>? today,
+    Expression<bool>? isDeleted,
     Expression<DateTime>? created,
     Expression<DateTime>? updated,
   }) {
@@ -397,6 +439,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
       if (nDate != null) 'n_date': nDate,
       if (nTime != null) 'n_time': nTime,
       if (today != null) 'today': today,
+      if (isDeleted != null) 'is_deleted': isDeleted,
       if (created != null) 'created': created,
       if (updated != null) 'updated': updated,
     });
@@ -411,6 +454,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
       Value<String?>? nDate,
       Value<String?>? nTime,
       Value<String?>? today,
+      Value<bool>? isDeleted,
       Value<DateTime>? created,
       Value<DateTime?>? updated}) {
     return NotesCompanion(
@@ -422,6 +466,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
       nDate: nDate ?? this.nDate,
       nTime: nTime ?? this.nTime,
       today: today ?? this.today,
+      isDeleted: isDeleted ?? this.isDeleted,
       created: created ?? this.created,
       updated: updated ?? this.updated,
     );
@@ -454,6 +499,9 @@ class NotesCompanion extends UpdateCompanion<Note> {
     if (today.present) {
       map['today'] = Variable<String>(today.value);
     }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
     if (created.present) {
       map['created'] = Variable<DateTime>(created.value);
     }
@@ -474,6 +522,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
           ..write('nDate: $nDate, ')
           ..write('nTime: $nTime, ')
           ..write('today: $today, ')
+          ..write('isDeleted: $isDeleted, ')
           ..write('created: $created, ')
           ..write('updated: $updated')
           ..write(')'))
@@ -693,6 +742,7 @@ typedef $$NotesTableCreateCompanionBuilder = NotesCompanion Function({
   Value<String?> nDate,
   Value<String?> nTime,
   Value<String?> today,
+  Value<bool> isDeleted,
   Value<DateTime> created,
   Value<DateTime?> updated,
 });
@@ -705,6 +755,7 @@ typedef $$NotesTableUpdateCompanionBuilder = NotesCompanion Function({
   Value<String?> nDate,
   Value<String?> nTime,
   Value<String?> today,
+  Value<bool> isDeleted,
   Value<DateTime> created,
   Value<DateTime?> updated,
 });
@@ -740,6 +791,9 @@ class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
 
   ColumnFilters<String> get today => $composableBuilder(
       column: $table.today, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get created => $composableBuilder(
       column: $table.created, builder: (column) => ColumnFilters(column));
@@ -781,6 +835,9 @@ class $$NotesTableOrderingComposer
   ColumnOrderings<String> get today => $composableBuilder(
       column: $table.today, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get created => $composableBuilder(
       column: $table.created, builder: (column) => ColumnOrderings(column));
 
@@ -821,6 +878,9 @@ class $$NotesTableAnnotationComposer
   GeneratedColumn<String> get today =>
       $composableBuilder(column: $table.today, builder: (column) => column);
 
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
   GeneratedColumn<DateTime> get created =>
       $composableBuilder(column: $table.created, builder: (column) => column);
 
@@ -859,6 +919,7 @@ class $$NotesTableTableManager extends RootTableManager<
             Value<String?> nDate = const Value.absent(),
             Value<String?> nTime = const Value.absent(),
             Value<String?> today = const Value.absent(),
+            Value<bool> isDeleted = const Value.absent(),
             Value<DateTime> created = const Value.absent(),
             Value<DateTime?> updated = const Value.absent(),
           }) =>
@@ -871,6 +932,7 @@ class $$NotesTableTableManager extends RootTableManager<
             nDate: nDate,
             nTime: nTime,
             today: today,
+            isDeleted: isDeleted,
             created: created,
             updated: updated,
           ),
@@ -883,6 +945,7 @@ class $$NotesTableTableManager extends RootTableManager<
             Value<String?> nDate = const Value.absent(),
             Value<String?> nTime = const Value.absent(),
             Value<String?> today = const Value.absent(),
+            Value<bool> isDeleted = const Value.absent(),
             Value<DateTime> created = const Value.absent(),
             Value<DateTime?> updated = const Value.absent(),
           }) =>
@@ -895,6 +958,7 @@ class $$NotesTableTableManager extends RootTableManager<
             nDate: nDate,
             nTime: nTime,
             today: today,
+            isDeleted: isDeleted,
             created: created,
             updated: updated,
           ),

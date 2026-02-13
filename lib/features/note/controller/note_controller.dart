@@ -50,6 +50,8 @@ class NoteController extends GetxController {
       // notes.sort((a, b) => b.created.compareTo(a.created));
       // Better to use Drift orderBy
       final sortedNotes = await (_db.select(_db.notes)
+            ..where(
+                (t) => t.isDeleted.equals(false)) // Filter soft deleted notes
             ..orderBy([
               (t) => drift.OrderingTerm(
                   expression: t.created, mode: drift.OrderingMode.desc)
@@ -109,6 +111,7 @@ class NoteController extends GetxController {
         nDate: drift.Value(nDate),
         nTime: drift.Value(nTime),
         today: drift.Value(today),
+        isDeleted: const drift.Value(false),
       );
 
       await _db.into(_db.notes).insert(companion);
@@ -192,7 +195,14 @@ class NoteController extends GetxController {
 
   Future<void> deleteNote(int id) async {
     try {
-      await (_db.delete(_db.notes)..where((t) => t.id.equals(id))).go();
+      // Soft delete: update isDeleted to true instead of deleting
+      final companion = NotesCompanion(
+        isDeleted: const drift.Value(true),
+        updated: drift.Value(DateTime.now()),
+      );
+
+      await (_db.update(_db.notes)..where((t) => t.id.equals(id)))
+          .write(companion);
 
       // Update local list
       allNotesList.removeWhere((note) => note.id == id);
