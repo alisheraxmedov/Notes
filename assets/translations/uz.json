@@ -51,5 +51,15 @@
   "auth_token_unavailable": "Token topilmadi",
   "sync_now": "Sinxronlash",
   "missed_notes": "O'tkazib yuborilgan",
-  "no_missed_notes": "O'tkazib yuborilgan eslatmalar yo'q"
+  "no_missed_notes": "O'tkazib yuborilgan eslatmalar yo'q",
+  "coming_soon": "Tez kunda",
+  "ai_voice_title": "AI Ovozli Eslatmalar",
+  "ai_voice_desc": "AI yordamida ovoz orqali eslatmalar yarating.",
+  "multi_device_title": "Multi-Device Sinxronlash",
+  "multi_device_desc": "Eslatmalaringizga barcha qurilmalaringizdan kiring.",
+  "share_notes_title": "Eslatmalarni Ulashish",
+  "share_notes_desc": "Do'stlaringiz va hamkasblaringiz bilan eslatmalarni ulashing.",
+  "ai_summary_title": "AI Haftalik Xulosa",
+  "ai_summary_desc": "Eslatmalaringizning aqlli haftalik xulosasini oling.",
+  "premium": "Premium"
 }

@@ -51,5 +51,15 @@
   "auth_token_unavailable": "Токен не найден",
   "sync_now": "Синхронизировать",
   "missed_notes": "Пропущенные",
-  "no_missed_notes": "Нет пропущенных заметок"
+  "no_missed_notes": "Нет пропущенных заметок",
+  "coming_soon": "Скоро",
+  "ai_voice_title": "Голосовые заметки (AI)",
+  "ai_voice_desc": "Создавайте заметки голосом с помощью передового ИИ.",
+  "multi_device_title": "Синхронизация устройств",
+  "multi_device_desc": "Доступ к заметкам на всех ваших устройствах.",
+  "share_notes_title": "Поделиться заметкой",
+  "share_notes_desc": "Делитесь заметками с друзьями и коллегами.",
+  "ai_summary_title": "ИИ Саммайринг",
+  "ai_summary_desc": "Получайте умные еженедельные сводки ваших заметок.",
+  "premium": "Premium"
 }

@@ -324,7 +324,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     title: _titleController.text,
                     content: _getContentAsJson(),
                     date:
-                        "${dateTime.day.toString().padLeft(2, '0')}:${dateTime.month.toString().padLeft(2, '0')}:${dateTime.year}",
+                        "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}",
                     time:
                         "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}",
                     nDate: noteController.notificationDate.value,
@@ -337,7 +337,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     title: _titleController.text,
                     content: _getContentAsJson(),
                     date:
-                        "${dateTime.day.toString().padLeft(2, '0')}:${dateTime.month.toString().padLeft(2, '0')}:${dateTime.year}",
+                        "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}",
                     time:
                         "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}",
                     nDate: noteController.notificationDate.value,

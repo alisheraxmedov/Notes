@@ -24,6 +24,8 @@ class NoteController extends GetxController {
   RxList<Note> filteredNotesList = <Note>[].obs;
   RxString searchQuery = "".obs;
 
+  RxList<Note> missedNotesList = <Note>[].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -58,7 +60,49 @@ class NoteController extends GetxController {
             ]))
           .get();
 
-      allNotesList.assignAll(sortedNotes);
+      final now = DateTime.now();
+      final activeNotes = <Note>[];
+      final missedNotes = <Note>[];
+
+      for (var note in sortedNotes) {
+        if (note.nDate != null &&
+            note.nDate != "Date" &&
+            note.nTime != null &&
+            note.nTime != "Time") {
+          try {
+            // nDate format matches YYYY-MM-DD from backend expectation
+            // nTime format matches HH:MM
+            final dParts = note.nDate!.split('-');
+            final tParts = note.nTime!.split(':');
+
+            if (dParts.length == 3 && tParts.length == 2) {
+              final scheduledDate = DateTime(
+                int.parse(dParts[0]),
+                int.parse(dParts[1]),
+                int.parse(dParts[2]),
+                int.parse(tParts[0]),
+                int.parse(tParts[1]),
+              );
+
+              if (scheduledDate.isBefore(now)) {
+                missedNotes.add(note);
+              } else {
+                activeNotes.add(note);
+              }
+            } else {
+              activeNotes.add(note);
+            }
+          } catch (e) {
+            // If parsing fails, treat as active note
+            activeNotes.add(note);
+          }
+        } else {
+          activeNotes.add(note);
+        }
+      }
+
+      allNotesList.assignAll(activeNotes);
+      missedNotesList.assignAll(missedNotes);
     } catch (e) {
       if (Get.context != null && Get.isOverlaysClosed) {
         Get.snackbar(

@@ -27,15 +27,32 @@ class DateFormatter {
     }
 
     try {
-      final parts = dateStr.split('-');
-      if (parts.length == 3) {
-        final year = parts[0];
-        final monthIndex = int.parse(parts[1]) - 1;
-        final day = parts[2].padLeft(2, '0');
+      // Try YYYY-MM-DD
+      if (dateStr.contains('-')) {
+        final parts = dateStr.split('-');
+        if (parts.length == 3) {
+          final year = parts[0];
+          final monthIndex = int.parse(parts[1]) - 1;
+          final day = parts[2].padLeft(2, '0');
 
-        if (monthIndex >= 0 && monthIndex < 12) {
-          final month = _monthAbbreviations[monthIndex];
-          return "$day-$month-$year";
+          if (monthIndex >= 0 && monthIndex < 12) {
+            final month = _monthAbbreviations[monthIndex];
+            return "$day-$month-$year";
+          }
+        }
+      }
+      // Try DD:MM:YYYY (Legacy)
+      else if (dateStr.contains(':')) {
+        final parts = dateStr.split(':');
+        if (parts.length == 3) {
+          final day = parts[0].padLeft(2, '0');
+          final monthIndex = int.parse(parts[1]) - 1;
+          final year = parts[2];
+
+          if (monthIndex >= 0 && monthIndex < 12) {
+            final month = _monthAbbreviations[monthIndex];
+            return "$day-$month-$year";
+          }
         }
       }
     } catch (_) {

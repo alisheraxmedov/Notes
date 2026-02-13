@@ -91,12 +91,20 @@ class MainScreen extends StatelessWidget {
                           },
                         ),
 
+                        //========== Coming Soon Tab ==========
+                        BottomNavItem(
+                          icon: Icons.rocket_launch_outlined,
+                          activeIcon: Icons.rocket_launch_rounded,
+                          isActive: controller.activeIndex.value == 2,
+                          onTap: () => controller.changeTab(2),
+                        ),
+
                         //========== Settings Tab ==========
                         BottomNavItem(
                           icon: Icons.settings_outlined,
                           activeIcon: Icons.settings_rounded,
-                          isActive: controller.activeIndex.value == 2,
-                          onTap: () => controller.changeTab(2),
+                          isActive: controller.activeIndex.value == 3,
+                          onTap: () => controller.changeTab(3),
                         ),
                       ],
                     ),

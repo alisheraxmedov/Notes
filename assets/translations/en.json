@@ -51,5 +51,15 @@
   "auth_token_unavailable": "Auth token unavailable",
   "sync_now": "Sync Now",
   "missed_notes": "Missed Notes",
-  "no_missed_notes": "No missed notes yet"
+  "no_missed_notes": "No missed notes yet",
+  "coming_soon": "Coming Soon",
+  "ai_voice_title": "AI Voice Notes",
+  "ai_voice_desc": "Create notes using your voice with advanced AI processing.",
+  "multi_device_title": "Multi-Device Sync",
+  "multi_device_desc": "Access your notes seamlessly across all your devices.",
+  "share_notes_title": "Share Notes",
+  "share_notes_desc": "Collaborate and share your notes with friends and colleagues.",
+  "ai_summary_title": "AI Weekly Summary",
+  "ai_summary_desc": "Get intelligent weekly summaries of your notes and activities.",
+  "premium": "Premium"
 }

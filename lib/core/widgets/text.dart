@@ -10,6 +10,7 @@ class TextWidget extends StatelessWidget {
   final FontStyle fontStyle;
   final Color textColor;
   final TextAlign textAlign;
+  final int? maxLines;
   const TextWidget({
     super.key,
     required this.width,
@@ -20,6 +21,7 @@ class TextWidget extends StatelessWidget {
     this.fontStyle = FontStyle.italic,
     this.textColor = ColorClass.black,
     this.textAlign = TextAlign.start,
+    this.maxLines,
   });
 
   @override
@@ -27,6 +29,8 @@ class TextWidget extends StatelessWidget {
     return Text(
       text,
       textAlign: textAlign,
+      maxLines: maxLines,
+      overflow: maxLines != null ? TextOverflow.ellipsis : null,
       style: Theme.of(context).textTheme.titleMedium!.copyWith(
             fontSize: fontSize,
             fontWeight: fontWeight,

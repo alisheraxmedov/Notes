@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     bottom: width * 0.05,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // App Title
