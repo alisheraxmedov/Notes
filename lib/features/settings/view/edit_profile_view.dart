@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:notes/core/const/colors.dart';
+import 'package:notes/core/const/app_constants.dart';
 import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/settings/controller/auth_controller.dart';
 
@@ -366,7 +367,7 @@ class EditProfileView extends StatelessWidget {
                 )
               else
                 Image.network(
-                  'https://www.google.com/favicon.ico',
+                  AppConstants.googleIconUrl,
                   width: width * 0.06,
                   height: width * 0.06,
                   errorBuilder: (_, __, ___) => Icon(

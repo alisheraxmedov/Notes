@@ -11,6 +11,7 @@ import 'package:notes/features/settings/controller/auth_controller.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:notes/firebase_options.dart';
 
 void main() async {
@@ -18,6 +19,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await dotenv.load(fileName: ".env");
 
   await GetStorage.init();
   await NotificationService.init();
@@ -27,8 +30,7 @@ void main() async {
   Get.put(db);
 
   // Initialize API Key (For setup only - in prod, fetch from auth/config)
-  const apiKey =
-      "c51f163cf3af977d58c8ad6723addf179517a99e2011d954e9e056ca7feb0ef6";
+  final apiKey = dotenv.env['API_KEY'] ?? '';
   await db.saveApiKey(apiKey);
 
   Get.put(SettingsController());

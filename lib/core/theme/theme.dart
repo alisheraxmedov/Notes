@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/core/const/colors.dart';
+import 'package:notes/core/const/app_constants.dart';
 
 class MyAppTheme {
   static final ThemeData lightTheme = ThemeData(
@@ -50,7 +51,7 @@ class MyAppTheme {
       dayStyle: const TextStyle(
         color: ColorClass.charcoal,
         fontWeight: FontWeight.w500,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
       ),
       dayOverlayColor: WidgetStateProperty.all(
         ColorClass.terracotta.withAlpha(50),
@@ -76,7 +77,7 @@ class MyAppTheme {
         foregroundColor: const WidgetStatePropertyAll(ColorClass.white),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -93,7 +94,7 @@ class MyAppTheme {
         foregroundColor: const WidgetStatePropertyAll(ColorClass.charcoal),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -125,7 +126,7 @@ class MyAppTheme {
         foregroundColor: const WidgetStatePropertyAll(ColorClass.white),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -142,7 +143,7 @@ class MyAppTheme {
         foregroundColor: const WidgetStatePropertyAll(ColorClass.charcoal),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -156,16 +157,16 @@ class MyAppTheme {
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         color: ColorClass.charcoal,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
         fontWeight: FontWeight.w600,
       ),
       bodyMedium: TextStyle(
         color: ColorClass.charcoal,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
       ),
       headlineMedium: TextStyle(
         color: ColorClass.charcoal,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
       ),
     ),
     iconTheme: const IconThemeData(
@@ -252,7 +253,7 @@ class MyAppTheme {
             const WidgetStatePropertyAll(ColorClass.darkBackground),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -269,7 +270,7 @@ class MyAppTheme {
         foregroundColor: const WidgetStatePropertyAll(ColorClass.white),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -295,7 +296,7 @@ class MyAppTheme {
       entryModeIconColor: ColorClass.darkAccent,
       helpTextStyle: const TextStyle(
         color: ColorClass.white,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
       ),
       confirmButtonStyle: ButtonStyle(
         backgroundColor: const WidgetStatePropertyAll(
@@ -305,7 +306,7 @@ class MyAppTheme {
             const WidgetStatePropertyAll(ColorClass.darkBackground),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -322,7 +323,7 @@ class MyAppTheme {
         foregroundColor: const WidgetStatePropertyAll(ColorClass.white),
         textStyle: const WidgetStatePropertyAll(
           TextStyle(
-            fontFamily: "Courier",
+            fontFamily: AppConstants.fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -337,16 +338,16 @@ class MyAppTheme {
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         color: ColorClass.white,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
         fontWeight: FontWeight.w600,
       ),
       bodyMedium: TextStyle(
         color: ColorClass.white,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
       ),
       headlineMedium: TextStyle(
         color: ColorClass.darkAccent,
-        fontFamily: "Courier",
+        fontFamily: AppConstants.fontFamily,
       ),
     ),
     iconTheme: const IconThemeData(

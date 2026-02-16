@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart' hide Trans;
+import 'package:notes/core/const/app_constants.dart';
 import 'package:notes/core/widgets/notification_dialog.dart';
 import 'package:notes/core/widgets/text_formatting_toolbar.dart';
 import 'package:notes/core/widgets/text.dart';
@@ -165,7 +166,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 decoration: InputDecoration(
                   labelText: "title".tr(),
                   labelStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        fontFamily: "Courier",
+                        fontFamily: AppConstants.fontFamily,
                         fontSize: width * 0.04,
                         color: colorScheme.inversePrimary.withAlpha(100),
                       ),
@@ -271,7 +272,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     customStyles: DefaultStyles(
                       paragraph: DefaultTextBlockStyle(
                         TextStyle(
-                          fontFamily: "Courier",
+                          fontFamily: AppConstants.fontFamily,
                           color: colorScheme.inversePrimary,
                           fontSize: width * 0.04,
                           height: 1.5,
@@ -283,7 +284,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                       ),
                       placeHolder: DefaultTextBlockStyle(
                         TextStyle(
-                          fontFamily: "Courier",
+                          fontFamily: AppConstants.fontFamily,
                           color: colorScheme.inversePrimary.withAlpha(80),
                           fontSize: width * 0.04,
                         ),
