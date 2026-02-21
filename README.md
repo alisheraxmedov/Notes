@@ -62,6 +62,30 @@ class AppSecrets {
 
 ---
 
+### Phase 1.1: 🔑 Environment Variables (dotenv)
+
+The app uses `flutter_dotenv` to securely load sensitive keys (like the Notification Service API Key) from a `.env` file. This file is **ignored by Git**, so you must create it manually.
+
+1.  In the **project root** directory, create a file named `.env`.
+2.  Add your Notification Service API Key:
+
+```env
+# File: .env
+API_KEY=your_notification_service_api_key_here
+```
+
+3.  The `flutter_dotenv` package is already in `pubspec.yaml` and `.env` is registered as an asset. Just run:
+
+```bash
+flutter pub get
+```
+
+> **How it works:** On app startup, `main.dart` calls `await dotenv.load(fileName: ".env")` and reads the key via `dotenv.env['API_KEY']`. This keeps secrets out of the source code.
+
+> **⚠️ Warning:** Never commit the `.env` file to Git. It is already listed in `.gitignore` (`*.env`, `.env*`).
+
+---
+
 ### Phase 1.5: 🍎 iOS Configuration (Config.xcconfig)
 
 For Google Sign-In to work on iOS, we need to set the `REVERSED_CLIENT_ID` in a way that doesn't expose it in `Info.plist`.

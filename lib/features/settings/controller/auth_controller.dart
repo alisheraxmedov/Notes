@@ -43,8 +43,6 @@ class AuthController extends GetxController {
           if (googleUser != null) {
             user.value = googleUser;
             _saveUserToStorage();
-          } else {
-            await signOut(showSnackbar: false);
           }
         }
       }

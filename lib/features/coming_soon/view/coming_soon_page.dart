@@ -68,9 +68,10 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
         title: TextWidget(
           width: width,
           text: "coming_soon".tr(),
-          fontSize: width * 0.055,
+          fontSize: width * 0.075,
           fontWeight: FontWeight.w700,
           textColor: colorScheme.secondary,
+          textAlign: TextAlign.center,
         ),
       ),
       body: SafeArea(

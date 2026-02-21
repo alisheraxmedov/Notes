@@ -25,6 +25,7 @@ class MissedNotesScreen extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     padding: EdgeInsets.all(width * 0.06),
@@ -45,6 +46,7 @@ class MissedNotesScreen extends StatelessWidget {
                     fontSize: width * 0.045,
                     fontWeight: FontWeight.w600,
                     textColor: colorScheme.secondary,
+                    textAlign: TextAlign.center,
                   ),
                   SizedBox(height: width * 0.02),
                   TextWidget(
@@ -70,7 +72,7 @@ class MissedNotesScreen extends StatelessWidget {
                   right: width * 0.05,
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextWidget(
@@ -79,6 +81,7 @@ class MissedNotesScreen extends StatelessWidget {
                       fontSize: width * 0.075,
                       fontWeight: FontWeight.w700,
                       textColor: colorScheme.secondary,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

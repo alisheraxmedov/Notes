@@ -92,7 +92,7 @@ class GoogleAuthService {
   /// Signs out the current user.
   Future<void> signOut() async {
     try {
-      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
       _currentUser = null;
     } catch (e) {
       debugPrint('GoogleAuthService: Sign-out failed: $e');

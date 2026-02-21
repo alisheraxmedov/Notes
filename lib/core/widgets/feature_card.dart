@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:notes/core/const/colors.dart';
 import 'package:notes/core/widgets/text.dart';
 
 class FeatureCard extends StatelessWidget {
@@ -22,6 +21,7 @@ class FeatureCard extends StatelessWidget {
     return Stack(
       children: [
         Container(
+          width: width * 0.8,
           margin: EdgeInsets.symmetric(
             horizontal: width * 0.02,
             vertical: width * 0.02,
@@ -29,7 +29,7 @@ class FeatureCard extends StatelessWidget {
           padding: EdgeInsets.all(width * 0.06),
           decoration: BoxDecoration(
             color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(width * 0.05),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.secondary.withAlpha(20),
@@ -43,16 +43,16 @@ class FeatureCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
+                height: width * 0.4,
+                width: width * 0.4,
                 padding: EdgeInsets.all(width * 0.04),
                 decoration: BoxDecoration(
                   color: colorScheme.secondary.withAlpha(10),
                   shape: BoxShape.circle,
-                ),
-                child: Image.asset(
-                  feature['image'],
-                  width: width * 0.4,
-                  height: width * 0.4,
-                  fit: BoxFit.contain,
+                  image: DecorationImage(
+                    image: AssetImage(feature['image']),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               SizedBox(height: width * 0.06),
@@ -80,31 +80,16 @@ class FeatureCard extends StatelessWidget {
         ),
         if (isPremium)
           Positioned(
+            height: width * 0.1,
+            width: width * 0.1,
             top: width * 0.05,
             left: width * 0.05,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.03,
-                vertical: width * 0.015,
-              ),
-              decoration: BoxDecoration(
-                // Using custom terracotta color as requested
-                color: const Color(0xFFE07A5F),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorClass.black.withAlpha(20),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextWidget(
-                width: width,
-                text: "premium".tr(),
-                fontSize: width * 0.03,
-                fontWeight: FontWeight.w700,
-                textColor: ColorClass.white,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(width * 0.02),
+              child: Image.asset(
+                'assets/icons/premium.png',
+                width: width * 0.2,
+                fit: BoxFit.contain,
               ),
             ),
           ),
