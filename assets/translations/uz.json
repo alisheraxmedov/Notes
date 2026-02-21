@@ -61,5 +61,9 @@
   "share_notes_desc": "Do'stlaringiz va hamkasblaringiz bilan eslatmalarni ulashing.",
   "ai_summary_title": "AI Haftalik Xulosa",
   "ai_summary_desc": "Eslatmalaringizning aqlli haftalik xulosasini oling.",
-  "premium": "Premium"
+  "premium": "Premium",
+  "delete": "O'chirish",
+  "delete_all_missed_notes": "Barcha o'tkazib yuborilgan eslatmalarni o'chirib tashlashga ishonchingiz komilmi?",
+  "yes": "Ha",
+  "no": "Yo'q"
 }

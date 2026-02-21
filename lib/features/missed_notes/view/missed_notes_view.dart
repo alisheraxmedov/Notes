@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
+import 'package:notes/core/const/colors.dart';
 import 'package:notes/core/const/item_colors.dart';
 import 'package:notes/core/utils/date_formatter.dart';
 import 'package:notes/core/widgets/notes_card.dart';
@@ -8,115 +9,220 @@ import 'package:notes/core/widgets/text.dart';
 import 'package:notes/features/note/controller/note_controller.dart';
 
 /// Screen for displaying missed / overdue notes.
-class MissedNotesScreen extends StatelessWidget {
+class MissedNotesScreen extends StatefulWidget {
   const MissedNotesScreen({super.key});
+
+  @override
+  State<MissedNotesScreen> createState() => _MissedNotesScreenState();
+}
+
+class _MissedNotesScreenState extends State<MissedNotesScreen> {
+  final NoteController noteController = Get.find();
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
     final colorScheme = Theme.of(context).colorScheme;
-    final NoteController noteController = Get.find();
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceDim,
       body: SafeArea(
         child: Obx(() {
-          if (noteController.missedNotesList.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(width * 0.06),
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondary.withAlpha(15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.history_rounded,
-                      size: width * 0.15,
-                      color: colorScheme.secondary.withAlpha(100),
-                    ),
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+            child: Column(
+              children: [
+//===============================================================================
+//=================================== HEADER ====================================
+//===============================================================================
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: width * 0.04,
+                    bottom: width * 0.05,
                   ),
-                  SizedBox(height: width * 0.06),
-                  TextWidget(
-                    width: width,
-                    text: "missed_notes".tr(),
-                    fontSize: width * 0.045,
-                    fontWeight: FontWeight.w600,
-                    textColor: colorScheme.secondary,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: width * 0.02),
-                  TextWidget(
-                    width: width,
-                    text: "no_missed_notes".tr(),
-                    fontSize: width * 0.035,
-                    fontWeight: FontWeight.w400,
-                    textAlign: TextAlign.center,
-                    textColor: colorScheme.inversePrimary.withAlpha(120),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  top: width * 0.04,
-                  bottom: width * 0.05,
-                  left: width * 0.05,
-                  right: width * 0.05,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextWidget(
-                      width: width,
-                      text: "missed_notes".tr(),
-                      fontSize: width * 0.075,
-                      fontWeight: FontWeight.w700,
-                      textColor: colorScheme.secondary,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: noteController.missedNotesList.length,
-                    itemBuilder: (context, index) {
-                      final note = noteController.missedNotesList[index];
-                      // Use negative index or special handling if needed,
-                      // but NoteCard just needs an index for color generation.
-                      // We can just use the index here.
-
-                      return NoteCard(
-                        id: note.id,
-                        index: index,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextWidget(
                         width: width,
-                        title: note.title,
-                        content: note.content,
-                        editedDate:
-                            "${"edited".tr()}: ${DateFormatter.formatDate(note.date)} ${note.time}",
-                        color: ItemsColor.getColors(context)[
-                            index % ItemsColor.getColors(context).length],
-                        reTime: note.nDate == "Date" || note.nDate == null
-                            ? "${"reminder_time".tr()}: ${"not_specified".tr()}"
-                            : "${"reminder_time".tr()}: ${DateFormatter.formatDate(note.nDate)} ${note.nTime}",
-                      );
-                    },
+                        text: "missed_notes".tr(),
+                        fontSize: width * 0.075,
+                        fontWeight: FontWeight.w700,
+                        textColor: colorScheme.secondary,
+                        textAlign: TextAlign.center,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (noteController.missedNotesList.isNotEmpty) {
+                            Get.defaultDialog(
+                              title: "delete".tr(),
+                              middleText: "delete_all_missed_notes".tr(),
+                              textConfirm: "yes".tr(),
+                              textCancel: "no".tr(),
+                              confirmTextColor: Colors.white,
+                              buttonColor: ColorClass.red,
+                              cancelTextColor: colorScheme.secondary,
+                              backgroundColor: colorScheme.surface,
+                              titleStyle: TextStyle(color: colorScheme.secondary),
+                              middleTextStyle: TextStyle(color: colorScheme.inversePrimary),
+                              onConfirm: () {
+                                noteController.deleteAllMissedNotes();
+                                Get.back();
+                              },
+                            );
+                          }
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: ColorClass.red.withAlpha(200),
+                          size: width * 0.06,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+//===============================================================================
+//================================= SEARCH BAR ==================================
+//===============================================================================
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.secondary.withAlpha(10),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (val) {
+                      noteController.searchMissedQuery.value = val;
+                    },
+                    cursorColor: colorScheme.secondary,
+                    decoration: InputDecoration(
+                      hintText: "search".tr(),
+                      hintStyle: TextStyle(
+                        color: colorScheme.inversePrimary.withAlpha(100),
+                        fontFamily: "Courier",
+                        fontSize: width * 0.04,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(
+                            left: width * 0.04, right: width * 0.02),
+                        child: Icon(
+                          Icons.search_rounded,
+                          color: colorScheme.secondary.withAlpha(150),
+                          size: width * 0.06,
+                        ),
+                      ),
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: width * 0.12,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: width * 0.04,
+                        vertical: width * 0.04,
+                      ),
+                    ),
+                    style: TextStyle(
+                      color: colorScheme.inversePrimary,
+                      fontFamily: "Courier",
+                      fontSize: width * 0.04,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                SizedBox(height: width * 0.04),
+//===============================================================================
+//================================= NOTES LIST ==================================
+//===============================================================================
+                if (noteController.filteredMissedNotesList.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(width * 0.06),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondary.withAlpha(15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              noteController.missedNotesList.isEmpty
+                                  ? Icons.history_rounded
+                                  : Icons.search_off_rounded,
+                              size: width * 0.15,
+                              color: colorScheme.secondary.withAlpha(100),
+                            ),
+                          ),
+                          SizedBox(height: width * 0.06),
+                          TextWidget(
+                            width: width,
+                            text: noteController.missedNotesList.isEmpty
+                                ? "missed_notes".tr()
+                                : "search_no_results".tr(),
+                            fontSize: width * 0.045,
+                            fontWeight: FontWeight.w600,
+                            textColor: colorScheme.secondary,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: width * 0.02),
+                          TextWidget(
+                            width: width,
+                            text: noteController.missedNotesList.isEmpty
+                                ? "no_missed_notes".tr()
+                                : "search_no_results_hint".tr(),
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w400,
+                            textAlign: TextAlign.center,
+                            textColor:
+                                colorScheme.inversePrimary.withAlpha(120),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: noteController.filteredMissedNotesList.length,
+                      itemBuilder: (context, index) {
+                        final note =
+                            noteController.filteredMissedNotesList[index];
+
+                        return NoteCard(
+                          id: note.id,
+                          index: index,
+                          width: width,
+                          title: note.title,
+                          content: note.content,
+                          editedDate:
+                              "${"edited".tr()}: ${DateFormatter.formatDate(note.date)} ${note.time}",
+                          color: ItemsColor.getColors(context)[
+                              index % ItemsColor.getColors(context).length],
+                          reTime: note.nDate == "Date" || note.nDate == null
+                              ? "${"reminder_time".tr()}: ${"not_specified".tr()}"
+                              : "${"reminder_time".tr()}: ${DateFormatter.formatDate(note.nDate)} ${note.nTime}",
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
           );
         }),
       ),

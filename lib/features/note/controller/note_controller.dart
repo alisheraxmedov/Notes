@@ -25,6 +25,8 @@ class NoteController extends GetxController {
   RxString searchQuery = "".obs;
 
   RxList<Note> missedNotesList = <Note>[].obs;
+  RxList<Note> filteredMissedNotesList = <Note>[].obs;
+  RxString searchMissedQuery = "".obs;
 
   @override
   void onInit() {
@@ -35,9 +37,12 @@ class NoteController extends GetxController {
     // Debounce search
     debounce(searchQuery, (_) => filterNotes(),
         time: const Duration(milliseconds: 300));
+    debounce(searchMissedQuery, (_) => filterMissedNotes(),
+        time: const Duration(milliseconds: 300));
 
     // Update filtered list
     ever(allNotesList, (_) => filterNotes());
+    ever(missedNotesList, (_) => filterMissedNotes());
   }
 
   // ==================== DATA FETCHING ====================
@@ -127,6 +132,19 @@ class NoteController extends GetxController {
     } else {
       filteredNotesList.assignAll(
         allNotesList.where((note) {
+          return note.title.toLowerCase().contains(query);
+        }),
+      );
+    }
+  }
+
+  void filterMissedNotes() {
+    String query = searchMissedQuery.value.toLowerCase();
+    if (query.isEmpty) {
+      filteredMissedNotesList.assignAll(missedNotesList);
+    } else {
+      filteredMissedNotesList.assignAll(
+        missedNotesList.where((note) {
           return note.title.toLowerCase().contains(query);
         }),
       );
@@ -266,6 +284,40 @@ class NoteController extends GetxController {
           colorText: ColorClass.white,
         );
       }
+    }
+  }
+
+  Future<void> deleteAllMissedNotes() async {
+    try {
+      if (missedNotesList.isEmpty) return;
+
+      isLoading.value = true;
+      final companion = NotesCompanion(
+        isDeleted: const drift.Value(true),
+        updated: drift.Value(DateTime.now()),
+      );
+
+      final ids = missedNotesList.map((n) => n.id).toList();
+
+      await (_db.update(_db.notes)..where((t) => t.id.isIn(ids)))
+          .write(companion);
+
+      allNotesList.removeWhere((note) => ids.contains(note.id));
+      missedNotesList.clear();
+      filteredMissedNotesList.clear();
+    } catch (e) {
+      if (Get.context != null && Get.isOverlaysClosed) {
+        Get.snackbar(
+          "Error",
+          "Failed to delete missed notes: $e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorClass.red.withValues(alpha: 0.8),
+          colorText: ColorClass.white,
+        );
+      }
+    } finally {
+      isLoading.value = false;
+      fetchNotes();
     }
   }
 

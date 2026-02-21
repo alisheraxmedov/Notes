@@ -46,7 +46,7 @@ void main() async {
       ],
       // assetLoader: const CodegenLoader(),
       path: 'assets/translations',
-      startLocale: const Locale('uz'),
+      startLocale: const Locale('en'),
       saveLocale: true,
       child: const MyApp(),
     ),

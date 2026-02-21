@@ -17,6 +17,12 @@ class NotificationService {
 
   /// Initialize Firebase Messaging
   static Future<void> init() async {
+    if (kIsWeb) {
+      debugPrint(
+          'Web platform detected. Skipping Firebase Messaging initialization.');
+      return;
+    }
+
     // Request permission (iOS)
     final settings = await _messaging.requestPermission(
       alert: true,
@@ -58,7 +64,7 @@ class NotificationService {
     try {
       // On iOS, we need to wait for APNs token first
       // On iOS, we need to wait for APNs token first
-      if (Platform.isIOS) {
+      if (!kIsWeb && Platform.isIOS) {
         // try-catch specific for APNs to avoid crashing if capability is missing
         try {
           String? apnsToken = await _messaging.getAPNSToken();
@@ -89,7 +95,7 @@ class NotificationService {
     } catch (e) {
       debugPrint('Error getting FCM token: $e');
       // On iOS Simulator, this is expected to fail
-      if (Platform.isIOS) {
+      if (!kIsWeb && Platform.isIOS) {
         debugPrint('Note: Push notifications may not work on iOS Simulator.');
       }
     }
