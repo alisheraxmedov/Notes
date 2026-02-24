@@ -59,6 +59,7 @@ class _MissedNotesScreenState extends State<MissedNotesScreen> {
                         textColor: colorScheme.secondary,
                         textAlign: TextAlign.center,
                       ),
+                      SizedBox(width: width * 0.2),
                       IconButton(
                         onPressed: () {
                           if (noteController.missedNotesList.isNotEmpty) {
@@ -71,8 +72,10 @@ class _MissedNotesScreenState extends State<MissedNotesScreen> {
                               buttonColor: ColorClass.red,
                               cancelTextColor: colorScheme.secondary,
                               backgroundColor: colorScheme.surface,
-                              titleStyle: TextStyle(color: colorScheme.secondary),
-                              middleTextStyle: TextStyle(color: colorScheme.inversePrimary),
+                              titleStyle:
+                                  TextStyle(color: colorScheme.secondary),
+                              middleTextStyle:
+                                  TextStyle(color: colorScheme.inversePrimary),
                               onConfirm: () {
                                 noteController.deleteAllMissedNotes();
                                 Get.back();
